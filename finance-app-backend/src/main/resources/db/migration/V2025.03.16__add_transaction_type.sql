@@ -1,0 +1,1 @@
+ALTER TABLE finance_app.transaction ADD COLUMN type VARCHAR(255) NOT NULL default 'DEFAULT';
