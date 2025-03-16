@@ -1,0 +1,11 @@
+package com.victor.financeapp.backend.domain.repository;
+
+import com.victor.financeapp.backend.domain.model.Transaction;
+import reactor.core.publisher.Flux;
+
+import java.time.YearMonth;
+
+public interface TransactionRepository {
+    Flux<Transaction> findUserTransactionsOn(Long id, YearMonth yearMonth);
+    Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId);
+}

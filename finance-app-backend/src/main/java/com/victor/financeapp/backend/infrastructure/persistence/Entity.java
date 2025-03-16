@@ -13,7 +13,7 @@ public abstract class Entity<ID extends Serializable> {
     private LocalDateTime createdAt;
     private LocalDateTime modificatedAt;
     private Boolean deleted = false;
-    private LocalDateTime deletedAt;
+    private LocalDateTime deleteDate;
 
     public boolean isNew() {
         return this.id == null;
@@ -21,6 +21,6 @@ public abstract class Entity<ID extends Serializable> {
 
     public void delete() {
         this.deleted = true;
-        this.deletedAt = LocalDateTime.now();
+        this.deleteDate = LocalDateTime.now();
     }
 }

@@ -2,6 +2,7 @@ package com.victor.financeapp.backend.domain.model;
 
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
@@ -11,18 +12,24 @@ import java.util.List;
 @Getter
 public class User {
 
-    private String name;
-    private String lastName;
-    private BigDecimal salary;
-    private boolean active;
-    private List<CreditCard> creditCards;
-    private List<Transaction> transactions;
-    private List<MonthClosure> monthClosures;
+    private Long id;
+    private final String name;
+    private final String lastName;
+    private final BigDecimal salary;
+    private final boolean active;
+    private final List<CreditCard> creditCards;
+    private final List<Transaction> transactions;
+    private final List<MonthClosure> monthClosures;
 
-    public User() {
+    public User(String name, String lastName, BigDecimal salary, boolean active) {
         Assert.hasText(name, "The user name is required");
         Assert.hasText(lastName, "The user lastname is required");
         Assert.notNull(salary, "The user salary is required");
+
+        this.name = name;
+        this.lastName = lastName;
+        this.salary = salary;
+        this.active = active;
         creditCards = new ArrayList<>();
         transactions = new ArrayList<>();
         monthClosures = new ArrayList<>();
@@ -30,5 +37,17 @@ public class User {
 
     public void addCreditCard(CreditCard creditCard) {
         this.creditCards.add(creditCard);
+    }
+
+    public void addCreditCards(List<CreditCard> creditCards) {
+        this.creditCards.addAll(creditCards);
+    }
+
+    public void addTransactions(List<Transaction> transactions) {
+        this.transactions.addAll(transactions);
+    }
+
+    public void addMonthClosures(List<MonthClosure> monthClosures) {
+        this.monthClosures.addAll(monthClosures);
     }
 }

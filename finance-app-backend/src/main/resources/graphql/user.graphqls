@@ -1,0 +1,9 @@
+scalar YearMonth
+
+extend type Query {
+    getBalance(yearMonth: YearMonth!): UserBalanceDTO
+}
+
+type UserBalanceDTO {
+    name: String
+}

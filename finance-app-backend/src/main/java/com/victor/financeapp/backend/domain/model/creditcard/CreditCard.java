@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 public class CreditCard {
 
+    private Long id;
     private String title;
     private String description;
     private String number;
@@ -22,18 +23,23 @@ public class CreditCard {
     @Setter
     private User user;
 
-    public CreditCard(String title, String number, Integer invoiceClosingDay) {
+    public CreditCard(Long id, String title, String number, Integer invoiceClosingDay) {
         Assert.hasText(title, "The credit card title is required");
         Assert.hasText(number, "The credit card number is required");
         Assert.notNull(invoiceClosingDay, "The credit card title is required");
         Assert.state(invoiceClosingDay > 0, "The credit card invoice closing day is invalid");
         invoices = new ArrayList<>();
+        this.id = id;
     }
 
     private Invoice addInvoice(YearMonth yearMonth) {
-        var newInvoice = Invoice.create(this, yearMonth);
+        var newInvoice = Invoice.create(this.id, yearMonth);
         this.invoices.add(newInvoice);
         return newInvoice;
+    }
+
+    public void addInvoice(Invoice invoice) {
+        this.invoices.add(invoice);
     }
 
     private Invoice getOrCreateInvoice(YearMonth yearMonth) {
