@@ -1,6 +1,7 @@
 package com.victor.financeapp.backend.application.config;
 
 import com.victor.financeapp.backend.application.config.scalar.YearMonthScalar;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,10 @@ public class GraphQLConfig {
 
     @Bean
     public RuntimeWiringConfigurer runtimeWiringConfigurer(GraphQLScalarType yearMonthScalar) {
-        return wiringBuilder -> wiringBuilder.scalar(yearMonthScalar);
+        return wiringBuilder -> wiringBuilder
+                .scalar(yearMonthScalar)
+                .scalar(ExtendedScalars.DateTime)
+                .scalar(ExtendedScalars.GraphQLBigDecimal)
+                .scalar(ExtendedScalars.Json);
     }
 }

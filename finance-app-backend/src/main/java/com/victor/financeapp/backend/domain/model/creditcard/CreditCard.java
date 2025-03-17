@@ -13,23 +13,29 @@ import java.util.List;
 @Getter
 public class CreditCard {
 
-    private Long id;
-    private String title;
-    private String description;
-    private String number;
-    private String color;
-    private Integer invoiceClosingDay;
-    private final List<Invoice> invoices;
+    private final Long id;
+    private final String title;
     @Setter
-    private User user;
+    private String description;
+    private final String number;
+    @Setter
+    private String color;
+    private final Integer invoiceClosingDay;
+    private final List<Invoice> invoices;
+    private final Long userId;
 
-    public CreditCard(Long id, String title, String number, Integer invoiceClosingDay) {
+    public CreditCard(Long id, String title, String number, Integer invoiceClosingDay, Long userId) {
         Assert.hasText(title, "The credit card title is required");
         Assert.hasText(number, "The credit card number is required");
         Assert.notNull(invoiceClosingDay, "The credit card title is required");
         Assert.state(invoiceClosingDay > 0, "The credit card invoice closing day is invalid");
-        invoices = new ArrayList<>();
+
+        this.invoices = new ArrayList<>();
+        this.title = title;
+        this.number = number;
+        this.invoiceClosingDay = invoiceClosingDay;
         this.id = id;
+        this.userId = userId;
     }
 
     private Invoice addInvoice(YearMonth yearMonth) {

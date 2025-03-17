@@ -37,8 +37,7 @@ public class GetUserBalanceUseCaseImpl implements GetBalanceUseCase {
 
     @Override
     public Mono<UserBalanceDTO> execute(YearMonth yearMonth) {
-        return SecurityContext.getUserEmail()
-                .flatMap(userEmail -> loadUser(yearMonth, userEmail));
+        return loadUser(yearMonth, "vpradodev@gmail.com");
     }
 
     private Mono<UserBalanceDTO> loadUser(YearMonth yearMonth, String userEmail) {
@@ -78,7 +77,7 @@ public class GetUserBalanceUseCaseImpl implements GetBalanceUseCase {
     }
 
     private Mono<Invoice> populateInvoiceTransactions(Invoice invoice) {
-        return  transactionRepository.findInvoiceTransactionsOn(invoice.getId())
+        return transactionRepository.findInvoiceTransactionsOn(invoice.getId())
                 .collectList()
                 .doOnNext(invoice::addTransactions)
                 .thenReturn(invoice);

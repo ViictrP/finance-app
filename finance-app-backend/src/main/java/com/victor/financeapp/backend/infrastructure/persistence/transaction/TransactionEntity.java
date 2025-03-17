@@ -20,6 +20,7 @@ class TransactionEntity extends Entity<Long> {
     private String installmentId;
     private Integer installmentAmount;
     private LocalDateTime date;
+    private String type;
     private Long userId;
     private Long invoiceId;
 }

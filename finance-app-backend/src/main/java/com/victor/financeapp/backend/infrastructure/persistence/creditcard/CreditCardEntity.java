@@ -12,7 +12,7 @@ class CreditCardEntity extends Entity<Long> {
     private String title;
     private String description;
     private String number;
-    private String color;
+    private String backgroundColor;
     private Integer invoiceClosingDay;
     private Long userId;
 }
