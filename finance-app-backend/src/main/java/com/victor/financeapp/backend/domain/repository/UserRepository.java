@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.domain.repository;
 
-import com.victor.financeapp.backend.domain.model.User;
+import com.victor.financeapp.backend.domain.model.user.User;
 import reactor.core.publisher.Mono;
 
 public interface UserRepository {

@@ -1,4 +1,4 @@
-package com.victor.financeapp.backend.domain.model;
+package com.victor.financeapp.backend.domain.model.user;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.domain.model.creditcard;
 
-import com.victor.financeapp.backend.domain.model.Transaction;
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import lombok.Getter;
 import org.springframework.util.Assert;
 

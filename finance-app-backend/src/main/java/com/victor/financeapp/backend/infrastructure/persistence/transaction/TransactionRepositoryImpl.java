@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.infrastructure.persistence.transaction;
 
-import com.victor.financeapp.backend.domain.model.Transaction;
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

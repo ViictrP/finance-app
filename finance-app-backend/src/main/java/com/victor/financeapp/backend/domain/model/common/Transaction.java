@@ -1,6 +1,7 @@
-package com.victor.financeapp.backend.domain.model;
+package com.victor.financeapp.backend.domain.model.common;
 
 import com.victor.financeapp.backend.domain.model.creditcard.Invoice;
+import com.victor.financeapp.backend.domain.model.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

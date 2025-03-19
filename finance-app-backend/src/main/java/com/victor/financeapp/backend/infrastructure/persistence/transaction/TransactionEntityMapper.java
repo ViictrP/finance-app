@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.infrastructure.persistence.transaction;
 
-import com.victor.financeapp.backend.domain.model.Transaction;
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.infrastructure.persistence.user;
 
-import com.victor.financeapp.backend.domain.model.User;
+import com.victor.financeapp.backend.domain.model.user.User;
 import com.victor.financeapp.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

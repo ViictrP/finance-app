@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.infrastructure.persistence.monthclosure;
 
-import com.victor.financeapp.backend.domain.model.MonthClosure;
+import com.victor.financeapp.backend.domain.model.user.MonthClosure;
 import com.victor.financeapp.backend.domain.repository.MonthClosureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

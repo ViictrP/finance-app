@@ -1,7 +1,7 @@
 package com.victor.financeapp.backend.application.mapper;
 
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
-import com.victor.financeapp.backend.domain.model.Transaction;
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

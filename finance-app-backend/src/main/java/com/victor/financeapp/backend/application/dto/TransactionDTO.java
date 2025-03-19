@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.application.dto;
 
-import com.victor.financeapp.backend.domain.model.Transaction.TransactionType;
+import com.victor.financeapp.backend.domain.model.common.Transaction.TransactionType;
 import lombok.Builder;
 
 import java.math.BigDecimal;

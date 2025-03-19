@@ -1,6 +1,6 @@
 package com.victor.financeapp.backend.domain.repository;
 
-import com.victor.financeapp.backend.domain.model.Transaction;
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import reactor.core.publisher.Flux;
 
 import java.time.YearMonth;
