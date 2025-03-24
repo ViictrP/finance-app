@@ -4,8 +4,8 @@ import com.victor.financeapp.backend.application.service.currency.CurrencyServic
 import com.victor.financeapp.backend.application.service.user.UserDomainService;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import com.victor.financeapp.backend.domain.model.creditcard.Invoice;
-import com.victor.financeapp.backend.domain.model.user.User;
 import com.victor.financeapp.backend.domain.model.user.Balance;
+import com.victor.financeapp.backend.domain.model.user.User;
 import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
 import com.victor.financeapp.backend.domain.repository.InvoiceRepository;
 import com.victor.financeapp.backend.domain.repository.MonthClosureRepository;
@@ -39,13 +39,15 @@ public class UserDomainServiceImpl implements UserDomainService {
                     user.addCreditCards(tuple.getT1());
                     user.addTransactions(tuple.getT2());
                     user.addMonthClosures(tuple.getT3());
+                    user.populateRecurringExpenses();
                 })
                 .thenReturn(user);
     }
 
     @Override
     public Mono<Balance> calculateUserBalance(User user) {
-        return Mono.just(user.calculateBalance());
+        return currencyService.getDollarExchangeRates()
+                .map(user::calculateBalance);
     }
 
     private Mono<CreditCard> populateCreditCardInvoice(YearMonth yearMonth, CreditCard creditCard) {

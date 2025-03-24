@@ -9,6 +9,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.victor.financeapp.backend.domain.model.common.Transaction.TransactionType.RECURRING;
 
 @Getter
 public class User {
@@ -22,6 +27,7 @@ public class User {
     private final List<Transaction> transactions;
     private final List<Transaction> recurringExpenses;
     private final List<MonthClosure> monthClosures;
+    private final Map<String, String> properties;
 
     public User(Long id, String name, String lastname, BigDecimal salary, boolean active) {
         Assert.hasText(name, "The user name is required");
@@ -37,6 +43,7 @@ public class User {
         transactions = new ArrayList<>();
         monthClosures = new ArrayList<>();
         this.recurringExpenses = new ArrayList<>();
+        this.properties = new HashMap<>();
     }
 
     public void addCreditCards(List<CreditCard> creditCards) {
@@ -51,7 +58,71 @@ public class User {
         this.monthClosures.addAll(monthClosures);
     }
 
-    public Balance calculateBalance() {
-        return new Balance(this.transactions, this.recurringExpenses, this.creditCards, this.salary, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new HashMap<>());
+    public Balance calculateBalance(BigDecimal dollar) {
+        var grossSalary = this.salary.multiply(dollar);
+        var currencyConversionTax = new BigDecimal(getProperty("CURRENCY_CONVERSION_TAX")
+                .orElse("0.0"));
+
+        var salaryTax = new BigDecimal(getProperty("SALARY_TAX")
+                .orElse("0.0"));
+        var salaryMinusConversionTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
+        var salaryMinusTax = salaryMinusConversionTax.subtract(salaryMinusConversionTax.multiply(salaryTax));
+
+        var expenses = calculateExpenses();
+        var creditCardExpenses = splitCreditCardsExpenses();
+
+        return Balance.builder()
+                .nonConvertedSalary(grossSalary)
+                .exchangeTaxValue(currencyConversionTax)
+                .taxValue(salaryTax)
+                .salary(salaryMinusTax)
+                .transactions(transactions)
+                .recurringTransactions(recurringExpenses)
+                .creditCards(creditCards)
+                .creditCardExpenses(creditCardExpenses)
+                .expenses(expenses)
+                .available(salaryMinusTax.subtract(expenses))
+                .build();
+    }
+
+    private Map<Long, BigDecimal> splitCreditCardsExpenses() {
+        return creditCards.stream()
+            .collect(Collectors.toMap(
+                CreditCard::getId,
+                CreditCard::calculateTotal)
+            );
+    }
+
+    private BigDecimal calculateExpenses() {
+        var transactionsAmount = transactions.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal creditCardsTotal = creditCards.stream()
+                .map(CreditCard::calculateTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return transactionsAmount.add(creditCardsTotal);
+    }
+
+    public void populateRecurringExpenses() {
+        this.recurringExpenses.addAll(
+                this.transactions
+                        .stream().filter(transaction -> RECURRING.equals(transaction.getType()))
+                        .toList()
+        );
+    }
+
+    public Optional<String> getProperty(String propertyName) {
+        if (this.properties.containsKey(propertyName)) {
+            return Optional.of(this.properties.get(propertyName));
+        }
+
+        return Optional.empty();
+    }
+
+    public void addProperty(String name, String value) {
+        this.properties.put(name, value);
     }
 }

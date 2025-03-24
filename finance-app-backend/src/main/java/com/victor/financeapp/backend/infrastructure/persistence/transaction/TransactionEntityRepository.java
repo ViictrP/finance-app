@@ -5,8 +5,6 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-import java.time.YearMonth;
-
 @Repository
 interface TransactionEntityRepository extends ReactiveCrudRepository<TransactionEntity, Long> {
 
@@ -18,7 +16,10 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
             AND invoice_id IS NULL
             AND EXTRACT(MONTH FROM date) = :month
             AND EXTRACT(YEAR FROM date) = :year
+            AND deleted IS FALSE
+            AND delete_date IS NULL
         """)
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
-    Flux<TransactionEntity> findByInvoiceId(Long invoiceId);
+
+    Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalse(Long invoiceId);
 }

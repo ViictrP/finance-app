@@ -35,3 +35,6 @@ server:
 logging:
     level:
         root: INFO
+
+CURRENCY:
+    url: https://economia.awesomeapi.com.br/json/last

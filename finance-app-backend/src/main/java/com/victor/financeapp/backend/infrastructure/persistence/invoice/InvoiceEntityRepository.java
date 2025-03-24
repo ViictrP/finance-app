@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 interface InvoiceEntityRepository extends ReactiveCrudRepository<InvoiceEntity, Long> {
-    Mono<InvoiceEntity> findByCreditCardIdAndMonthAndYear(Long creditCardId, String month, int year);
+    Mono<InvoiceEntity> findByCreditCardIdAndMonthAndYearAndDeletedIsFalse(Long creditCardId, String month, int year);
 }

@@ -6,5 +6,5 @@ import reactor.core.publisher.Flux;
 
 @Repository
 interface CreditCardEntityRepository extends ReactiveCrudRepository<CreditCardEntity, Long> {
-    Flux<CreditCardEntity> findByUserId(Long userId);
+    Flux<CreditCardEntity> findByUserIdAndDeletedIsFalse(Long userId);
 }

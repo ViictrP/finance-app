@@ -18,7 +18,7 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     @Override
     public Mono<Invoice> findCreditCardsInvoiceOn(Long creditCardId, YearMonth yearMonth) {
         var month = yearMonth.getMonth().name().substring(0, 3);
-        return repository.findByCreditCardIdAndMonthAndYear(creditCardId, month, yearMonth.getYear())
+        return repository.findByCreditCardIdAndMonthAndYearAndDeletedIsFalse(creditCardId, month, yearMonth.getYear())
                 .map(mapper::toDomain);
     }
 }

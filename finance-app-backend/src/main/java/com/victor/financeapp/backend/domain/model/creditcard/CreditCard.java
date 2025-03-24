@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.Assert;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,5 +64,12 @@ public class CreditCard {
 
         var invoice = getOrCreateInvoice(transactionDate);
         invoice.addTransaction(transaction);
+    }
+
+    public BigDecimal calculateTotal() {
+        return invoices.stream()
+                .flatMap(invoice -> invoice.getTransactions().stream())
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
