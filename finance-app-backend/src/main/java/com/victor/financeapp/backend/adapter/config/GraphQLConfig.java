@@ -1,6 +1,6 @@
-package com.victor.financeapp.backend.application.config;
+package com.victor.financeapp.backend.adapter.config;
 
-import com.victor.financeapp.backend.application.config.scalar.YearMonthScalar;
+import com.victor.financeapp.backend.adapter.config.scalar.YearMonthScalar;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
 import org.springframework.context.annotation.Bean;

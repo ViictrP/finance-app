@@ -1,4 +1,4 @@
-package com.victor.financeapp.backend.infrastructure.client.config;
+package com.victor.financeapp.backend.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

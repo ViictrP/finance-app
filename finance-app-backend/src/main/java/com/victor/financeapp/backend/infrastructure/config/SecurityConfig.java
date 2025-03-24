@@ -1,6 +1,6 @@
-package com.victor.financeapp.backend.application.config.security;
+package com.victor.financeapp.backend.infrastructure.config;
 
-import com.victor.financeapp.backend.application.config.security.oauth2.JwtGrantedAuthorityConverter;
+import com.victor.financeapp.backend.infrastructure.security.oauth2.JwtGrantedAuthorityConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;

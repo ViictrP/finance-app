@@ -1,4 +1,4 @@
-package com.victor.financeapp.backend.application.config.security.oauth2;
+package com.victor.financeapp.backend.infrastructure.security.oauth2;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;

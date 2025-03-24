@@ -1,4 +1,4 @@
-package com.victor.financeapp.backend.application.config.scalar;
+package com.victor.financeapp.backend.adapter.config.scalar;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.GraphQLScalarType;
