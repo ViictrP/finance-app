@@ -37,7 +37,7 @@ fun SummaryCard() {
         ) {
             InternalSummaryCard("Salário", "27.362,47", Color.Gray)
             InternalSummaryCard("Gastos", "23.143,66", Color.Gray)
-            InternalSummaryCard("Disponível", "4.218,81", Color.Gray)
+            InternalSummaryCard("Livre", "4.218,81", Color.Gray)
         }
     }
 }

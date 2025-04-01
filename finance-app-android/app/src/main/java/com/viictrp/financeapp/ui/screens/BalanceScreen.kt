@@ -121,7 +121,7 @@ fun ExpensesCarousel() {
     ) {
         item { CreditCardImpactCard("Samsung", "4.99%", "R$ 1.154,57", Color.Black) }
         item { CreditCardImpactCard("Porto", "2.40%", "R$ 554,64", Color.Black) }
-        item { CreditCardImpactCard("Sams Club", "", "R$ 518,34", Color.Black) } // Orange
+        item { CreditCardImpactCard("Sams Club", "1.99%", "R$ 518,34", Color.Black) } // Orange
     }
 }
 
