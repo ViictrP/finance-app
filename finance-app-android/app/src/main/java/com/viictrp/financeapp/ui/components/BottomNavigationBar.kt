@@ -1,7 +1,6 @@
 package com.viictrp.financeapp.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,25 +9,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,22 +37,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    val navBackStackEntry = navController.currentBackStackEntryAsState().value
-    val currentRoute = navBackStackEntry?.destination?.route
+    var selectedItem by remember { mutableIntStateOf(0) }
     var bottomSheetVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
+
+    val items = listOf("Início", "Adicionar", "Cartões")
+    val routesMap = mapOf(
+        "Início" to "home",
+        "Adicionar" to "",
+        "Cartões" to "credit_card"
+    )
+    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Add, Icons.Filled.Email)
+    val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Add, Icons.Outlined.Email)
 
     if (bottomSheetVisible) {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         val padding = 30.dp
 
         val sheetMaxWidth = screenWidth - padding
+
         ModalBottomSheet(
             onDismissRequest = { bottomSheetVisible = false },
             sheetState = bottomSheetState,
@@ -69,7 +78,7 @@ fun BottomNavigationBar(navController: NavController) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Outlined.Email,
+                                painter = CustomIcons.DuoTone.AddCircle,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp)
                             )
@@ -86,7 +95,7 @@ fun BottomNavigationBar(navController: NavController) {
                         Spacer(modifier = Modifier.size(24.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Outlined.AccountCircle,
+                                painter = CustomIcons.DuoTone.AirPlay,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp)
                             )
@@ -103,56 +112,29 @@ fun BottomNavigationBar(navController: NavController) {
         )
     }
 
-    BottomAppBar(
-        containerColor = Color.White,
-        tonalElevation = 4.dp,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController.navigate("home") }) {
-                Icon(
-                    Icons.Filled.Home,
-                    contentDescription = "Home",
-                    modifier = Modifier.size(36.dp),
-                    tint = if (currentRoute == "home") Color(0xFF2196F3) else Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            FloatingActionButton(
-                onClick = {
-                    bottomSheetVisible = true
+    // Navigation Bar
+    NavigationBar(containerColor = Color.White, modifier = Modifier.zIndex(1f)) {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
+                        contentDescription = item
+                    )
                 },
-                containerColor = Color.White,
-                elevation = FloatingActionButtonDefaults.elevation(0.8.dp),
-                modifier = Modifier.size(70.dp),
-                shape = CircleShape
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    modifier = Modifier.size(50.dp),
-                    contentDescription = "Add",
-                    tint = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(onClick = { navController.navigate("credit_card") }) {
-                Icon(
-                    Icons.Filled.Email,
-                    contentDescription = "Cards",
-                    modifier = Modifier.size(36.dp),
-                    tint = if (currentRoute == "credit_card") Color(0xFF2196F3) else Color.Gray
-                )
-            }
+                label = { Text(item) },
+                selected = selectedItem == index,
+                onClick = {
+                    if (item == "Adicionar") {
+                        bottomSheetVisible = true
+                    } else {
+                        routesMap[item]?.let { route ->
+                            selectedItem = index
+                            navController.navigate(route)
+                        }
+                    }
+                }
+            )
         }
     }
 }
