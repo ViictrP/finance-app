@@ -23,6 +23,9 @@ fun MainScreen() {
             composable("home") {
                 HomeScreen(navController)
             }
+            composable("credit_card") {
+                CreditCardScreen(navController)
+            }
             composable("balance") {
                 BalanceScreen()
             }

@@ -145,12 +145,12 @@ fun BottomNavigationBar(navController: NavController) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(onClick = { navController.navigate("balance") }) {
+            IconButton(onClick = { navController.navigate("credit_card") }) {
                 Icon(
                     Icons.Filled.Email,
                     contentDescription = "Cards",
                     modifier = Modifier.size(36.dp),
-                    tint = if (currentRoute == "balance") Color(0xFF2196F3) else Color.Gray
+                    tint = if (currentRoute == "credit_card") Color(0xFF2196F3) else Color.Gray
                 )
             }
         }
