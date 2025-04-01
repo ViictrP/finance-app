@@ -6,16 +6,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.viictrp.financeapp.ui.screens.BalanceScreen
+import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.ui.screens.HomeScreen
+import com.viictrp.financeapp.ui.screens.MainScreen
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             FinanceAppTheme {
-                BalanceScreen()
+                MainScreen()
             }
         }
     }
@@ -23,8 +26,9 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun HomePreview() {
+    val navController = rememberNavController()
     FinanceAppTheme {
-        BalanceScreen()
+        HomeScreen(navController)
     }
 }

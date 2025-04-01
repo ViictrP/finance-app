@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,11 +42,20 @@ fun CreditCardImpactCard(name: String, percentage: String, amount: String, color
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(percentage, fontSize = 18.sp, color = Color.White)
+                Text(
+                    name,
+                    style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    percentage,
+                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    color = Color.White
+                )
             }
             Spacer(Modifier.size(4.dp))
-            Text(amount, fontSize = 18.sp, color = Color.White)
+            Text(amount, style = LocalTextStyle.current.copy(fontSize = 18.sp), color = Color.White)
         }
     }
 }

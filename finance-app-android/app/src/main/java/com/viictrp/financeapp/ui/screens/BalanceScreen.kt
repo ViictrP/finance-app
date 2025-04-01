@@ -11,19 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.Header
+import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 
@@ -54,10 +46,14 @@ fun BalanceScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
-                    Text("Extrato do mês.", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Extrato do mês.",
+                        fontWeight = FontWeight.Bold,
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp)
+                    )
                     Text(
                         "Acumulado de todas as transações e faturas...",
-                        fontSize = 14.sp,
+                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
                         color = Color.Gray
                     )
                 }
@@ -88,7 +84,7 @@ fun BalanceScreen() {
                 ) {
                     Text(
                         "Impacto nos gastos",
-                        fontSize = 24.sp,
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -104,36 +100,17 @@ fun BalanceScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
-                    Text("Compras", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Compras",
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                        fontWeight = FontWeight.Bold
+                    )
                     Spacer(modifier = Modifier.size(24.dp))
                     Transactions()
                 }
             }
         }
     }
-}
-
-@Composable
-fun MonthPicker() {
-    val selectedDate by remember { mutableStateOf("March 2025") }
-
-    OutlinedTextField(
-        value = selectedDate,
-        onValueChange = {},
-        readOnly = true,
-        modifier = Modifier.fillMaxWidth(),
-        leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Calendar") },
-        trailingIcon = {
-            IconButton(onClick = { /* Open month picker */ }) {
-                Icon(Icons.Default.Clear, contentDescription = "Select Month")
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.Gray,
-        )
-    )
 }
 
 @Composable
@@ -153,7 +130,7 @@ fun Transactions() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 50.dp)
+            .padding(bottom = 100.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

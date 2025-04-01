@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,11 +29,11 @@ import androidx.compose.ui.unit.sp
 fun SummaryCard() {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(4.dp)
+        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.1f)),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             InternalSummaryCard("Salário", "27.362,47", Color.Gray)
             InternalSummaryCard("Gastos", "23.143,66", Color.Gray)
@@ -50,9 +52,9 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
                     .background(color, CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(title, style = LocalTextStyle.current.copy(fontSize = 16.sp), fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(amount, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(amount, style = LocalTextStyle.current.copy(fontSize = 18.sp), fontWeight = FontWeight.Bold)
     }
 }
