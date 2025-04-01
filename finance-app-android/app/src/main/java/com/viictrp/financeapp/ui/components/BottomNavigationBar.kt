@@ -13,13 +13,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,13 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +69,7 @@ fun BottomNavigationBar(navController: NavController) {
             onDismissRequest = { bottomSheetVisible = false },
             sheetState = bottomSheetState,
             sheetMaxWidth = sheetMaxWidth,
+            containerColor = MaterialTheme.colorScheme.primary,
             content = {
                 Box(
                     modifier = Modifier
@@ -80,12 +83,14 @@ fun BottomNavigationBar(navController: NavController) {
                             Icon(
                                 painter = CustomIcons.DuoTone.AddCircle,
                                 contentDescription = "Settings",
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                             Spacer(modifier = Modifier.size(24.dp))
                             Text(
                                 "Novo Cartão",
                                 style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                color = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.clickable {
                                     navController.navigate("credit_card_form")
                                     bottomSheetVisible = false
@@ -97,13 +102,15 @@ fun BottomNavigationBar(navController: NavController) {
                             Icon(
                                 painter = CustomIcons.DuoTone.AirPlay,
                                 contentDescription = "Settings",
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                             Spacer(modifier = Modifier.size(24.dp))
                             Text(
                                 "Nova Transação",
                                 style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                                modifier = Modifier.clickable {}
+                                modifier = Modifier.clickable {},
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                     }
@@ -113,7 +120,10 @@ fun BottomNavigationBar(navController: NavController) {
     }
 
     // Navigation Bar
-    NavigationBar(containerColor = Color.White, modifier = Modifier.zIndex(1f)) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.zIndex(1f)
+    ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 icon = {
@@ -136,5 +146,13 @@ fun BottomNavigationBar(navController: NavController) {
                 }
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BottomNavigationBarPreview() {
+    FinanceAppTheme {
+        BottomNavigationBar(rememberNavController())
     }
 }

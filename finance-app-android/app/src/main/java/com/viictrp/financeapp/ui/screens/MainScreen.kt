@@ -1,11 +1,14 @@
 package com.viictrp.financeapp.ui.screens
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.components.BottomNavigationBar
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun MainScreen() {
@@ -14,7 +17,8 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { _ ->
         NavHost(
             navController = navController,
@@ -33,5 +37,13 @@ fun MainScreen() {
                 CreditCardFormScreen(navController)
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    FinanceAppTheme {
+        MainScreen()
     }
 }

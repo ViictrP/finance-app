@@ -13,20 +13,22 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun TransactionCard(title: String, category: String, amount: String, date: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Row(
             modifier = Modifier
@@ -42,19 +44,20 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                     Icons.Outlined.ShoppingCart,
                     modifier = Modifier.size(26.dp),
                     contentDescription = "Select Month",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
                     Text(
                         category,
                         style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                     )
                     Text(
                         title,
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.secondary,
                     )
                 }
             }
@@ -62,14 +65,28 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                 Text(
                     date,
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                 )
                 Text(
                     amount,
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                    color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionCardPreview() {
+    FinanceAppTheme {
+        TransactionCard(
+            title = "Title",
+            category = "Category",
+            amount = "R$0,00",
+            date = "22/03/2023"
+        )
     }
 }

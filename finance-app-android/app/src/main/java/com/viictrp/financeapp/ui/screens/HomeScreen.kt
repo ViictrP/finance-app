@@ -14,23 +14,30 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.components.Header
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             Header("Victor Prado")
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -44,8 +51,11 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.1f)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    ),
                 ) {
                     Column(
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
@@ -57,12 +67,15 @@ fun HomeScreen(navController: NavController) {
                             Text(
                                 "gastos do mês",
                                 style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                             )
                             Text(
-                                "Mar",
+                                SimpleDateFormat(
+                                    "MMM",
+                                    Locale.getDefault()
+                                ).format(Calendar.getInstance().time),
                                 style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                color = Color.Blue,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 fontWeight = FontWeight.Medium,
                                 modifier = Modifier.clickable { navController.navigate("balance") }
                             )
@@ -72,11 +85,20 @@ fun HomeScreen(navController: NavController) {
                             "R$ 23.143,66",
                             style = LocalTextStyle.current.copy(fontSize = 40.sp),
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomePreview() {
+    val navController = rememberNavController()
+    FinanceAppTheme {
+        HomeScreen(navController)
     }
 }

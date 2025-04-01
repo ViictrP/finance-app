@@ -19,8 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import com.viictrp.financeapp.ui.theme.PrimaryDark
+import com.viictrp.financeapp.ui.theme.SecondaryDark
 
 @Composable
 fun CreditCardImpactCard(name: String, percentage: String, amount: String, color: Color) {
@@ -46,16 +50,33 @@ fun CreditCardImpactCard(name: String, percentage: String, amount: String, color
                     name,
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = SecondaryDark
                 )
                 Text(
                     percentage,
                     style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                    color = Color.White
+                    color = SecondaryDark
                 )
             }
             Spacer(Modifier.size(4.dp))
-            Text(amount, style = LocalTextStyle.current.copy(fontSize = 18.sp), color = Color.White)
+            Text(
+                amount,
+                style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                color = SecondaryDark
+            )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreditCardImpactPreview() {
+    FinanceAppTheme {
+        CreditCardImpactCard(
+            name = "Card",
+            percentage = "99.9%",
+            amount = "R$ 0,00",
+            color = PrimaryDark
+        )
     }
 }
