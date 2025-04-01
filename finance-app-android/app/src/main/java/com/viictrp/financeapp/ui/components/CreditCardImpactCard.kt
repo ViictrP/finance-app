@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 fun CreditCardImpactCard(name: String, percentage: String, amount: String, color: Color) {
     Card(
         modifier = Modifier
-            .width(180.dp)
+            .width(190.dp)
             .height(80.dp),
         colors = CardDefaults.cardColors(containerColor = color),
         elevation = CardDefaults.cardElevation(4.dp)
