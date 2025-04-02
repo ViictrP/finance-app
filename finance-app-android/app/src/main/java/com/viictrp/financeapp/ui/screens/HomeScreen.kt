@@ -88,7 +88,7 @@ fun HomeScreen(navController: NavController) {
                                     Icons.Outlined.DateRange,
                                     modifier = Modifier.size(24.dp),
                                     contentDescription = "Select Month",
-                                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.8f),
+                                    tint = MaterialTheme.colorScheme.tertiary,
                                 )
                             }
                         }

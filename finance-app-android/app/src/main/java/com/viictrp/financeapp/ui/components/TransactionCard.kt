@@ -44,7 +44,7 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                     Icons.Outlined.ShoppingCart,
                     modifier = Modifier.size(26.dp),
                     contentDescription = "Select Month",
-                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.8f),
+                    tint = MaterialTheme.colorScheme.tertiary,
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
