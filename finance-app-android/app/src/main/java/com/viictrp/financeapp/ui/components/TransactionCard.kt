@@ -53,6 +53,7 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                         style = LocalTextStyle.current.copy(fontSize = 16.sp),
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                     )
+                    Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         title,
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
@@ -67,6 +68,7 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                 )
+                Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     amount,
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),

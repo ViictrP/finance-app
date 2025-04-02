@@ -71,7 +71,7 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
                 title,
                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
                 style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

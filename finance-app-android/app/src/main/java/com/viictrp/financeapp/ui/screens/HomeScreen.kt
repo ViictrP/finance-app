@@ -3,6 +3,7 @@ package com.viictrp.financeapp.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.components.Header
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -69,16 +74,24 @@ fun HomeScreen(navController: NavController) {
                                 style = LocalTextStyle.current.copy(fontSize = 14.sp),
                                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                             )
-                            Text(
-                                SimpleDateFormat(
-                                    "MMM",
-                                    Locale.getDefault()
-                                ).format(Calendar.getInstance().time),
-                                style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                color = MaterialTheme.colorScheme.tertiary,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.clickable { navController.navigate("balance") }
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(
+                                    SimpleDateFormat(
+                                        "MMMM",
+                                        Locale.getDefault()
+                                    ).format(Calendar.getInstance().time),
+                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.clickable { navController.navigate("balance") }
+                                )
+                                Icon(
+                                    Icons.Outlined.DateRange,
+                                    modifier = Modifier.size(24.dp),
+                                    contentDescription = "Select Month",
+                                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.8f),
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
