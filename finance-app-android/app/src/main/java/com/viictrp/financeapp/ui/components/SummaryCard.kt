@@ -41,17 +41,17 @@ fun SummaryCard() {
             InternalSummaryCard(
                 "Salário",
                 "27.362,47",
-                MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.tertiary
             )
             InternalSummaryCard(
                 "Gastos",
                 "23.143,66",
-                MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.tertiary
             )
             InternalSummaryCard(
                 "Livre",
                 "4.218,81",
-                MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.tertiary
             )
         }
     }

@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
@@ -83,7 +84,11 @@ fun MonthPicker() {
         modifier = Modifier.fillMaxWidth(),
         trailingIcon = {
             IconButton(onClick = { openDialog.value = true }) {
-                Icon(Icons.Outlined.DateRange, contentDescription = "Select Month")
+                Icon(
+                    Icons.Outlined.DateRange,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "Select Month"
+                )
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
@@ -93,7 +98,7 @@ fun MonthPicker() {
             unfocusedBorderColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
             cursorColor = Color.Transparent,
         ),
-        textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
+        textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, fontWeight = FontWeight.Medium)
     )
 }
 
