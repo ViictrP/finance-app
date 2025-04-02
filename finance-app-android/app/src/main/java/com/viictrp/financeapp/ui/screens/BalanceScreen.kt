@@ -139,7 +139,7 @@ fun Transactions() {
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
             TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")

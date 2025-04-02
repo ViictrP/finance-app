@@ -60,12 +60,13 @@ fun Header(name: String) {
                     modifier = Modifier.size(32.dp)
                 )
             }
-            IconButton(onClick = { /* Sync or refresh */ }) {
+            IconButton(
+                modifier = Modifier.padding(end = 16.dp),
+                onClick = { /* Sync or refresh */ }) {
                 Icon(
                     Icons.Default.AccountCircle,
                     contentDescription = "Sync",
                     modifier = Modifier
-                        .padding(end = 16.dp)
                         .size(32.dp)
                 )
             }

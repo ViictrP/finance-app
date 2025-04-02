@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController) {
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                     border = BorderStroke(
                         1.dp,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
                     ),
                 ) {
                     Column(

@@ -28,7 +28,7 @@ import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 fun TransactionCard(title: String, category: String, amount: String, date: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
         Row(
             modifier = Modifier
@@ -44,7 +44,7 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                     Icons.Outlined.ShoppingCart,
                     modifier = Modifier.size(26.dp),
                     contentDescription = "Select Month",
-                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
+                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.8f),
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {

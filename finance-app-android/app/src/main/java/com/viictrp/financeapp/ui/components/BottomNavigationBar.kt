@@ -81,10 +81,10 @@ fun BottomNavigationBar(navController: NavController) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.DuoTone.AddCircle,
+                                painter = CustomIcons.DuoTone.CreditCard,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
-                                tint = MaterialTheme.colorScheme.secondary
+                                tint = MaterialTheme.colorScheme.tertiary
                             )
                             Spacer(modifier = Modifier.size(24.dp))
                             Text(
@@ -100,10 +100,10 @@ fun BottomNavigationBar(navController: NavController) {
                         Spacer(modifier = Modifier.size(24.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.DuoTone.AirPlay,
+                                painter = CustomIcons.DuoTone.ShoppingBag,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
-                                tint = MaterialTheme.colorScheme.secondary
+                                tint = MaterialTheme.colorScheme.tertiary
                             )
                             Spacer(modifier = Modifier.size(24.dp))
                             Text(

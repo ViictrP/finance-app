@@ -14,5 +14,13 @@ object CustomIcons {
         val AirPlay: Painter
             @Composable
             get() = painterResource(id = R.drawable.airplay)
+
+        val CreditCard: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.credit_card)
+
+        val ShoppingBag: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.shopping_bag)
     }
 }
