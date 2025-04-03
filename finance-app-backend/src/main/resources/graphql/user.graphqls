@@ -1,7 +1,6 @@
 scalar YearMonth
 scalar DateTime
 @specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
-scalar JSON
 scalar BigDecimal
 
 extend type Query {
@@ -18,7 +17,6 @@ type UserBalanceDTO {
     taxValue: BigDecimal
     exchangeTaxValue: BigDecimal
     nonConvertedSalary: BigDecimal
-    creditCardExpenses: JSON
 }
 
 type TransactionDTO {
@@ -36,6 +34,12 @@ type TransactionDTO {
 
 type CreditCardDTO {
     id: Int!
+    userId: ID!
+    title: String!
+    description: String!
+    invoiceClosingDay: Int!
+    totalInvoiceAmount: BigDecimal
+    color: String
     invoices: [InvoiceDTO]
 }
 
