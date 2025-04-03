@@ -11,10 +11,14 @@ on:
       - synchronize
     branches:
       - develop
+    paths:
+      - 'finance-app-backend/**'
   push:
     branches:
       - main
       - develop
+    paths:
+      - 'finance-app-backend/**'
 jobs:
   build:
     runs-on: ubuntu-latest
