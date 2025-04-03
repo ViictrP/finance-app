@@ -20,12 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Pega o commit anterior para comparação
+          fetch-depth: 2  # Pegamos o commit anterior para comparação
 
-      - name: Check if finance-app-backend has changes
+      - name: Check if changes were made in finance-app-backend
         id: check_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q "^finance-app-backend/"; then
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Arquivos modificados: $CHANGED_FILES"
+          
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-backend/"; then
             echo "changes=true" >> $GITHUB_ENV
           else
             echo "changes=false" >> $GITHUB_ENV
