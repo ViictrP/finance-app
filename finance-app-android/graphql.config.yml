@@ -1,0 +1,9 @@
+schema: "schema.graphql"
+documents: "src/main/graphql/**/*.graphql"
+
+extensions:
+  codegen:
+    generates:
+      src/main/java/com/example/graphql:
+        plugins:
+          - kotlin

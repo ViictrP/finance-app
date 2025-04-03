@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.apollographql.apollo3") version "3.8.5"
 }
 
 android {
@@ -10,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.viictrp.financeapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -39,6 +40,13 @@ android {
     }
 }
 
+apollo {
+    service("service") {
+        packageName.set("com.viictrp.financeapp.graphql")
+        mapScalar("BigDecimal", "java.math.BigDecimal", "com.viictrp.financeapp.application.graphql.adapter.BigDecimalAdapter")
+        mapScalar("YearMonth", "java.time.YearMonth", "com.viictrp.financeapp.application.graphql.adapter.YearMonthAdapter")
+    }
+}
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -57,4 +65,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.apollo.runtime)
+    implementation(libs.androidx.runtime.livedata)
 }

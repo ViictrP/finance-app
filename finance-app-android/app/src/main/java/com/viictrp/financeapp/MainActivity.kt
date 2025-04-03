@@ -7,9 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.screens.HomeScreen
 import com.viictrp.financeapp.ui.screens.MainScreen
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -29,6 +31,6 @@ class MainActivity : ComponentActivity() {
 fun HomePreview() {
     val navController = rememberNavController()
     FinanceAppTheme {
-        HomeScreen(navController)
+        HomeScreen(navController, BalanceViewModel(ApiService()))
     }
 }

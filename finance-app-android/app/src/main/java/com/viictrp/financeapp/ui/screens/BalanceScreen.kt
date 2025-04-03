@@ -16,12 +16,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.application.dto.CreditCardDTO
+import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.components.MonthPicker
@@ -29,9 +32,17 @@ import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.theme.PrimaryDark
+import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun BalanceScreen() {
+fun BalanceScreen(viewModel: BalanceViewModel) {
+    val balanceState = viewModel.balance.observeAsState()
+    val balance = balanceState.value
+
     Scaffold(
         topBar = {
             Header("Victor Prado")
@@ -79,7 +90,9 @@ fun BalanceScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    SummaryCard()
+                    balance?.let {
+                        SummaryCard(it.salary, it.expenses, it.available)
+                    }
                 }
             }
             item {
@@ -96,14 +109,18 @@ fun BalanceScreen() {
                             .padding(horizontal = 16.dp)
                     )
                     Spacer(modifier = Modifier.size(24.dp))
-                    ExpensesCarousel()
+                    balance?.let {
+                        ExpensesCarousel(it.creditCards, it.salary)
+                    }
                 }
             }
+
             item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), Arrangement.SpaceBetween
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 100.dp), Arrangement.SpaceBetween
                 ) {
                     Text(
                         "Compras",
@@ -111,7 +128,17 @@ fun BalanceScreen() {
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.size(24.dp))
-                    Transactions()
+                    balance?.let {
+                        it.transactions.forEach { transaction ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -119,42 +146,20 @@ fun BalanceScreen() {
 }
 
 @Composable
-fun ExpensesCarousel() {
+fun ExpensesCarousel(creditCards: List<CreditCardDTO>, salary: BigDecimal) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        item { CreditCardImpactCard("Samsung", "4.99%", "R$ 1.154,57", PrimaryDark) }
-        item { CreditCardImpactCard("Porto", "2.40%", "R$ 554,64", PrimaryDark) }
-        item { CreditCardImpactCard("Sams Club", "1.99%", "R$ 518,34", PrimaryDark) } // Orange
-    }
-}
-
-@Composable
-fun Transactions() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 100.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
-            TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
+        items(creditCards.size) { index ->
+            var creditCard = creditCards[index]
+            CreditCardImpactCard(
+                creditCard.title,
+                DecimalFormat("#,##0.00'%'").format((creditCard.totalInvoiceAmount * BigDecimal(100)) / salary),
+                NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                    .format(creditCard.totalInvoiceAmount),
+                PrimaryDark
+            )
         }
     }
 }
@@ -163,6 +168,6 @@ fun Transactions() {
 @Composable
 fun BalanceScreenPreview() {
     FinanceAppTheme {
-        BalanceScreen()
+        BalanceScreen(BalanceViewModel(ApiService()))
     }
 }

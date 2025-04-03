@@ -1,0 +1,59 @@
+query GetBalance($yearMonth: YearMonth!) {
+    getBalance(yearMonth: $yearMonth) {
+        transactions {
+            id
+            description
+            amount
+            type
+            date
+            isInstallment
+            installmentAmount
+            installmentId
+            installmentNumber
+            creditCardId
+        }
+        recurringTransactions {
+            id
+            description
+            amount
+            date
+            isInstallment
+            installmentAmount
+            installmentId
+            installmentNumber
+            creditCardId
+            type
+        }
+        creditCards {
+            id
+            invoices {
+                id
+                creditCardId
+                transactions {
+                    id
+                    description
+                    amount
+                    type
+                    date
+                    isInstallment
+                    installmentAmount
+                    installmentId
+                    installmentNumber
+                    creditCardId
+                }
+            }
+            title
+            userId
+            description
+            invoiceClosingDay
+            totalInvoiceAmount
+            color
+        }
+        salary
+        expenses
+        available
+        taxValue
+        exchangeTaxValue
+        nonConvertedSalary
+    }
+}

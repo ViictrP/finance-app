@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,14 +29,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: BalanceViewModel) {
+    val balanceState = viewModel.balance.observeAsState()
+    val balance = balanceState.value
+
     Scaffold(
         topBar = {
             Header("Victor Prado")
@@ -94,7 +101,9 @@ fun HomeScreen(navController: NavController) {
                         }
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
-                            "R$ 23.143,66",
+                            balance?.let {
+                                NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(it.salary)
+                            } ?: "Carregando...",
                             style = LocalTextStyle.current.copy(fontSize = 40.sp),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary
@@ -111,6 +120,6 @@ fun HomeScreen(navController: NavController) {
 fun HomePreview() {
     val navController = rememberNavController()
     FinanceAppTheme {
-        HomeScreen(navController)
+        HomeScreen(navController, BalanceViewModel(ApiService()))
     }
 }

@@ -27,9 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import java.math.BigDecimal
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun SummaryCard() {
+fun SummaryCard(salary: BigDecimal, expenses: BigDecimal, available: BigDecimal) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)),
@@ -40,17 +43,17 @@ fun SummaryCard() {
         ) {
             InternalSummaryCard(
                 "Salário",
-                "27.362,47",
+                NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(salary),
                 MaterialTheme.colorScheme.tertiary
             )
             InternalSummaryCard(
                 "Gastos",
-                "23.143,66",
+                NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(expenses),
                 MaterialTheme.colorScheme.tertiary
             )
             InternalSummaryCard(
                 "Livre",
-                "4.218,81",
+                NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(available),
                 MaterialTheme.colorScheme.tertiary
             )
         }
@@ -89,6 +92,6 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
 @Composable
 fun SummaryCardPreview() {
     FinanceAppTheme {
-        SummaryCard()
+        SummaryCard(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
     }
 }
