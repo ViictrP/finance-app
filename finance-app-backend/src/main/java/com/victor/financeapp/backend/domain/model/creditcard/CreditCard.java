@@ -23,6 +23,7 @@ public class CreditCard {
     private final Integer invoiceClosingDay;
     private final List<Invoice> invoices;
     private final Long userId;
+    private BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
 
     public CreditCard(Long id, String title, String number, Integer invoiceClosingDay, Long userId) {
         Assert.hasText(title, "The credit card title is required");
@@ -67,9 +68,9 @@ public class CreditCard {
     }
 
     public BigDecimal calculateTotal() {
-        return invoices.stream()
-                .flatMap(invoice -> invoice.getTransactions().stream())
-                .map(Transaction::getAmount)
+        totalInvoiceAmount = invoices.parallelStream()
+                .map(Invoice::calculateTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return totalInvoiceAmount;
     }
 }

@@ -4,6 +4,7 @@ import com.victor.financeapp.backend.domain.model.common.Transaction;
 import lombok.Getter;
 import org.springframework.util.Assert;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,12 @@ public class Invoice {
     public void addTransaction(Transaction transaction) {
         transaction.setInvoice(this);
         this.transactions.add(transaction);
+    }
+
+    public BigDecimal calculateTotal() {
+        return transactions.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void addTransactions(List<Transaction> transactions) {

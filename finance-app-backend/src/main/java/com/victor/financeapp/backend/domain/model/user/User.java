@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.victor.financeapp.backend.domain.model.common.Transaction.TransactionType.RECURRING;
 
@@ -69,7 +68,6 @@ public class User {
         var salaryMinusTax = salaryMinusConversionTax.subtract(salaryMinusConversionTax.multiply(salaryTax));
 
         var expenses = calculateExpenses();
-        var creditCardExpenses = splitCreditCardsExpenses();
 
         return Balance.builder()
                 .nonConvertedSalary(grossSalary)
@@ -79,18 +77,9 @@ public class User {
                 .transactions(transactions)
                 .recurringTransactions(recurringExpenses)
                 .creditCards(creditCards)
-                .creditCardExpenses(creditCardExpenses)
                 .expenses(expenses)
                 .available(salaryMinusTax.subtract(expenses))
                 .build();
-    }
-
-    private Map<Long, BigDecimal> splitCreditCardsExpenses() {
-        return creditCards.stream()
-            .collect(Collectors.toMap(
-                CreditCard::getId,
-                CreditCard::calculateTotal)
-            );
     }
 
     private BigDecimal calculateExpenses() {
@@ -99,7 +88,7 @@ public class User {
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
 
-        BigDecimal creditCardsTotal = creditCards.stream()
+        BigDecimal creditCardsTotal = creditCards.parallelStream()
                 .map(CreditCard::calculateTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
