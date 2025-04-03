@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .requestCache(cache -> cache.requestCache(NoOpServerRequestCache.getInstance()))
-            .authorizeExchange(authz -> authz.pathMatchers("financeapp/graphql").permitAll())
+            .authorizeExchange(authz -> authz.pathMatchers("financeapp/graphql").authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
         return http.build();
     }
