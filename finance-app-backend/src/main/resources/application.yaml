@@ -1,3 +1,40 @@
 spring:
-  application:
-    name: finance-app-backend
+    application:
+        name: finance-app-backend
+    r2dbc:
+        url: r2dbc:${DB_URL}
+        username: ${DB_USER}
+        password: ${DB_PASSWORD}
+        properties:
+            # Postgres properties
+            lock_timeout: 30000
+            statement_timeout: 30000
+            idle_in_transaction_session_timeout: 30000
+            # R2DBC properties
+            connectTimeout: PT60S
+    graphql:
+        graphiql:
+            enabled: true
+        path: '/financeapp/graphql'
+    flyway:
+        default-schema: finance_app
+        locations: classpath:db/migration
+        baseline-on-migrate: true
+        enabled: true
+        url: jdbc:${DB_URL}
+        user: ${DB_USER}
+        password: ${DB_PASSWORD}
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: ${ISSUER_URI}
+                    jwk-set-uri: ${JWK_SET_URI}
+server:
+    port: ${PORT}
+logging:
+    level:
+        root: INFO
+
+CURRENCY:
+    url: https://economia.awesomeapi.com.br/json/last

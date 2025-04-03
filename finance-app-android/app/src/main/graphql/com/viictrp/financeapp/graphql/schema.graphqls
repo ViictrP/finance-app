@@ -1,0 +1,57 @@
+scalar BigDecimal
+scalar YearMonth
+
+schema {
+    query: Query
+}
+
+type Query {
+    getBalance(yearMonth: YearMonth!): BalanceDTO
+}
+
+enum TransactionType {
+    RECURRING
+    DEFAULT
+}
+
+type TransactionDTO {
+    id: ID!
+    description: String!
+    amount: BigDecimal!
+    type: TransactionType!
+    date: String!
+    isInstallment: Boolean!
+    installmentAmount: BigDecimal
+    installmentId: ID
+    installmentNumber: Int
+    creditCardId: ID
+}
+
+type CreditCardDTO {
+    id: ID!
+    userId: ID!
+    title: String!
+    description: String!
+    invoiceClosingDay: Int!
+    totalInvoiceAmount: BigDecimal
+    color: String
+    invoices: [InvoiceDTO]
+}
+
+type InvoiceDTO {
+    id: ID!
+    creditCardId: ID!
+    transactions: [TransactionDTO]!
+}
+
+type BalanceDTO {
+    transactions: [TransactionDTO]!
+    recurringTransactions: [TransactionDTO]!
+    creditCards: [CreditCardDTO]!
+    salary: BigDecimal!
+    expenses: BigDecimal!
+    available: BigDecimal!
+    taxValue: BigDecimal!
+    exchangeTaxValue: BigDecimal!
+    nonConvertedSalary: BigDecimal!
+}

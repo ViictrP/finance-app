@@ -1,0 +1,50 @@
+scalar YearMonth
+scalar DateTime
+@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
+scalar BigDecimal
+
+extend type Query {
+    getBalance(yearMonth: YearMonth!): UserBalanceDTO
+}
+
+type UserBalanceDTO {
+    transactions: [TransactionDTO]
+    recurringTransactions: [TransactionDTO]
+    creditCards: [CreditCardDTO]
+    salary: BigDecimal
+    expenses: BigDecimal
+    available: BigDecimal
+    taxValue: BigDecimal
+    exchangeTaxValue: BigDecimal
+    nonConvertedSalary: BigDecimal
+}
+
+type TransactionDTO {
+    id: Int!,
+    description: String!
+    amount: BigDecimal!
+    type: String!
+    date: DateTime!
+    isInstallment: Boolean!
+    installmentAmount: BigDecimal
+    installmentId: String
+    installmentNumber: Int
+    creditCardId: Int
+}
+
+type CreditCardDTO {
+    id: Int!
+    userId: ID!
+    title: String!
+    description: String!
+    invoiceClosingDay: Int!
+    totalInvoiceAmount: BigDecimal
+    color: String
+    invoices: [InvoiceDTO]
+}
+
+type InvoiceDTO {
+    id: Int!
+    creditCardId: Int!
+    transactions: [TransactionDTO]
+}
