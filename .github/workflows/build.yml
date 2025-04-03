@@ -31,9 +31,10 @@ jobs:
       #TODO fix tests
       - name: Build with Maven
         run: mvn clean install -DskipTests
+        working-directory: ./finance-app-backend
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4.3.3
         with:
           name: java-app
-          path: '${{ github.workspace }}/finance-app-backend/target/*.jar'
+          path: finance-app-backend/target/*.jar
