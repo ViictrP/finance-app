@@ -45,7 +45,7 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
 
     Scaffold(
         topBar = {
-            Header("Victor")
+            Header("Victor Prado")
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
