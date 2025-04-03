@@ -81,7 +81,9 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    MonthPicker()
+                    MonthPicker { yearMonth ->
+                        viewModel.loadBalance(yearMonth)
+                    }
                 }
             }
             item {

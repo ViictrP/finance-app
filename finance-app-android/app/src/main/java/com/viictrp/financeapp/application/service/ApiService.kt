@@ -16,9 +16,9 @@ class ApiService {
 
     val apolloClient = ApolloClientProvider.apolloClient
 
-    suspend fun getBalance(): BalanceDTO? {
+    suspend fun getBalance(yearMonth: YearMonth): BalanceDTO? {
         val response: ApolloResponse<GetBalanceQuery.Data> =
-            apolloClient.query(GetBalanceQuery(YearMonth.now()))
+            apolloClient.query(GetBalanceQuery(yearMonth))
                 .execute()
 
         return response.data?.let { data ->

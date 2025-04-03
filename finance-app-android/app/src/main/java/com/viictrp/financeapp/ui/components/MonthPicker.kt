@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,12 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.YearMonth
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthPicker() {
+fun MonthPicker(onMonthChanged: (YearMonth) -> Unit) {
     val formatter = SimpleDateFormat("MMMM, yyyy", Locale.getDefault())
     var selectedDate by remember {
         mutableStateOf(formatter.format(Calendar.getInstance().time))
@@ -55,6 +59,13 @@ fun MonthPicker() {
                     onClick = {
                         openDialog.value = false
                         selectedDate = formatter.format(datePickerState.selectedDateMillis)
+                        datePickerState.selectedDateMillis?.let {
+                            val yearMonth = Instant.ofEpochMilli(it)
+                                .atZone(ZoneId.systemDefault())  // Convert to ZonedDateTime
+                                .toLocalDate()                   // Extract LocalDate
+                                .let { YearMonth.from(it) }
+                            onMonthChanged(yearMonth)
+                        }
                     },
                     enabled = confirmEnabled.value
                 ) {
@@ -106,6 +117,8 @@ fun MonthPicker() {
 @Composable
 fun MonthPickerPreview() {
     FinanceAppTheme {
-        MonthPicker()
+        MonthPicker { milis ->
+            Log.d("MonthPicker", "Month changed: $milis")
+        }
     }
 }

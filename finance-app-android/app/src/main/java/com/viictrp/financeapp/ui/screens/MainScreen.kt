@@ -12,6 +12,7 @@ import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.BottomNavigationBar
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
+import java.time.YearMonth
 
 @Composable
 fun MainScreen() {
@@ -19,7 +20,7 @@ fun MainScreen() {
     val viewModel = BalanceViewModel(ApiService())
 
     LaunchedEffect(Unit) {
-        viewModel.loadBalance()
+        viewModel.loadBalance(YearMonth.now())
     }
 
     @Suppress("UnusedMaterial3ScaffoldPaddingParameter")
