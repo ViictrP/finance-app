@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.viewmodel
+package com.viictrp.financeapp.ui.screens.main.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

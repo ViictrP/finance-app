@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens
+package com.viictrp.financeapp.ui.screens.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,7 @@ import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.theme.PrimaryDark
-import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat

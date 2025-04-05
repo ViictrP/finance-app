@@ -1,9 +1,12 @@
-package com.viictrp.financeapp.ui.screens
+package com.viictrp.financeapp.ui.screens.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -11,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,7 +25,7 @@ import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
-fun CreditCardScreen(navController: NavController) {
+fun CreditCardFormScreen(navController: NavController) {
     Scaffold(
         topBar = {
             Header("Victor Prado")
@@ -30,9 +34,10 @@ fun CreditCardScreen(navController: NavController) {
     ) { padding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(padding)
-                .padding(top = 24.dp)
+                .padding(top = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(48.dp)
         ) {
             item {
                 Column(
@@ -41,9 +46,15 @@ fun CreditCardScreen(navController: NavController) {
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Seus Cartões",
+                        "Adicionar um Cartão de Crédito",
                         fontWeight = FontWeight.Bold,
                         style = LocalTextStyle.current.copy(fontSize = 24.sp)
+                    )
+                    Spacer(modifier = Modifier.size(24.dp))
+                    Text(
+                        " Para adicionar um cartão de crédito, preencha todas as informações obrigatórias marcadas com * (asterísco). ",
+                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                        color = Color.Gray
                     )
                 }
             }
@@ -53,9 +64,9 @@ fun CreditCardScreen(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun CreditCardScreenPreview() {
+fun CreditCardFormScreenPreview() {
     val navController = rememberNavController()
     FinanceAppTheme {
-        CreditCardScreen(navController)
+        CreditCardFormScreen(navController)
     }
 }
