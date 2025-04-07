@@ -1,5 +1,6 @@
 package com.victor.financeapp.backend.application.dto;
 
+import com.victor.financeapp.backend.domain.model.user.MonthClosure;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ public record UserBalanceDTO(
         List<TransactionDTO> transactions,
         List<TransactionDTO> recurringExpenses,
         List<CreditCardDTO> creditCards,
+        List<MonthClosureDTO> monthClosures,
         BigDecimal salary,
         BigDecimal expenses,
         BigDecimal available,
