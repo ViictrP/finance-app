@@ -29,7 +29,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +61,9 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
 
     LaunchedEffect(Unit) {
         user?.let {
-            viewModel.loadBalance(YearMonth.now())
+            if (balance == null) {
+                viewModel.loadBalance(YearMonth.now())
+            }
         }
     }
 
@@ -156,25 +157,6 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                     }
                 }
             }
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        "Impacto nos gastos",
-                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.size(24.dp))
-                    balance?.let {
-                        ExpensesCarousel(it.creditCards, it.salary)
-                    }
-                }
-            }
 
             item {
                 Column(
@@ -184,48 +166,27 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                         .padding(bottom = 100.dp), Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Compras",
+                        "Últimas Compras",
                         style = LocalTextStyle.current.copy(fontSize = 24.sp),
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                     balance?.let {
-                        Text(
-                            "Gastos Fixos",
-                            style = LocalTextStyle.current.copy(
-                                fontSize = 20.sp,
-                                fontStyle = FontStyle.Italic
-                            ),
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                        )
-                        Spacer(modifier = Modifier.size(16.dp))
-                        it.recurringExpenses.forEach { transaction ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                TransactionCard(transaction)
+                        it.creditCards
+                            .flatMap { it.invoices }
+                            .flatMap { it.transactions }
+                            .plus(it.transactions)
+                            .plus(it.recurringExpenses)
+                            .sortedByDescending { transition -> transition.id }
+                            .forEach { transaction ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp)
+                                ) {
+                                    TransactionCard(transaction, "Nubank", MaterialTheme.colorScheme.tertiary)
+                                }
                             }
-                        }
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Text(
-                            "Compras",
-                            style = LocalTextStyle.current.copy(
-                                fontSize = 20.sp,
-                                fontStyle = FontStyle.Italic
-                            ),
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                        )
-                        it.transactions.forEach { transaction ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                TransactionCard(transaction)
-                            }
-                        }
                     }
                 }
             }
@@ -238,12 +199,12 @@ fun StatusChip(text: String, backgroundColor: Color, textColor: Color = Color.Wh
     Box(
         modifier = Modifier
             .background(color = backgroundColor, shape = RoundedCornerShape(50))
-            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .padding(horizontal = 8.dp)
     ) {
         Text(
             text = text,
             color = textColor,
-            style = LocalTextStyle.current.copy(fontSize = 14.sp)
+            style = LocalTextStyle.current.copy(fontSize = 10.sp)
         )
     }
 }

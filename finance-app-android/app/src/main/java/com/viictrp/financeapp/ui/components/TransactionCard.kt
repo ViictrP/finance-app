@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun TransactionCard(transaction: TransactionDTO) {
+fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: Color? = null) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -56,11 +57,20 @@ fun TransactionCard(transaction: TransactionDTO) {
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
-                    Text(
-                        categoryHelper(transaction.category),
-                        style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
-                    )
+                    Column {
+                        Text(
+                            categoryHelper(transaction.category),
+                            style = LocalTextStyle.current.copy(fontSize = 16.sp),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
+                        )
+                        tag?.let {
+                            Text(
+                                it,
+                                style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                color = tagColor ?: MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         transaction.description,
@@ -106,7 +116,8 @@ fun TransactionCardPreview() {
                 installmentId = null,
                 creditCardId = null,
                 installmentNumber = 1
-            )
+            ),
+             null
         )
     }
 }
