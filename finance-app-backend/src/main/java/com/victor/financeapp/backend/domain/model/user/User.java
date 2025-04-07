@@ -75,7 +75,7 @@ public class User {
                 .taxValue(salaryTax)
                 .salary(salaryMinusTax)
                 .transactions(transactions)
-                .recurringTransactions(recurringExpenses)
+                .recurringExpenses(recurringExpenses)
                 .creditCards(creditCards)
                 .expenses(expenses)
                 .available(salaryMinusTax.subtract(expenses))
@@ -113,5 +113,9 @@ public class User {
 
     public void addProperty(String name, String value) {
         this.properties.put(name, value);
+    }
+
+    public void addRecurringExpenses(List<Transaction> recurringExpenses) {
+        this.recurringExpenses.addAll(recurringExpenses);
     }
 }

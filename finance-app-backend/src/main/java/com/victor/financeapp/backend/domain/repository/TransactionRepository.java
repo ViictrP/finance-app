@@ -7,5 +7,6 @@ import java.time.YearMonth;
 
 public interface TransactionRepository {
     Flux<Transaction> findUserTransactionsOn(Long id, YearMonth yearMonth);
+    Flux<Transaction> findAllRecurringExpenses(Long userId);
     Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId);
 }

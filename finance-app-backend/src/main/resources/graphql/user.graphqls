@@ -9,7 +9,7 @@ extend type Query {
 
 type UserBalanceDTO {
     transactions: [TransactionDTO]
-    recurringTransactions: [TransactionDTO]
+    recurringExpenses: [TransactionDTO]
     creditCards: [CreditCardDTO]
     salary: BigDecimal
     expenses: BigDecimal
