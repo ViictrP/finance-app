@@ -20,6 +20,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -137,13 +138,31 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                     balance?.let {
+                        Text(
+                            "Gastos Fixos",
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                        )
+                        it.recurringExpenses.forEach { transaction ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                TransactionCard(transaction)
+                            }
+                        }
+
+                        Text(
+                            "Compras",
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                        )
                         it.transactions.forEach { transaction ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 8.dp)
                             ) {
-                                TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
+                                TransactionCard(transaction)
                             }
                         }
                     }

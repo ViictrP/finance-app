@@ -22,10 +22,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.application.dto.TransactionDTO
+import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import java.math.BigDecimal
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.time.OffsetDateTime
+import java.util.Locale
 
 @Composable
-fun TransactionCard(title: String, category: String, amount: String, date: String) {
+fun TransactionCard(transaction: TransactionDTO) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -49,13 +56,13 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
                     Text(
-                        category,
+                        transaction.category,
                         style = LocalTextStyle.current.copy(fontSize = 16.sp),
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
-                        title,
+                        transaction.description,
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.secondary,
@@ -64,13 +71,16 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    date,
+                    SimpleDateFormat(
+                        "dd/MM/yyyy",
+                        Locale.getDefault()
+                    ).format(transaction.date),
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    amount,
+                    NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(transaction.amount),
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
                     color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold
@@ -85,10 +95,19 @@ fun TransactionCard(title: String, category: String, amount: String, date: Strin
 fun TransactionCardPreview() {
     FinanceAppTheme {
         TransactionCard(
-            title = "Title",
-            category = "Category",
-            amount = "R$0,00",
-            date = "22/03/2023"
+            TransactionDTO(
+                id = 1,
+                description = "Description",
+                amount = BigDecimal.valueOf(100.0),
+                category = "shop",
+                type = TransactionType.RECURRING,
+                date = OffsetDateTime.now(),
+                isInstallment = false,
+                installmentAmount = BigDecimal.valueOf(100.0),
+                installmentId = null,
+                creditCardId = null,
+                installmentNumber = 1
+            )
         )
     }
 }
