@@ -11,6 +11,7 @@ public record TransactionDTO(
         Long id,
         String description,
         BigDecimal amount,
+        String category,
         TransactionType type,
         OffsetDateTime date,
         Boolean isInstallment,
