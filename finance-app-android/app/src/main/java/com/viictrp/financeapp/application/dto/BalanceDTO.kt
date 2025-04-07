@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 data class BalanceDTO(
     val transactions: List<TransactionDTO> = emptyList(),
-    val recurringTransactions: List<TransactionDTO> = emptyList(),
+    val recurringExpenses: List<TransactionDTO> = emptyList(),
     val creditCards: List<CreditCardDTO> = emptyList(),
     val salary: BigDecimal = BigDecimal.ZERO,
     val expenses: BigDecimal = BigDecimal.ZERO,

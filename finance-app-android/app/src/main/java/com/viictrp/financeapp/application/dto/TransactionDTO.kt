@@ -8,6 +8,7 @@ data class TransactionDTO(
     val id: Long,
     val description: String,
     val amount: BigDecimal,
+    val category: String,
     val type: TransactionType,
     val date: OffsetDateTime,
     val isInstallment: Boolean,

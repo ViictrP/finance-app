@@ -19,33 +19,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.theme.PrimaryDark
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun BalanceScreen(viewModel: BalanceViewModel) {
+fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
     val balanceState = viewModel.balance.observeAsState()
     val balance = balanceState.value
+    val user = authModel.user.observeAsState().value
 
     Scaffold(
         topBar = {
-            Header("Victor")
+            Header(user?.fullName ?: "")
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -82,7 +87,9 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
                         .padding(horizontal = 16.dp)
                 ) {
                     MonthPicker { yearMonth ->
-                        viewModel.loadBalance(yearMonth)
+                        user?.let {
+                            viewModel.loadBalance(yearMonth)
+                        }
                     }
                 }
             }
@@ -131,13 +138,31 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                     balance?.let {
+                        Text(
+                            "Gastos Fixos",
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                        )
+                        it.recurringExpenses.forEach { transaction ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                TransactionCard(transaction)
+                            }
+                        }
+
+                        Text(
+                            "Compras",
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                        )
                         it.transactions.forEach { transaction ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 8.dp)
                             ) {
-                                TransactionCard("Seguro de Vida", "Casa", "R$ 189,37", "22/03/24")
+                                TransactionCard(transaction)
                             }
                         }
                     }
@@ -169,7 +194,9 @@ fun ExpensesCarousel(creditCards: List<CreditCardDTO>, salary: BigDecimal) {
 @Preview(showBackground = true)
 @Composable
 fun BalanceScreenPreview() {
+    val authManager = AuthManager(LocalContext.current)
+
     FinanceAppTheme {
-        BalanceScreen(BalanceViewModel(ApiService()))
+        BalanceScreen(BalanceViewModel(ApiService()), AuthViewModel(authManager))
     }
 }
