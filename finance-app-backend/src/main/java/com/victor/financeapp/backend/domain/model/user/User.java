@@ -69,6 +69,7 @@ public class User {
 
         var expenses = calculateExpenses();
 
+        //
         return Balance.builder()
                 .nonConvertedSalary(grossSalary)
                 .exchangeTaxValue(currencyConversionTax)
