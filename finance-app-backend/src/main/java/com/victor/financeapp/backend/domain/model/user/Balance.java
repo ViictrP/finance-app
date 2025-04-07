@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-//
 public record Balance(
         List<Transaction> transactions,
         List<Transaction> recurringTransactions,
