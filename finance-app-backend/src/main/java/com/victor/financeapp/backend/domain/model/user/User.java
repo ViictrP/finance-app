@@ -88,11 +88,16 @@ public class User {
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
 
+        var recurringExpensesAmount = recurringExpenses.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
         BigDecimal creditCardsTotal = creditCards.parallelStream()
                 .map(CreditCard::calculateTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return transactionsAmount.add(creditCardsTotal);
+        return transactionsAmount.add(creditCardsTotal).add(recurringExpensesAmount);
     }
 
     public void populateRecurringExpenses() {
