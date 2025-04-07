@@ -5,15 +5,13 @@ import androidx.navigation.compose.composable
 import com.viictrp.financeapp.ui.screens.auth.LoginScreen
 import com.viictrp.financeapp.ui.screens.auth.SplashScreen
 import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
 fun NavGraphBuilder.authGraph(
     navController: NavController,
-    authViewModel: AuthViewModel,
-    balanceViewModel: BalanceViewModel
+    authViewModel: AuthViewModel
 ) {
     composable("splash") {
-        SplashScreen(navController, authViewModel, balanceViewModel)
+        SplashScreen(navController, authViewModel)
     }
     composable("login") {
         LoginScreen(navController, authViewModel)

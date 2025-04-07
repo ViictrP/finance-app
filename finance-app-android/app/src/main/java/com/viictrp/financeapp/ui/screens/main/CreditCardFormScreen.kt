@@ -15,17 +15,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.components.Header
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModelFactory
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
-fun CreditCardFormScreen(navController: NavController) {
+fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceViewModel, authModel: AuthViewModel) {
     Scaffold(
         topBar = {
             Header("Victor Prado")
@@ -66,7 +74,15 @@ fun CreditCardFormScreen(navController: NavController) {
 @Composable
 fun CreditCardFormScreenPreview() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(AuthManager(LocalContext.current))
+    )
+
+    val balanceViewModel: BalanceViewModel = viewModel(
+        factory = BalanceViewModelFactory(ApiService())
+    )
+
     FinanceAppTheme {
-        CreditCardFormScreen(navController)
+        CreditCardFormScreen(navController, balanceViewModel, authViewModel)
     }
 }

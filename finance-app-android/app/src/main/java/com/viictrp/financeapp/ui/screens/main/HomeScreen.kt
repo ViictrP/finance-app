@@ -21,31 +21,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.components.Header
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModelFactory
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: BalanceViewModel) {
+fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authModel: AuthViewModel) {
     val balanceState = viewModel.balance.observeAsState()
     val balance = balanceState.value
+    val userState = authModel.user.observeAsState()
+    val user = userState.value
+
+    LaunchedEffect(Unit) {
+        user?.let {
+            viewModel.loadBalance(YearMonth.now())
+        }
+    }
 
     Scaffold(
         topBar = {
-            Header("Victor Prado")
+            Header(user?.fullName ?: "")
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -104,7 +120,7 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel) {
                             balance?.let {
                                 NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(it.salary)
                             } ?: "Carregando...",
-                            style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                            style = LocalTextStyle.current.copy(fontSize = 28.sp),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -118,8 +134,16 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(AuthManager(LocalContext.current))
+    )
+
+    val balanceViewModel: BalanceViewModel = viewModel(
+        factory = BalanceViewModelFactory(ApiService())
+    )
+
     val navController = rememberNavController()
     FinanceAppTheme {
-        HomeScreen(navController, BalanceViewModel(ApiService()))
+        HomeScreen(navController, balanceViewModel, authViewModel)
     }
 }

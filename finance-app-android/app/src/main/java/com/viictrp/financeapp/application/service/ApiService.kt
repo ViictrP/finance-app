@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.application.service
 
+import android.util.Log
 import com.apollographql.apollo3.api.ApolloResponse
 import com.viictrp.financeapp.application.client.ApolloClientProvider
 import com.viictrp.financeapp.application.dto.BalanceDTO
@@ -8,6 +9,7 @@ import com.viictrp.financeapp.application.dto.InvoiceDTO
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.graphql.GetBalanceQuery
+import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.time.YearMonth
@@ -17,21 +19,28 @@ class ApiService {
     val apolloClient = ApolloClientProvider.apolloClient
 
     suspend fun getBalance(yearMonth: YearMonth): BalanceDTO? {
-        val response: ApolloResponse<GetBalanceQuery.Data> =
-            apolloClient.query(GetBalanceQuery(yearMonth))
-                .execute()
+        return try {
+            val response: ApolloResponse<GetBalanceQuery.Data> =
+                apolloClient
+                    .query(GetBalanceQuery(yearMonth))
+                    .execute()
 
-        return response.data?.let { data ->
-            BalanceDTO(
-                salary = data.getBalance?.salary ?: BigDecimal.ZERO,
-                expenses = data.getBalance?.expenses ?: BigDecimal.ZERO,
-                taxValue = data.getBalance?.taxValue ?: BigDecimal.ZERO,
-                available = data.getBalance?.available ?: BigDecimal.ZERO,
-                exchangeTaxValue = data.getBalance?.expenses ?: BigDecimal.ZERO,
-                nonConvertedSalary = data.getBalance?.nonConvertedSalary ?: BigDecimal.ZERO,
-                transactions = mapTransactionDTO(data.getBalance?.transactions ?: emptyList()),
-                creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
-            )
+            response.data?.let { data ->
+                BalanceDTO(
+                    salary = data.getBalance?.salary ?: BigDecimal.ZERO,
+                    expenses = data.getBalance?.expenses ?: BigDecimal.ZERO,
+                    taxValue = data.getBalance?.taxValue ?: BigDecimal.ZERO,
+                    available = data.getBalance?.available ?: BigDecimal.ZERO,
+                    exchangeTaxValue = data.getBalance?.exchangeTaxValue ?: BigDecimal.ZERO,
+                    nonConvertedSalary = data.getBalance?.nonConvertedSalary ?: BigDecimal.ZERO,
+                    transactions = mapTransactionDTO(data.getBalance?.transactions ?: emptyList()),
+                    creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("ApiService", "Error fetching balance: ${e.message}")
+            if (e is CancellationException) throw e
+            null
         }
     }
 

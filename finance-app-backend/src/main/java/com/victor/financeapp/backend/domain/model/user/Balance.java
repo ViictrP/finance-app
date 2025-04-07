@@ -11,7 +11,7 @@ import java.util.Map;
 @Builder
 public record Balance(
         List<Transaction> transactions,
-        List<Transaction> recurringTransactions,
+        List<Transaction> recurringExpenses,
         List<CreditCard> creditCards,
         BigDecimal salary,
         BigDecimal expenses,

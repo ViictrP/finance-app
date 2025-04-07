@@ -19,33 +19,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.theme.PrimaryDark
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun BalanceScreen(viewModel: BalanceViewModel) {
+fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
     val balanceState = viewModel.balance.observeAsState()
     val balance = balanceState.value
+    val user = authModel.user.observeAsState().value
 
     Scaffold(
         topBar = {
-            Header("Victor")
+            Header(user?.fullName ?: "")
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -82,7 +86,9 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
                         .padding(horizontal = 16.dp)
                 ) {
                     MonthPicker { yearMonth ->
-                        viewModel.loadBalance(yearMonth)
+                        user?.let {
+                            viewModel.loadBalance(yearMonth)
+                        }
                     }
                 }
             }
@@ -169,7 +175,9 @@ fun ExpensesCarousel(creditCards: List<CreditCardDTO>, salary: BigDecimal) {
 @Preview(showBackground = true)
 @Composable
 fun BalanceScreenPreview() {
+    val authManager = AuthManager(LocalContext.current)
+
     FinanceAppTheme {
-        BalanceScreen(BalanceViewModel(ApiService()))
+        BalanceScreen(BalanceViewModel(ApiService()), AuthViewModel(authManager))
     }
 }

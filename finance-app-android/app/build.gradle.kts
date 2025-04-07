@@ -76,6 +76,4 @@ dependencies {
     implementation(libs.apollo.runtime)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.com.google.firebase.firebase.auth.ktx)
-    implementation(libs.play.services.auth)
 }
