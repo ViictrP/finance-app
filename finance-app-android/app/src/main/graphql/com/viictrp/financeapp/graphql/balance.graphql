@@ -6,16 +6,18 @@ query GetBalance($yearMonth: YearMonth!) {
             amount
             type
             date
+            category
             isInstallment
             installmentAmount
             installmentId
             installmentNumber
             creditCardId
         }
-        recurringTransactions {
+        recurringExpenses {
             id
             description
             amount
+            category
             date
             isInstallment
             installmentAmount
@@ -35,6 +37,7 @@ query GetBalance($yearMonth: YearMonth!) {
                     amount
                     type
                     date
+                    category
                     isInstallment
                     installmentAmount
                     installmentId

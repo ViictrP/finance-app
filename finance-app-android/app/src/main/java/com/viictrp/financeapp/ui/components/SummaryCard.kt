@@ -81,8 +81,8 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
         Text(
             amount,
             color = MaterialTheme.colorScheme.secondary,
-            style = LocalTextStyle.current.copy(fontSize = 18.sp),
-            fontWeight = FontWeight.Bold
+            style = LocalTextStyle.current.copy(fontSize = 13.sp),
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -92,6 +92,6 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
 @Composable
 fun SummaryCardPreview() {
     FinanceAppTheme {
-        SummaryCard(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
+        SummaryCard(BigDecimal.valueOf(27000), BigDecimal.valueOf(8500), BigDecimal.valueOf(19500))
     }
 }
