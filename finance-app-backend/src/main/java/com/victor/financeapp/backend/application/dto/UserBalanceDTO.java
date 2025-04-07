@@ -9,7 +9,7 @@ import java.util.Map;
 @Builder
 public record UserBalanceDTO(
         List<TransactionDTO> transactions,
-        List<TransactionDTO> recurringTransactions,
+        List<TransactionDTO> recurringExpenses,
         List<CreditCardDTO> creditCards,
         BigDecimal salary,
         BigDecimal expenses,

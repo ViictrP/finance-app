@@ -34,12 +34,13 @@ public class UserDomainServiceImpl implements UserDomainService {
                                 .flatMap(creditCard -> populateCreditCardInvoice(yearMonth, creditCard))
                                 .collectList(),
                         transactionRepository.findUserTransactionsOn(user.getId(), yearMonth).collectList(),
-                        monthClosureRepository.findUsersLastFiveMonthClosures(user.getId()).collectList())
+                        monthClosureRepository.findUsersLastFiveMonthClosures(user.getId()).collectList(),
+                        transactionRepository.findAllRecurringExpenses(user.getId()).collectList())
                 .doOnNext(tuple -> {
                     user.addCreditCards(tuple.getT1());
                     user.addTransactions(tuple.getT2());
                     user.addMonthClosures(tuple.getT3());
-                    user.populateRecurringExpenses();
+                    user.addRecurringExpenses(tuple.getT4());
                 })
                 .thenReturn(user);
     }
