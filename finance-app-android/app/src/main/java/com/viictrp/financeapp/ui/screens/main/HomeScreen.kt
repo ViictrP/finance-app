@@ -1,6 +1,7 @@
 package com.viictrp.financeapp.ui.screens.main
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.Card
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -125,7 +128,7 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                             Text(
                                 balance?.let {
                                     NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                        .format(it.salary)
+                                        .format(it.expenses)
                                 } ?: "Carregando...",
                                 style = LocalTextStyle.current.copy(fontSize = 28.sp),
                                 fontWeight = FontWeight.Bold,
@@ -140,20 +143,12 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                                     NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
                                         .format(value),
                                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                    color = MaterialTheme.colorScheme.secondary
+                                    color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
                                 )
                                 if (value > BigDecimal.ZERO) {
-                                    Text(
-                                        "diminuiu!",
-                                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
+                                    StatusChip("diminuiu!", MaterialTheme.colorScheme.onTertiary)
                                 } else {
-                                    Text(
-                                        "aumentou!",
-                                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
+                                    StatusChip("aumentou!", MaterialTheme.colorScheme.error)
                                 }
                             }
 
@@ -235,6 +230,21 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StatusChip(text: String, backgroundColor: Color, textColor: Color = Color.White) {
+    Box(
+        modifier = Modifier
+            .background(color = backgroundColor, shape = RoundedCornerShape(50))
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = text,
+            color = textColor,
+            style = LocalTextStyle.current.copy(fontSize = 14.sp)
+        )
     }
 }
 
