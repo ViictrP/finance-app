@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,8 +22,6 @@ import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 
 @Composable
 fun SplashScreen(
@@ -30,20 +29,21 @@ fun SplashScreen(
     authViewModel: AuthViewModel
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val user by authViewModel.user.observeAsState()
 
     LaunchedEffect(Unit) {
-        authViewModel.checkAuth {
+        authViewModel.checkAuth()
+    }
+
+    LaunchedEffect(isAuthenticated, user) {
+        if (isAuthenticated == true && user != null) {
+            navController.navigate("home") {
+                popUpTo("splash") { inclusive = true }
+            }
+        } else if (isAuthenticated == false) {
             navController.navigate("login") {
                 popUpTo("splash") { inclusive = true }
             }
-        }
-
-        authViewModel.isAuthenticated
-            .filterNotNull()
-            .first { it }
-
-        navController.navigate("home") {
-            popUpTo("splash") { inclusive = true }
         }
     }
 

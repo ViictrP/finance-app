@@ -20,30 +20,18 @@ import com.viictrp.financeapp.ui.screens.main.HomeScreen
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val authViewModel: AuthViewModel by viewModels {
-        val authManager = AuthManager(applicationContext)
-        AuthViewModelFactory(authManager)
-    }
-
-    private val balanceViewModel: BalanceViewModel by viewModels {
-        BalanceViewModelFactory(ApiService())
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition {
-            authViewModel.loading.value
-        }
-
         super.onCreate(savedInstanceState)
         window.setBackgroundDrawableResource(R.color.background)
         enableEdgeToEdge()
         setContent {
             FinanceAppTheme {
-                MainScreen(authViewModel, balanceViewModel)
+                MainScreen()
             }
         }
     }

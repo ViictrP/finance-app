@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -16,13 +17,15 @@ import com.viictrp.financeapp.ui.screens.graph.mainGraph
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
 @Composable
-fun MainScreen(authViewModel: AuthViewModel,
-               balanceViewModel: BalanceViewModel) {
+fun MainScreen() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
     val shouldShowBottomBar = currentDestination != "splash" && currentDestination != "login"
+
+    val authViewModel = hiltViewModel<AuthViewModel>()
+    val balanceViewModel = hiltViewModel<BalanceViewModel>()
 
     @Suppress("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
@@ -35,7 +38,8 @@ fun MainScreen(authViewModel: AuthViewModel,
     ) { _ ->
         NavHost(
             navController = navController,
-            startDestination = "splash",
+            startDestination = "auth",
+            route = "root",
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {

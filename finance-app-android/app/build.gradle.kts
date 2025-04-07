@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.apollographql.apollo3") version "3.8.5"
     alias(libs.plugins.google.gms.google.services)
+    alias (libs.plugins.hilt.application)
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -76,4 +79,8 @@ dependencies {
     implementation(libs.apollo.runtime)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.core.splashscreen)
+    implementation (libs.hilt.android)
+    kapt (libs.hilt.android.compiler)
+    implementation (libs.hilt.navigation.compose)
+
 }
