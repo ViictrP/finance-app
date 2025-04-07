@@ -11,7 +11,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = SecondaryDark,
     tertiary = AccentDark,
     background = BackgroundDark,
-    error = dangerDark,
+    error = danger,
     onTertiary = success
 )
 
