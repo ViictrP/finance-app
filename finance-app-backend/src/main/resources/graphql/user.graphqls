@@ -17,6 +17,7 @@ type UserBalanceDTO {
     taxValue: BigDecimal
     exchangeTaxValue: BigDecimal
     nonConvertedSalary: BigDecimal
+    monthClosures: [MonthClosureDTO]
 }
 
 type TransactionDTO {
@@ -42,6 +43,16 @@ type CreditCardDTO {
     totalInvoiceAmount: BigDecimal
     color: String
     invoices: [InvoiceDTO]
+}
+
+type MonthClosureDTO {
+    month: String!
+    year: Int!
+    total: BigDecimal!
+    available: BigDecimal!
+    expenses: BigDecimal!
+    index: Int!
+    finalUsdToBRL: BigDecimal!
 }
 
 type InvoiceDTO {

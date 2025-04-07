@@ -13,6 +13,7 @@ public record Balance(
         List<Transaction> transactions,
         List<Transaction> recurringExpenses,
         List<CreditCard> creditCards,
+        List<MonthClosure> monthClosures,
         BigDecimal salary,
         BigDecimal expenses,
         BigDecimal available,

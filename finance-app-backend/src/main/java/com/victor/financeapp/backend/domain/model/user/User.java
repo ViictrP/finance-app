@@ -79,6 +79,7 @@ public class User {
                 .creditCards(creditCards)
                 .expenses(expenses)
                 .available(salaryMinusTax.subtract(expenses))
+                .monthClosures(monthClosures)
                 .build();
     }
 
