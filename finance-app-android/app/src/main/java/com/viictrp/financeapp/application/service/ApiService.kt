@@ -6,6 +6,7 @@ import com.viictrp.financeapp.application.client.ApolloClientProvider
 import com.viictrp.financeapp.application.dto.BalanceDTO
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.dto.InvoiceDTO
+import com.viictrp.financeapp.application.dto.MonthClosureDTO
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.graphql.GetBalanceQuery
@@ -13,7 +14,6 @@ import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.time.YearMonth
-import kotlin.toString
 
 class ApiService {
 
@@ -36,7 +36,12 @@ class ApiService {
                     nonConvertedSalary = data.getBalance?.nonConvertedSalary ?: BigDecimal.ZERO,
                     transactions = mapTransactionDTO(data.getBalance?.transactions ?: emptyList()),
                     creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
-                    recurringExpenses = mapRecurringExpenseDTO(data.getBalance?.recurringExpenses ?: emptyList())
+                    recurringExpenses = mapRecurringExpenseDTO(
+                        data.getBalance?.recurringExpenses ?: emptyList()
+                    ),
+                    monthClosures = mapMonthClosureDTO(
+                        data.getBalance?.monthClosures ?: emptyList()
+                    ),
                 )
             }
         } catch (e: Exception) {
@@ -45,6 +50,21 @@ class ApiService {
             null
         }
     }
+
+    private fun mapMonthClosureDTO(closures: List<GetBalanceQuery.MonthClosure?>): List<MonthClosureDTO> =
+        closures
+            .filterNotNull()
+            .map { closure ->
+                MonthClosureDTO(
+                    month = closure.month,
+                    year = closure.year,
+                    total = closure.total,
+                    available = closure.available,
+                    expenses = closure.expenses,
+                    index = closure.index,
+                    finalUsdToBRL = closure.finalUsdToBRL
+                )
+            }
 
     private fun mapCreditCardDTO(creditCards: List<GetBalanceQuery.CreditCard?>): List<CreditCardDTO> =
         creditCards.filterNotNull().map { creditCard ->

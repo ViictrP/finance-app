@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
+import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -57,7 +57,7 @@ fun TransactionCard(transaction: TransactionDTO) {
                 Spacer(modifier = Modifier.size(16.dp))
                 Column {
                     Text(
-                        transaction.category,
+                        categoryHelper(transaction.category),
                         style = LocalTextStyle.current.copy(fontSize = 16.sp),
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                     )
@@ -65,7 +65,6 @@ fun TransactionCard(transaction: TransactionDTO) {
                     Text(
                         transaction.description,
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.secondary,
                     )
                 }

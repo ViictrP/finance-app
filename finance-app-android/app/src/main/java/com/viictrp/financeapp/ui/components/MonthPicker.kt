@@ -30,19 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.YearMonth
 import java.time.ZoneId
-import java.util.Calendar
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthPicker(onMonthChanged: (YearMonth) -> Unit) {
-    val formatter = SimpleDateFormat("MMMM, yyyy", Locale.getDefault())
+fun MonthPicker(initial: YearMonth?, onMonthChanged: (YearMonth) -> Unit) {
     var selectedDate by remember {
-        mutableStateOf(formatter.format(Calendar.getInstance().time))
+        mutableStateOf(initial ?: YearMonth.now())
     }
     val openDialog = remember { mutableStateOf(false) }
     if (openDialog.value) {
@@ -58,12 +56,12 @@ fun MonthPicker(onMonthChanged: (YearMonth) -> Unit) {
                 TextButton(
                     onClick = {
                         openDialog.value = false
-                        selectedDate = formatter.format(datePickerState.selectedDateMillis)
                         datePickerState.selectedDateMillis?.let {
                             val yearMonth = Instant.ofEpochMilli(it)
                                 .atZone(ZoneId.systemDefault())  // Convert to ZonedDateTime
                                 .toLocalDate()                   // Extract LocalDate
                                 .let { YearMonth.from(it) }
+                            selectedDate = yearMonth
                             onMonthChanged(yearMonth)
                         }
                     },
@@ -89,7 +87,9 @@ fun MonthPicker(onMonthChanged: (YearMonth) -> Unit) {
     }
 
     OutlinedTextField(
-        value = selectedDate,
+        value = selectedDate?.format(
+            DateTimeFormatter.ofPattern("MMMM, yyyy", Locale.getDefault())
+        ) ?: "Selecione uma data",
         onValueChange = {},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),
@@ -117,7 +117,7 @@ fun MonthPicker(onMonthChanged: (YearMonth) -> Unit) {
 @Composable
 fun MonthPickerPreview() {
     FinanceAppTheme {
-        MonthPicker { milis ->
+        MonthPicker(initial = YearMonth.now()) { milis ->
             Log.d("MonthPicker", "Month changed: $milis")
         }
     }

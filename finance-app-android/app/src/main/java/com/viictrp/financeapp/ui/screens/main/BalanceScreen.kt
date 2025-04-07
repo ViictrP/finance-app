@@ -16,7 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +44,7 @@ import com.viictrp.financeapp.ui.theme.PrimaryDark
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.time.YearMonth
 import java.util.Locale
 
 @Composable
@@ -47,6 +52,7 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
     val balanceState = viewModel.balance.observeAsState()
     val balance = balanceState.value
     val user = authModel.user.observeAsState().value
+    var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
 
     Scaffold(
         topBar = {
@@ -86,9 +92,10 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    MonthPicker { yearMonth ->
+                    MonthPicker(selectedYearMonth) { yearMonth ->
+                        selectedYearMonth = yearMonth
                         user?.let {
-                            viewModel.loadBalance(yearMonth)
+                            viewModel.loadBalance(selectedYearMonth)
                         }
                     }
                 }
