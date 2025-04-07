@@ -91,7 +91,7 @@ class AuthManager(private val context: Context) {
     private suspend fun getGoogleCredential(): GoogleIdTokenCredential? {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
-            .setServerClientId("")
+            .setServerClientId("13736117814-3v0d8tvlff21kavkvat58ol2n372g05h.apps.googleusercontent.com")
             .build()
 
         val request = GetCredentialRequest.Builder()

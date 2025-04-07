@@ -29,6 +29,7 @@ import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
@@ -71,10 +72,9 @@ fun TransactionCard(transaction: TransactionDTO) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    SimpleDateFormat(
-                        "dd/MM/yyyy",
-                        Locale.getDefault()
-                    ).format(transaction.date),
+                    text = transaction.date.format(
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+                    ),
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                 )
@@ -83,7 +83,7 @@ fun TransactionCard(transaction: TransactionDTO) {
                     NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(transaction.amount),
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
                     color = MaterialTheme.colorScheme.secondary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.time.YearMonth
+import kotlin.toString
 
 class ApiService {
 
@@ -35,6 +36,7 @@ class ApiService {
                     nonConvertedSalary = data.getBalance?.nonConvertedSalary ?: BigDecimal.ZERO,
                     transactions = mapTransactionDTO(data.getBalance?.transactions ?: emptyList()),
                     creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
+                    recurringExpenses = mapRecurringExpenseDTO(data.getBalance?.recurringExpenses ?: emptyList())
                 )
             }
         } catch (e: Exception) {
@@ -82,7 +84,8 @@ class ApiService {
                     installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
                     installmentId = transaction.installmentId,
                     installmentNumber = transaction.installmentNumber ?: 0,
-                    creditCardId = transaction.creditCardId?.toLong()
+                    creditCardId = transaction.creditCardId?.toLong(),
+                    category = transaction.category.toString()
                 )
             }
 
@@ -101,7 +104,28 @@ class ApiService {
                     installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
                     installmentId = transaction.installmentId,
                     installmentNumber = transaction.installmentNumber ?: 0,
-                    creditCardId = transaction.creditCardId?.toLong()
+                    creditCardId = transaction.creditCardId?.toLong(),
+                    category = transaction.category.toString()
                 )
             }
+
+    private fun mapRecurringExpenseDTO(recurringExpenses: List<GetBalanceQuery.RecurringExpense?>): List<TransactionDTO> {
+        return recurringExpenses
+            .filterNotNull()
+            .map { transaction ->
+                TransactionDTO(
+                    id = transaction.id.toLong(),
+                    description = transaction.description,
+                    amount = transaction.amount,
+                    type = TransactionType.valueOf(transaction.type.toString()),
+                    date = OffsetDateTime.parse(transaction.date),
+                    isInstallment = transaction.isInstallment,
+                    installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
+                    installmentId = transaction.installmentId,
+                    installmentNumber = transaction.installmentNumber ?: 0,
+                    creditCardId = transaction.creditCardId?.toLong(),
+                    category = transaction.category.toString()
+                )
+            }
+    }
 }

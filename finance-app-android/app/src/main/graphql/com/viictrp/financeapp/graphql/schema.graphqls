@@ -20,6 +20,7 @@ type TransactionDTO {
     amount: BigDecimal!
     type: TransactionType!
     date: String!
+    category: String
     isInstallment: Boolean!
     installmentAmount: BigDecimal
     installmentId: ID
@@ -46,7 +47,7 @@ type InvoiceDTO {
 
 type BalanceDTO {
     transactions: [TransactionDTO]!
-    recurringTransactions: [TransactionDTO]!
+    recurringExpenses: [TransactionDTO]!
     creditCards: [CreditCardDTO]!
     salary: BigDecimal!
     expenses: BigDecimal!

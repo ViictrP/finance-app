@@ -140,8 +140,10 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                     balance?.let {
                         Text(
                             "Gastos Fixos",
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
                         )
+                        Spacer(modifier = Modifier.size(16.dp))
                         it.recurringExpenses.forEach { transaction ->
                             Box(
                                 modifier = Modifier
@@ -151,10 +153,11 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                                 TransactionCard(transaction)
                             }
                         }
-
+                        Spacer(modifier = Modifier.size(16.dp))
                         Text(
                             "Compras",
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
                         )
                         it.transactions.forEach { transaction ->
                             Box(
