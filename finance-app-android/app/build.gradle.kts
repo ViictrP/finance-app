@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.apollographql.apollo3") version "3.8.5"
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -51,12 +52,17 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,4 +75,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.apollo.runtime)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.com.google.firebase.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
 }

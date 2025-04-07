@@ -14,8 +14,8 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
             FROM finance_app.transaction
             WHERE user_id = :userId
             AND invoice_id IS NULL
-            AND EXTRACT(MONTH FROM date) = :month
-            AND EXTRACT(YEAR FROM date) = :year
+            --AND EXTRACT(MONTH FROM date) = :month
+            --AND EXTRACT(YEAR FROM date) = :year
             AND deleted IS FALSE
             AND delete_date IS NULL
         """)

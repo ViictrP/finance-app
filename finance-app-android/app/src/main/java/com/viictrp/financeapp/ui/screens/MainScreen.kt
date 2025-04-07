@@ -3,57 +3,37 @@ package com.viictrp.financeapp.ui.screens
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.BottomNavigationBar
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
-import java.time.YearMonth
+import com.viictrp.financeapp.ui.navigation.mainGraph
+import com.viictrp.financeapp.ui.screens.graph.authGraph
+import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: BalanceViewModel, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
-    val viewModel = BalanceViewModel(ApiService())
-
-    LaunchedEffect(Unit) {
-        viewModel.loadBalance(YearMonth.now())
-    }
+    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry.value?.destination?.route
+    val showBottomBar = currentRoute !in listOf("login", "splash")
 
     @Suppress("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(navController)
+            if (showBottomBar) {
+                BottomNavigationBar(navController)
+            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { _ ->
         NavHost(
             navController = navController,
-            startDestination = "home"
+            startDestination = "splash"
         ) {
-            composable("home") {
-                HomeScreen(navController, viewModel)
-            }
-            composable("credit_card") {
-                CreditCardScreen(navController)
-            }
-            composable("balance") {
-                BalanceScreen(viewModel)
-            }
-            composable("credit_card_form") {
-                CreditCardFormScreen(navController)
-            }
+            authGraph(navController, authViewModel, viewModel)
+            mainGraph(navController, viewModel)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    FinanceAppTheme {
-        MainScreen()
     }
 }

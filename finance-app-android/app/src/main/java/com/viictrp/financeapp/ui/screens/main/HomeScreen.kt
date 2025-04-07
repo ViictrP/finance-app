@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens
+package com.viictrp.financeapp.ui.screens.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -32,7 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import com.viictrp.financeapp.ui.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar

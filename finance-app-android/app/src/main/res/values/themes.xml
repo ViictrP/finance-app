@@ -2,4 +2,17 @@
 <resources>
 
     <style name="Theme.FinanceApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.FinanceApp.Splash" parent="Theme.SplashScreen">
+        <!-- Customize your background -->
+        <item name="windowSplashScreenBackground">@color/secondary</item>
+
+        <!-- Your static app logo (shown immediately) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <!-- Icon animation duration -->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+
+        <!-- Optional: stays visible for this duration even if loading finishes -->
+        <item name="postSplashScreenTheme">@style/Theme.FinanceApp</item>
+    </style>
 </resources>
