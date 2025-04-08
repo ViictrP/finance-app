@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.viictrp.financeapp"
-        minSdk = 26
+        minSdk = 31
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -82,5 +82,5 @@ dependencies {
     implementation (libs.hilt.android)
     kapt (libs.hilt.android.compiler)
     implementation (libs.hilt.navigation.compose)
-
+    implementation(libs.core.splashscreen)
 }
