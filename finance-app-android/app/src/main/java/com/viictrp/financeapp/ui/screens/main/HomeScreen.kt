@@ -55,7 +55,7 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authModel: AuthViewModel) {
-    val balance by viewModel.balance.collectAsState()
+    val balance by viewModel.currentBalance.collectAsState()
     val user by authModel.user.collectAsState()
     val space = Modifier.height(48.dp)
 

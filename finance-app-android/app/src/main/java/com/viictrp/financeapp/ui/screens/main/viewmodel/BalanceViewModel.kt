@@ -16,9 +16,19 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     private val _balance = MutableStateFlow<BalanceDTO?>(null)
     val balance = _balance
 
-    fun loadBalance(yearMonth: YearMonth) {
+    private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
+    val currentBalance = _currentBalance
+
+    fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
         viewModelScope.launch {
             _balance.value = apiService.getBalance(yearMonth)
+            if (defineCurrent) {
+                setCurrentBalance(balance.value)
+            }
         }
+    }
+
+    fun setCurrentBalance(balance: BalanceDTO?) {
+        _currentBalance.value = balance
     }
 }

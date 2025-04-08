@@ -31,7 +31,7 @@ fun MainScreen() {
 
     LaunchedEffect(currentDestination) {
         if (currentDestination == "home" && balanceViewModel.balance.value == null) {
-            balanceViewModel.loadBalance(YearMonth.now())
+            balanceViewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         }
     }
 
