@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,8 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -48,23 +50,24 @@ import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authModel: AuthViewModel) {
-    val balanceState = viewModel.balance.observeAsState()
-    val balance = balanceState.value
-    val userState = authModel.user.observeAsState()
-    val user = userState.value
+    val balance by viewModel.balance.collectAsState()
+    val user by authModel.user.collectAsState()
+    val space = Modifier.height(48.dp)
 
-    LaunchedEffect(Unit) {
-        user?.let {
-            if (balance == null) {
-                viewModel.loadBalance(YearMonth.now())
-            }
-        }
+    val transactions = remember(balance) {
+        balance?.let {
+            it.creditCards
+                .flatMap { it.invoices }
+                .flatMap { it.transactions }
+                .plus(it.transactions)
+                .plus(it.recurringExpenses)
+                .sortedByDescending { transition -> transition.id }
+        } ?: emptyList()
     }
 
     Scaffold(
@@ -78,7 +81,6 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                 .fillMaxSize()
                 .padding(padding)
                 .padding(top = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(48.dp)
         ) {
             item {
                 Card(
@@ -138,7 +140,8 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             balance?.let {
-                                val value =it.expenses.subtract(it.monthClosures[it.monthClosures.size - 2].expenses)
+                                val value =
+                                    it.expenses.subtract(it.monthClosures[it.monthClosures.size - 2].expenses)
 
                                 Text(
                                     NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
@@ -159,36 +162,35 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
             }
 
             item {
-                Column(
+                Spacer(modifier = space)
+            }
+            item {
+                Text(
+                    "Últimas Compras",
+                    style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp)
+                )
+            }
+
+            items(transactions.size) { index ->
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 100.dp), Arrangement.SpaceBetween
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
-                    Text(
-                        "Últimas Compras",
-                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                        fontWeight = FontWeight.Bold
+                    TransactionCard(
+                        transactions[index],
+                        "Nubank",
+                        MaterialTheme.colorScheme.tertiary
                     )
-                    Spacer(modifier = Modifier.size(24.dp))
-                    balance?.let {
-                        it.creditCards
-                            .flatMap { it.invoices }
-                            .flatMap { it.transactions }
-                            .plus(it.transactions)
-                            .plus(it.recurringExpenses)
-                            .sortedByDescending { transition -> transition.id }
-                            .forEach { transaction ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 8.dp)
-                                ) {
-                                    TransactionCard(transaction, "Nubank", MaterialTheme.colorScheme.tertiary)
-                                }
-                            }
-                    }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

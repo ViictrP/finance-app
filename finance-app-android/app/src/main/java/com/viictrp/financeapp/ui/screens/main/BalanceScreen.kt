@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,8 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,10 +50,19 @@ import java.util.Locale
 
 @Composable
 fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
-    val balanceState = viewModel.balance.observeAsState()
-    val balance = balanceState.value
-    val user = authModel.user.observeAsState().value
+    val balance by viewModel.balance.collectAsState()
+    val user by authModel.user.collectAsState()
     var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
+
+    val recurringExpenses = remember(balance) {
+        balance?.recurringExpenses ?: emptyList()
+    }
+
+    val transactions = remember(balance) {
+        balance?.transactions ?: emptyList()
+    }
+
+    val spacing = Modifier.height(48.dp)
 
     Scaffold(
         topBar = {
@@ -64,8 +74,7 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(top = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(48.dp)
+                .padding(top = 24.dp)
         ) {
             item {
                 Column(
@@ -87,6 +96,10 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
             }
 
             item {
+                Spacer(modifier = spacing)
+            }
+
+            item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -100,6 +113,11 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                     }
                 }
             }
+
+            item {
+                Spacer(modifier = spacing)
+            }
+
             item {
                 Column(
                     modifier = Modifier
@@ -111,6 +129,11 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
                     }
                 }
             }
+
+            item {
+                Spacer(modifier = spacing)
+            }
+
             item {
                 Column(
                     modifier = Modifier
@@ -132,51 +155,78 @@ fun BalanceScreen(viewModel: BalanceViewModel, authModel: AuthViewModel) {
             }
 
             item {
+                Spacer(modifier = spacing)
+            }
+
+            item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .padding(bottom = 100.dp), Arrangement.SpaceBetween
+                        .padding(bottom = 8.dp)
                 ) {
                     Text(
                         "Compras",
                         style = LocalTextStyle.current.copy(fontSize = 24.sp),
                         fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.size(24.dp))
-                    balance?.let {
-                        Text(
-                            "Gastos Fixos",
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic),
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                        )
-                        Spacer(modifier = Modifier.size(16.dp))
-                        it.recurringExpenses.forEach { transaction ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                TransactionCard(transaction)
-                            }
-                        }
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Text(
-                            "Compras",
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp, fontStyle = FontStyle.Italic),
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                        )
-                        it.transactions.forEach { transaction ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                TransactionCard(transaction)
-                            }
-                        }
-                    }
                 }
+            }
+
+            item {
+                Text(
+                    "Gastos Fixos",
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
+                    style = LocalTextStyle.current.copy(
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                )
+            }
+
+            items(recurringExpenses.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    TransactionCard(recurringExpenses[index])
+                }
+            }
+
+            item {
+                Spacer(modifier = spacing)
+            }
+
+            item {
+                Text(
+                    "Compras",
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
+                    style = LocalTextStyle.current.copy(
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                )
+            }
+
+            items(transactions.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    TransactionCard(transactions[index])
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

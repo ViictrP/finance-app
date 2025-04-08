@@ -1,7 +1,9 @@
 package com.viictrp.financeapp.application.dto
 
+import androidx.compose.runtime.Immutable
 import java.math.BigDecimal
 
+@Immutable
 data class BalanceDTO(
     val transactions: List<TransactionDTO> = emptyList(),
     val recurringExpenses: List<TransactionDTO> = emptyList(),

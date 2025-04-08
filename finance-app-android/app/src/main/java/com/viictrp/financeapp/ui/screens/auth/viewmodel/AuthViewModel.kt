@@ -1,12 +1,10 @@
 package com.viictrp.financeapp.ui.screens.auth.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viictrp.financeapp.application.dto.UserDTO
 import com.viictrp.financeapp.ui.auth.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -22,7 +20,7 @@ class AuthViewModel @Inject constructor(private val authManager: AuthManager) : 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
 
-    private val _user = MutableLiveData<UserDTO?>(null)
+    private val _user = MutableStateFlow<UserDTO?>(null)
     val user = _user
 
     fun checkAuth() {

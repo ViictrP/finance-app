@@ -1,9 +1,11 @@
 package com.viictrp.financeapp.application.dto
 
+import androidx.compose.runtime.Immutable
 import com.viictrp.financeapp.application.enums.TransactionType
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 
+@Immutable
 data class TransactionDTO(
     val id: Long,
     val description: String,
