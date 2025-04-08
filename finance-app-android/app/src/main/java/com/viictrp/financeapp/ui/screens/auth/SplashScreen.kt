@@ -30,6 +30,7 @@ import com.viictrp.financeapp.R
 import com.viictrp.financeapp.ui.auth.AuthManager
 import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
@@ -45,6 +46,7 @@ fun SplashScreen(
 
     LaunchedEffect(isAuthenticated, user) {
         if (isAuthenticated == true && user != null) {
+            delay(1000)
             navController.navigate("home") {
                 popUpTo("splash") { inclusive = true }
             }
