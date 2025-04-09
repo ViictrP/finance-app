@@ -83,4 +83,5 @@ dependencies {
     kapt (libs.hilt.android.compiler)
     implementation (libs.hilt.navigation.compose)
     implementation(libs.core.splashscreen)
+    implementation(libs.lottie.compose)
 }
