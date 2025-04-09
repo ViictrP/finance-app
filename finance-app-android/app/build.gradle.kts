@@ -84,4 +84,5 @@ dependencies {
     implementation (libs.hilt.navigation.compose)
     implementation(libs.core.splashscreen)
     implementation(libs.lottie.compose)
+    implementation(libs.material3.pullrefresh)
 }

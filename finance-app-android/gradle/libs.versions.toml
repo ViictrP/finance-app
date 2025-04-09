@@ -5,13 +5,13 @@ coreSplashscreen = "1.0.1"
 credentials = "1.5.0"
 googleid = "1.1.1"
 kotlin = "2.0.21"
-coreKtx = "1.15.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 lifecycleViewmodelCompose = "2.8.7"
 lottieCompose = "6.0.0"
 navigationCompose = "2.8.9"
@@ -51,8 +51,8 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version = "2.11.0" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationVersion" }
-hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltVersion" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
+material3-pullrefresh = { group = "androidx.compose.material3", name = "material3", version = "1.3.2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -19,15 +19,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -47,17 +55,24 @@ import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModelFactory
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authModel: AuthViewModel) {
     val balance by viewModel.currentBalance.collectAsState()
     val user by authModel.user.collectAsState()
     val space = Modifier.height(48.dp)
+    val coroutineScope = rememberCoroutineScope()
+
+    var refreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
 
     val transactions = remember(balance) {
         balance?.let {
@@ -76,121 +91,148 @@ fun HomeScreen(navController: NavController, viewModel: BalanceViewModel, authMo
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(top = 24.dp),
+        PullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = {
+                coroutineScope.launch {
+                    refreshing = true
+                    viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+                    refreshing = false
+                }
+            },
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = refreshing,
+                    containerColor = MaterialTheme.colorScheme.onTertiary,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    state = pullRefreshState
+                )
+            },
+            state = pullRefreshState,
+            modifier = Modifier.fillMaxSize()
         ) {
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-                    ),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(top = 24.dp),
+            ) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                        ),
                     ) {
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    "gastos do mês",
-                                    style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
-                                )
+                        Column(
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Column {
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.clickable { navController.navigate("balance") }) {
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
                                     Text(
-                                        SimpleDateFormat(
-                                            "MMMM",
-                                            Locale.getDefault()
-                                        ).format(Calendar.getInstance().time),
-                                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                        color = MaterialTheme.colorScheme.tertiary,
-                                        fontWeight = FontWeight.Medium
+                                        "gastos do mês",
+                                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
                                     )
-                                    Icon(
-                                        Icons.Outlined.DateRange,
-                                        modifier = Modifier.size(24.dp),
-                                        contentDescription = "Select Month",
-                                        tint = MaterialTheme.colorScheme.tertiary,
-                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.clickable { navController.navigate("balance") }) {
+                                        Text(
+                                            SimpleDateFormat(
+                                                "MMMM",
+                                                Locale.getDefault()
+                                            ).format(Calendar.getInstance().time),
+                                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                            color = MaterialTheme.colorScheme.tertiary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Icon(
+                                            Icons.Outlined.DateRange,
+                                            modifier = Modifier.size(24.dp),
+                                            contentDescription = "Select Month",
+                                            tint = MaterialTheme.colorScheme.tertiary,
+                                        )
+                                    }
                                 }
-                            }
-                            Spacer(modifier = Modifier.size(10.dp))
-                            Text(
-                                balance?.let {
-                                    NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                        .format(it.expenses)
-                                } ?: "Carregando...",
-                                style = LocalTextStyle.current.copy(fontSize = 28.sp),
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            balance?.let {
-                                val value =
-                                    it.expenses.subtract(it.monthClosures[it.monthClosures.size - 2].expenses)
-
+                                Spacer(modifier = Modifier.size(10.dp))
                                 Text(
-                                    NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                        .format(value),
-                                    style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                    color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                    if (balance != null && !refreshing) {
+                                        NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                            .format(balance?.expenses)
+                                    } else {
+                                        "Carregando..."
+                                    },
+                                    style = LocalTextStyle.current.copy(fontSize = 28.sp),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
-                                if (value > BigDecimal.ZERO) {
-                                    StatusChip("diminuiu!", MaterialTheme.colorScheme.onTertiary)
-                                } else {
-                                    StatusChip("aumentou!", MaterialTheme.colorScheme.error)
-                                }
                             }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                balance?.let {
+                                    val value =
+                                        it.expenses.subtract(it.monthClosures[it.monthClosures.size - 2].expenses)
 
+                                    Text(
+                                        NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                            .format(value),
+                                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                        color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                    )
+                                    if (value > BigDecimal.ZERO) {
+                                        StatusChip(
+                                            "diminuiu!",
+                                            MaterialTheme.colorScheme.onTertiary
+                                        )
+                                    } else {
+                                        StatusChip("aumentou!", MaterialTheme.colorScheme.error)
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
-            }
 
-            item {
-                Spacer(modifier = space)
-            }
-            item {
-                Text(
-                    "Últimas Compras",
-                    style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp)
-                )
-            }
-
-            items(transactions.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                ) {
-                    TransactionCard(
-                        transactions[index],
-                        "Nubank",
-                        MaterialTheme.colorScheme.tertiary
+                item {
+                    Spacer(modifier = space)
+                }
+                item {
+                    Text(
+                        "Últimas Compras",
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp)
                     )
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
+                items(transactions.size) { index ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    ) {
+                        TransactionCard(
+                            transactions[index],
+                            "Nubank",
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
             }
         }
     }

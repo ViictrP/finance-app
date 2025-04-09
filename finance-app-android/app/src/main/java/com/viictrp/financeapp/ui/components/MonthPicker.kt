@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,11 @@ fun MonthPicker(initial: YearMonth?, onMonthChanged: (YearMonth) -> Unit) {
         mutableStateOf(initial ?: YearMonth.now())
     }
     val openDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(initial) {
+        selectedDate = initial ?: YearMonth.now()
+    }
+
     if (openDialog.value) {
         val datePickerState = rememberDatePickerState()
         val confirmEnabled = remember {
