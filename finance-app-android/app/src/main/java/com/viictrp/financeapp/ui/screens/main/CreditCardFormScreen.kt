@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,27 +23,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
-import com.viictrp.financeapp.ui.auth.AuthManager
-import com.viictrp.financeapp.ui.components.Header
-import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
-import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModelFactory
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
-fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceViewModel, authModel: AuthViewModel) {
+fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceViewModel) {
     Scaffold(
-        topBar = {
-            Header("Victor Prado")
-        },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(top = 24.dp),
+                .padding(padding),
             verticalArrangement = Arrangement.spacedBy(48.dp)
         ) {
             item {
@@ -74,15 +65,11 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
 @Composable
 fun CreditCardFormScreenPreview() {
     val navController = rememberNavController()
-    val authViewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(AuthManager(LocalContext.current))
-    )
-
     val balanceViewModel: BalanceViewModel = viewModel(
         factory = BalanceViewModelFactory(ApiService())
     )
 
     FinanceAppTheme {
-        CreditCardFormScreen(navController, balanceViewModel, authViewModel)
+        CreditCardFormScreen(navController, balanceViewModel)
     }
 }

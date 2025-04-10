@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.components
+package com.viictrp.financeapp.ui.components.custom
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

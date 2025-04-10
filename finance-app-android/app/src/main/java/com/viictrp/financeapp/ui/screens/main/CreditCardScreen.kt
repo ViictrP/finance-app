@@ -19,24 +19,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
-import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceViewModel) {
+
     Scaffold(
-        topBar = {
-            Header("Victor Prado")
-        },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(padding)
-                .padding(top = 24.dp)
         ) {
             item {
                 Column(

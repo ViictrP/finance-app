@@ -85,4 +85,8 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.lottie.compose)
     implementation(libs.material3.pullrefresh)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.play.services.base)
+    implementation(libs.play.services.basement)
+    implementation(libs.coil.compose)
 }

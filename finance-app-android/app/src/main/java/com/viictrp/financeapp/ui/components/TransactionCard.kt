@@ -74,7 +74,7 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         transaction.description,
-                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
                         color = MaterialTheme.colorScheme.secondary,
                     )
                 }

@@ -39,7 +39,7 @@ fun SummaryCard(salary: BigDecimal, expenses: BigDecimal, available: BigDecimal)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
             InternalSummaryCard(
                 "Salário",
@@ -81,7 +81,7 @@ private fun InternalSummaryCard(title: String, amount: String, color: Color) {
         Text(
             amount,
             color = MaterialTheme.colorScheme.secondary,
-            style = LocalTextStyle.current.copy(fontSize = 13.sp),
+            style = LocalTextStyle.current.copy(fontSize = 14.sp),
             fontWeight = FontWeight.Medium
         )
     }
