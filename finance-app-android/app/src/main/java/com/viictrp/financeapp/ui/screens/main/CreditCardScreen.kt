@@ -110,8 +110,8 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
     ) { padding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp)
+                .fillMaxWidth(),
+            contentPadding = padding
         ) {
             item {
                 Row(
