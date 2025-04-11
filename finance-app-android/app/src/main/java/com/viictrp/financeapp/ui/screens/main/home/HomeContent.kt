@@ -128,7 +128,7 @@ internal fun HomeScreenContent(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         balance?.let {
                             val value =
-                                it.expenses.subtract(it.monthClosures[it.monthClosures.size - 2].expenses)
+                                it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
 
                             Text(
                                 NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
@@ -145,7 +145,7 @@ internal fun HomeScreenContent(
                             } else {
                                 StatusChip(
                                     "aumentou!", textColor = MaterialTheme.colorScheme.primary,
-                                    backgroundColor = MaterialTheme.colorScheme.onTertiary
+                                    backgroundColor = MaterialTheme.colorScheme.error
                                 )
                             }
                         }
