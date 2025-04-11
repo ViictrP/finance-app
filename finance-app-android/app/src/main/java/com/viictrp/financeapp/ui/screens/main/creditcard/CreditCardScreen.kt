@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens.main
+package com.viictrp.financeapp.ui.screens.main.creditcard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -165,7 +165,7 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.clickable { navController.navigate("balance") }) {
+                            modifier = Modifier.clickable { navController.navigate("invoice/$selectedCardId") }) {
                             Text(
                                 "Ver faturas",
                                 style = LocalTextStyle.current.copy(fontSize = 18.sp),

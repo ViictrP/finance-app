@@ -33,6 +33,13 @@ interface CarouselItem {
     fun getDetail(): String
 }
 
+val colorMap = mapOf(
+    "black" to Secondary,
+    "orange" to Orange,
+    "blue" to Blue,
+    "purple" to Purple
+)
+
 @Composable
 fun <T : CarouselItem> CardCarousel(
     items: List<T>,
@@ -45,15 +52,6 @@ fun <T : CarouselItem> CardCarousel(
 ) {
     val haptics = LocalHapticFeedback.current
     val onPageChangedState by rememberUpdatedState(onPageChanged)
-
-    val colorMap = remember {
-        mapOf(
-            "black" to Secondary,
-            "orange" to Orange,
-            "blue" to Blue,
-            "purple" to Purple
-        )
-    }
 
     LaunchedEffect(pagerState.settledPage) {
         if (items.isNotEmpty()) {
@@ -98,7 +96,7 @@ fun <T : CarouselItem> CardCarousel(
 }
 
 @Composable
-private fun CarouselCardContent(item: CarouselItem) {
+fun CarouselCardContent(item: CarouselItem) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
