@@ -91,7 +91,7 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
                     NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(transaction.amount),
                     style = LocalTextStyle.current.copy(fontSize = 20.sp),
                     color = MaterialTheme.colorScheme.secondary,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
