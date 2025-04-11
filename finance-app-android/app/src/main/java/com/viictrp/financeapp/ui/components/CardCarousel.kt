@@ -6,17 +6,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.theme.Blue
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
@@ -103,18 +104,49 @@ fun <T : CarouselItem> CardCarousel(
             ),
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = card.getTitle(),
                         color = SecondaryDark,
                         style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
                     )
+                    IconButton(onClick = {}) {
+                        Icon(
+                            CustomIcons.DuoTone.AddCircle,
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = Color.White,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            CustomIcons.DuoTone.Calendar,
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = SecondaryDark,
+                        )
+                        Text(
+                            text = " ${card.getDetail()}",
+                            color = SecondaryDark,
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
+                        )
+                    }
                     Text(
                         text = card.getDescription(),
                         color = SecondaryDark,
@@ -122,20 +154,6 @@ fun <T : CarouselItem> CardCarousel(
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Outlined.DateRange,
-                        modifier = Modifier.size(24.dp),
-                        contentDescription = "Select Month",
-                        tint = SecondaryDark,
-                    )
-                    Text(
-                        text = "/${card.getDetail()}",
-                        color = SecondaryDark,
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
                     )
                 }
             }

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -104,7 +102,6 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                 )
             } ?: emptyList()
     }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -132,22 +129,6 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                             " (${carouselItems.size})",
                             fontWeight = FontWeight.Normal,
                             style = LocalTextStyle.current.copy(fontSize = 24.sp)
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.clickable { navController.navigate("balance") }) {
-                        Text(
-                            "Editar ${selectedCreditCard?.title?.split(" ")[0]}",
-                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Icon(
-                            CustomIcons.DuoTone.CreditCard,
-                            modifier = Modifier.size(24.dp),
-                            contentDescription = "Select Month",
-                            tint = MaterialTheme.colorScheme.tertiary,
                         )
                     }
                 }
@@ -205,7 +186,7 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                                 fontWeight = FontWeight.Medium
                             )
                             Icon(
-                                Icons.Outlined.DateRange,
+                                CustomIcons.DuoTone.Calendar,
                                 modifier = Modifier.size(24.dp),
                                 contentDescription = "Select Month",
                                 tint = MaterialTheme.colorScheme.tertiary,

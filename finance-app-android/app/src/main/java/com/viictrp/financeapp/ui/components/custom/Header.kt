@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.viictrp.financeapp.R
 import com.viictrp.financeapp.application.dto.UserDTO
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +58,7 @@ fun Header(user: UserDTO?) {
         actions = {
             IconButton(onClick = { /* Open settings */ }) {
                 Icon(
-                    Icons.Default.Settings,
+                    CustomIcons.DuoTone.Settings,
                     contentDescription = "Settings",
                     modifier = Modifier.size(32.dp)
                 )
@@ -69,7 +67,7 @@ fun Header(user: UserDTO?) {
                 modifier = Modifier.padding(end = 16.dp),
                 onClick = { /* Sync or refresh */ }) {
                 Icon(
-                    Icons.Default.AccountCircle,
+                    CustomIcons.DuoTone.User,
                     contentDescription = "Sync",
                     modifier = Modifier
                         .size(32.dp)

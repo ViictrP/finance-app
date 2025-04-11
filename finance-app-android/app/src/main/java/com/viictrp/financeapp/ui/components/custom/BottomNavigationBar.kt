@@ -9,13 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -33,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,8 +57,15 @@ fun BottomNavigationBar(navController: NavController) {
         "Adicionar" to "",
         "Cartões" to "credit_card"
     )
-    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Add, Icons.Filled.Email)
-    val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Add, Icons.Outlined.Email)
+    val selectedIcons = listOf(
+        CustomIcons.DuoTone.Dashboard, CustomIcons.DuoTone.AddCircle,
+        CustomIcons.DuoTone.CreditCard
+    )
+    val unselectedIcons = listOf(
+        CustomIcons.DuoTone.Dashboard,
+        CustomIcons.DuoTone.AddCircle,
+        CustomIcons.DuoTone.CreditCard
+    )
 
     if (bottomSheetVisible) {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -138,11 +139,17 @@ fun BottomNavigationBar(navController: NavController) {
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = if (isSelected) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item
+                        painter = if (isSelected) selectedIcons[index] else unselectedIcons[index],
+                        contentDescription = item,
+                        modifier = Modifier.size(if (index == 1) 48.dp else 24.dp)
                     )
                 },
-                label = { Text(item) },
+                label = {
+                    Text(
+                        item,
+                        color = if (index == 1) Color.Transparent else MaterialTheme.colorScheme.secondary
+                    )
+                },
                 selected = selectedIndex == index,
                 onClick = {
                     if (item == "Adicionar") {

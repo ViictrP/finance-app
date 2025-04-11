@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -105,7 +106,7 @@ internal fun HomeScreenContent(
                                     fontWeight = FontWeight.Medium
                                 )
                                 Icon(
-                                    Icons.Outlined.DateRange,
+                                    CustomIcons.DuoTone.Calendar,
                                     modifier = Modifier.size(24.dp),
                                     contentDescription = "Select Month",
                                     tint = MaterialTheme.colorScheme.tertiary,

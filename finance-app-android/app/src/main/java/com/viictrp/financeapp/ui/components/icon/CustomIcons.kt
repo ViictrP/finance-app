@@ -22,5 +22,21 @@ object CustomIcons {
         val ShoppingBag: Painter
             @Composable
             get() = painterResource(id = R.drawable.shopping_bag)
+
+        val Settings: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.settings)
+
+        val Dashboard: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.dashboard)
+
+        val Calendar: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.calendar)
+
+        val User: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.user)
     }
 }

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
@@ -50,7 +49,7 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.Outlined.ShoppingCart,
+                    CustomIcons.DuoTone.ShoppingBag,
                     modifier = Modifier.size(26.dp),
                     contentDescription = "Select Month",
                     tint = MaterialTheme.colorScheme.tertiary,
@@ -82,7 +81,7 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = transaction.date.format(
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+                        DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.getDefault())
                     ),
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)
