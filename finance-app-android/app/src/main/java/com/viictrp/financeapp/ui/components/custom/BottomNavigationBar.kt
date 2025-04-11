@@ -27,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +43,7 @@ import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
+    val haptic = LocalHapticFeedback.current
     var bottomSheetVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -153,6 +156,7 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = selectedIndex == index,
                 onClick = {
                     if (item == "Adicionar") {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         bottomSheetVisible = true
                     } else {
                         route?.let {

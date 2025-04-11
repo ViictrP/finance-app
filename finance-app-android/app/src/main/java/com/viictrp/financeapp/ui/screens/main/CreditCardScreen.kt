@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CardCarousel
 import com.viictrp.financeapp.ui.components.CarouselItem
@@ -65,29 +63,16 @@ data class CreditCardCarouselItem(
 fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceViewModel) {
     val balance by balanceViewModel.currentBalance.collectAsState()
 
-    var transactions: List<TransactionDTO> by remember {
-        mutableStateOf(emptyList())
+    var selectedCardId by remember {
+        mutableStateOf(balance?.creditCards?.firstOrNull()?.id?.toString())
     }
 
-    var selectedCard: CreditCardCarouselItem? by remember {
-        mutableStateOf(
-            CreditCardCarouselItem(
-                id = balance?.creditCards[0]?.id.toString(),
-                title = balance?.creditCards[0]?.title.toString(),
-                description = balance?.creditCards[0]?.number.toString(),
-                color = balance?.creditCards[0]?.color.toString(),
-                detail = balance?.creditCards[0]?.invoiceClosingDay.toString()
-            )
-        )
+    val selectedCreditCard = remember(selectedCardId, balance) {
+        balance?.creditCards?.find { it.id.toString() == selectedCardId }
     }
 
-    var selectedCreditCard: CreditCardDTO? = remember(selectedCard) {
-        val creditCardId = selectedCard?.getKey()
-        val card = balance?.creditCards?.find { it.id.toString() == creditCardId }
-        card?.let {
-            transactions = it.invoices[0].transactions
-            it
-        }
+    val transactions = remember(selectedCreditCard) {
+        selectedCreditCard?.invoices?.firstOrNull()?.transactions ?: emptyList()
     }
 
     var carouselItems: List<CreditCardCarouselItem> = remember(balance) {
@@ -135,9 +120,11 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
             }
 
             item {
-                CardCarousel(carouselItems) { card ->
-                    selectedCard = card as CreditCardCarouselItem?
-                }
+                CardCarousel(
+                    carouselItems,
+                    onPageChanged = { card -> selectedCardId = card.getKey() },
+                    cardHeight = 180.dp
+                )
             }
 
             item {
@@ -207,6 +194,7 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .animateItem()
                 ) {
                     TransactionCard(transactions[index])
                 }

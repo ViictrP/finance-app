@@ -206,6 +206,7 @@ fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .animateItem()
             ) {
                 TransactionCard(transactions[index])
             }
