@@ -7,6 +7,7 @@ data class CreditCardDTO(
     val title: String,
     val description: String,
     val color: String,
+    val number: String,
     val invoiceClosingDay: Int,
     val totalInvoiceAmount: BigDecimal,
     val invoices: List<InvoiceDTO> = emptyList()

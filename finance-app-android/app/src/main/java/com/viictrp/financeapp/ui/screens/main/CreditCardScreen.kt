@@ -1,24 +1,31 @@
 package com.viictrp.financeapp.ui.screens.main
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,55 +33,76 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.application.dto.CreditCardDTO
+import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CardCarousel
 import com.viictrp.financeapp.ui.components.CarouselItem
+import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import java.math.BigDecimal
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 data class CreditCardCarouselItem(
     private val id: String,
     private val color: String,
     private val title: String,
-    private val description: String
+    private val description: String,
+    private val detail: String
 ) : CarouselItem {
     override fun getKey() = id
     override fun getColor() = color
     override fun getTitle() = title
     override fun getDescription() = description
+    override fun getDetail(): String = detail
 }
 
 @Composable
 fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceViewModel) {
     val balance by balanceViewModel.currentBalance.collectAsState()
-    var selectedCard: CreditCardCarouselItem? by remember {
-        mutableStateOf(null)
-    }
 
-    var carouselItems: List<CreditCardCarouselItem> by remember {
+    var transactions: List<TransactionDTO> by remember {
         mutableStateOf(emptyList())
     }
 
-    LaunchedEffect(balance) {
-        balance?.let {
-            selectedCard = CreditCardCarouselItem(
-                id = it.creditCards[0].id.toString(),
-                title = it.creditCards[0].title,
-                description = it.creditCards[0].description,
-                color = it.creditCards[0].color
+    var selectedCard: CreditCardCarouselItem? by remember {
+        mutableStateOf(
+            CreditCardCarouselItem(
+                id = balance?.creditCards[0]?.id.toString(),
+                title = balance?.creditCards[0]?.title.toString(),
+                description = balance?.creditCards[0]?.number.toString(),
+                color = balance?.creditCards[0]?.color.toString(),
+                detail = balance?.creditCards[0]?.invoiceClosingDay.toString()
             )
+        )
+    }
 
-            carouselItems = it.creditCards
-                .map { creditCard ->
-                    CreditCardCarouselItem(
-                        id = creditCard.id.toString(),
-                        title = creditCard.title,
-                        description = creditCard.description,
-                        color = creditCard.color
-                    )
-                }
+    var selectedCreditCard: CreditCardDTO? = remember(selectedCard) {
+        val creditCardId = selectedCard?.getKey()
+        val card = balance?.creditCards?.find { it.id.toString() == creditCardId }
+        card?.let {
+            transactions = it.invoices[0].transactions
+            it
         }
+    }
+
+    var carouselItems: List<CreditCardCarouselItem> = remember(balance) {
+        balance?.creditCards
+            ?.map { creditCard ->
+                CreditCardCarouselItem(
+                    id = creditCard.id.toString(),
+                    title = creditCard.title,
+                    description = creditCard.number,
+                    color = creditCard.color,
+                    detail = creditCard.invoiceClosingDay.toString()
+                )
+            } ?: emptyList()
     }
 
     Scaffold(
@@ -83,14 +111,16 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(padding)
+                .padding(top = 48.dp)
         ) {
             item {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp), Arrangement.SpaceBetween
+                        .padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row {
                         Text(
@@ -104,8 +134,25 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                             style = LocalTextStyle.current.copy(fontSize = 24.sp)
                         )
                     }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.clickable { navController.navigate("balance") }) {
+                        Text(
+                            "Editar ${selectedCreditCard?.title?.split(" ")[0]}",
+                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Icon(
+                            CustomIcons.DuoTone.CreditCard,
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
+                    }
                 }
             }
+
             item {
                 CardCarousel(carouselItems) { card ->
                     selectedCard = card as CreditCardCarouselItem?
@@ -113,14 +160,79 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
             }
 
             item {
-                Column(
+                Spacer(modifier = Modifier.size(48.dp))
+            }
+
+            item {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp), Arrangement.SpaceBetween
+                        .padding(bottom = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(selectedCard?.getTitle() ?: "")
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = selectedCreditCard?.title ?: "",
+                            fontWeight = FontWeight.Bold,
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        )
+                        Text(
+                            "Lançamentos da fatura de ${
+                                SimpleDateFormat(
+                                    "MMMM",
+                                    Locale.getDefault()
+                                ).format(Calendar.getInstance().time)
+                            }",
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.clickable { navController.navigate("balance") }) {
+                            Text(
+                                "Ver faturas",
+                                style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                color = MaterialTheme.colorScheme.tertiary,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Icon(
+                                Icons.Outlined.DateRange,
+                                modifier = Modifier.size(24.dp),
+                                contentDescription = "Select Month",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                        Text(
+                            text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                .format(selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)),
+                            fontWeight = FontWeight.Normal,
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        )
+                    }
                 }
+            }
+
+            items(transactions.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    TransactionCard(transactions[index])
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }

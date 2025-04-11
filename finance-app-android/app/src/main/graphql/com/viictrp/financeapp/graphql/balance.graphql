@@ -48,6 +48,7 @@ query GetBalance($yearMonth: YearMonth!) {
             title
             userId
             description
+            number
             invoiceClosingDay
             totalInvoiceAmount
             color

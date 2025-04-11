@@ -35,6 +35,7 @@ type CreditCardDTO {
     description: String!
     invoiceClosingDay: Int!
     totalInvoiceAmount: BigDecimal
+    number: String
     color: String
     invoices: [InvoiceDTO]
 }
