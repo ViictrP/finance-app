@@ -13,3 +13,8 @@ val PrimaryDark = Color(0xFF1A1A1A)
 val SecondaryDark = Color(0xFFE0E0E0)
 val AccentDark = Color(0xFF128BE7)
 val BackgroundDark = Color(0xFF101010)
+
+// CUSTOMS
+val Orange = Color(0xFFFF791F)
+val Blue = Color(0xFF0975E8)
+val Purple = Color(0xFF6C06B6)
