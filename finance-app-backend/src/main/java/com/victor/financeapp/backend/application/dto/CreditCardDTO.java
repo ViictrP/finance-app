@@ -11,6 +11,7 @@ public record CreditCardDTO(
         Long userId,
         String title,
         String description,
+        String number,
         String color,
         Integer invoiceClosingDay,
         BigDecimal totalInvoiceAmount,

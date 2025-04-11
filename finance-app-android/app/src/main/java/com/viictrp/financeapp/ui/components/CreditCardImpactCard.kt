@@ -51,20 +51,20 @@ fun CreditCardImpactCard(name: String, percentage: String, amount: String, color
             ) {
                 Text(
                     name,
-                    style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
                     fontWeight = FontWeight.Bold,
                     color = SecondaryDark
                 )
                 Text(
                     percentage,
-                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = SecondaryDark
                 )
             }
             Spacer(Modifier.size(4.dp))
             Text(
                 amount,
-                style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                style = LocalTextStyle.current.copy(fontSize = 16.sp),
                 color = SecondaryDark
             )
         }

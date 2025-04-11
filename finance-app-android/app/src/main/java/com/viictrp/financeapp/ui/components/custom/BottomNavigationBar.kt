@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.components
+package com.viictrp.financeapp.ui.components.custom
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
@@ -47,9 +47,15 @@ import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    var selectedItem by remember { mutableIntStateOf(0) }
     var bottomSheetVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val selectedIndex = when (currentRoute) {
+        "home" -> 0
+        "credit_card" -> 2
+        else -> -1 // nada selecionado, como login, etc
+    }
 
     val items = listOf("Início", "Adicionar", "Cartões")
     val routesMap = mapOf(
@@ -126,22 +132,29 @@ fun BottomNavigationBar(navController: NavController) {
         modifier = Modifier.zIndex(1f)
     ) {
         items.forEachIndexed { index, item ->
+            val route = routesMap[item]
+            val isSelected = route == currentRoute
+
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
+                        imageVector = if (isSelected) selectedIcons[index] else unselectedIcons[index],
                         contentDescription = item
                     )
                 },
                 label = { Text(item) },
-                selected = selectedItem == index,
+                selected = selectedIndex == index,
                 onClick = {
                     if (item == "Adicionar") {
                         bottomSheetVisible = true
                     } else {
-                        routesMap[item]?.let { route ->
-                            selectedItem = index
-                            navController.navigate(route)
+                        route?.let {
+                            if (it != currentRoute) {
+                                navController.navigate(it) {
+                                    popUpTo("main_graph") { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            }
                         }
                     }
                 },

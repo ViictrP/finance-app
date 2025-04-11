@@ -49,10 +49,21 @@ type BalanceDTO {
     transactions: [TransactionDTO]!
     recurringExpenses: [TransactionDTO]!
     creditCards: [CreditCardDTO]!
+    monthClosures: [MonthClosureDTO]
     salary: BigDecimal!
     expenses: BigDecimal!
     available: BigDecimal!
     taxValue: BigDecimal!
     exchangeTaxValue: BigDecimal!
     nonConvertedSalary: BigDecimal!
+}
+
+type MonthClosureDTO {
+    month: String!
+    year: Int!
+    total: BigDecimal!
+    available: BigDecimal!
+    expenses: BigDecimal!
+    index: Int!
+    finalUsdToBRL: BigDecimal!
 }

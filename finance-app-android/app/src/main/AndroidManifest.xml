@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".FinanceApp"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,12 +12,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FinanceApp"
-        tools:targetApi="31">
+        android:theme="@style/Theme.FinanceApp">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.FinanceApp.Splash">
+            android:theme="@style/Theme.FinanceApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

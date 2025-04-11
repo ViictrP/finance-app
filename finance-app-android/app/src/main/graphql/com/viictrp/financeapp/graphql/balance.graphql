@@ -52,6 +52,15 @@ query GetBalance($yearMonth: YearMonth!) {
             totalInvoiceAmount
             color
         }
+        monthClosures {
+            month
+            year
+            total
+            available
+            expenses
+            index
+            finalUsdToBRL
+        }
         salary
         expenses
         available

@@ -10,14 +10,18 @@ private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
     secondary = SecondaryDark,
     tertiary = AccentDark,
-    background = BackgroundDark
+    background = BackgroundDark,
+    error = danger,
+    onTertiary = success
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     secondary = Secondary,
     tertiary = Accent,
-    background = Background
+    background = Background,
+    error = danger,
+    onTertiary = success
 
     /* Other default colors to override
     surface = Color(0xFFFFFBFE),
@@ -38,7 +42,7 @@ fun FinanceAppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = PoppinsTypography,
         content = content
     )
 }

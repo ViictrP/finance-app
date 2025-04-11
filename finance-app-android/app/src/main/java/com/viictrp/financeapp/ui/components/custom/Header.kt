@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.components
+package com.viictrp.financeapp.ui.components.custom
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,18 +23,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.viictrp.financeapp.R
+import com.viictrp.financeapp.application.dto.UserDTO
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(name: String) {
+fun Header(user: UserDTO?) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         title = {
             Text(
-                name,
+                user?.fullName ?: "",
                 Modifier.padding(start = 8.dp),
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             )
@@ -44,7 +47,9 @@ fun Header(name: String) {
         ),
         navigationIcon = {
             Image(
-                painter = painterResource(R.drawable.ic_launcher_background),
+                painter = user?.let {
+                    rememberAsyncImagePainter(it.pictureUrl)
+                } ?: painterResource(R.drawable.ic_launcher_background),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .padding(start = 16.dp)
@@ -78,6 +83,13 @@ fun Header(name: String) {
 @Composable
 fun HeaderPreview() {
     FinanceAppTheme {
-        Header("Victor Prado")
+        Header(
+            UserDTO(
+                fullName = "Victor",
+                email = "a@a.com",
+                pictureUrl = "",
+                accessToken = ""
+            )
+        )
     }
 }
