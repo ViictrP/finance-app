@@ -75,6 +75,7 @@ class ApiService {
                 invoiceClosingDay = creditCard.invoiceClosingDay,
                 color = creditCard.color.toString(),
                 invoices = mapInvoiceDTO(creditCard.invoices ?: emptyList()),
+                number = creditCard.number.toString(),
                 totalInvoiceAmount = creditCard.totalInvoiceAmount ?: BigDecimal.ZERO
             )
         }

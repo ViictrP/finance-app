@@ -1,3 +1,23 @@
 extend type Query {
-    findCreditCards: [Int]
+    findInvoice(creditCardId: Int, yearMonth: YearMonth): InvoiceDTO
+}
+
+type CreditCardDTO {
+    id: Int!
+    userId: ID!
+    title: String!
+    description: String!
+    invoiceClosingDay: Int!
+    totalInvoiceAmount: BigDecimal
+    color: String
+    number: String
+    invoices: [InvoiceDTO]
+}
+
+type InvoiceDTO {
+    id: Int!
+    creditCardId: Int!
+    transactions: [TransactionDTO]
+    isClosed: Boolean
+    yearMonth: YearMonth
 }

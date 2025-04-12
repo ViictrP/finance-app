@@ -4,9 +4,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.viictrp.financeapp.ui.screens.main.CreditCardFormScreen
-import com.viictrp.financeapp.ui.screens.main.CreditCardScreen
+import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardFormScreen
+import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardScreen
 import com.viictrp.financeapp.ui.screens.main.balance.BalanceScreen
+import com.viictrp.financeapp.ui.screens.main.creditcard.invoice.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.main.home.HomeScreen
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
@@ -26,6 +27,9 @@ fun NavGraphBuilder.mainGraph(
         }
         composable("credit_card_form") {
             CreditCardFormScreen(navController, balanceModel)
+        }
+        composable("invoice/{creditCardId}") { backStackEntry ->
+            InvoiceScreen(backStackEntry.arguments?.getString("creditCardId").toString(), balanceModel)
         }
     }
 }

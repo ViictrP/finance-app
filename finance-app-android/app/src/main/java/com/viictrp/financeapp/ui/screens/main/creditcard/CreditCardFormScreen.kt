@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens.main
+package com.viictrp.financeapp.ui.screens.main.creditcard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillAlpha="0.3" android:fillColor="@color/black" android:fillType="evenOdd" android:pathData="M19,11C20.047,11 20.917,11.806 20.995,12.85L21,13L21,19C21,20.047 20.194,20.917 19.15,20.995L19,21L15,21C13.953,21 13.083,20.194 13.005,19.15L13,19L13,13C13,11.953 13.806,11.083 14.85,11.005L15,11L19,11Z" android:strokeAlpha="0.3"/>
+      
+    <path android:fillAlpha="0.3" android:fillColor="@color/black" android:fillType="evenOdd" android:pathData="M19,3C20.105,3 21,3.895 21,5L21,7C21,8.105 20.105,9 19,9L15,9C13.895,9 13,8.105 13,7L13,5C13,3.895 13.895,3 15,3L19,3Z" android:strokeAlpha="0.3"/>
+      
+    <path android:fillColor="@color/black" android:fillType="evenOdd" android:pathData="M9,3C10.105,3 11,3.895 11,5L11,11C11,12.105 10.105,13 9,13L5,13C3.895,13 3,12.105 3,11L3,5C3,3.895 3.895,3 5,3L9,3Z"/>
+      
+    <path android:fillAlpha="0.3" android:fillColor="@color/black" android:fillType="evenOdd" android:pathData="M9,15C10.105,15 11,15.895 11,17L11,19C11,20.105 10.105,21 9,21L5,21C3.895,21 3,20.105 3,19L3,17C3,15.895 3.895,15 5,15L9,15Z" android:strokeAlpha="0.3"/>
+    
+</vector>

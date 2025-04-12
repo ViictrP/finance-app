@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.main.balance
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
     val balance by viewModel.balance.collectAsState()
@@ -85,7 +87,7 @@ fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
             Spacer(modifier = spacing)
         }
 
-        item {
+        stickyHeader {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -206,6 +208,7 @@ fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .animateItem()
             ) {
                 TransactionCard(transactions[index])
             }

@@ -1,6 +1,8 @@
 package com.victor.financeapp.backend.domain.model.creditcard;
 
+import com.victor.financeapp.backend.domain.exception.InvoiceNotFoundException;
 import com.victor.financeapp.backend.domain.model.common.Transaction;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.Assert;
@@ -25,6 +27,7 @@ public class CreditCard {
     private final Long userId;
     private BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
 
+    @Builder
     public CreditCard(Long id, String title, String number, Integer invoiceClosingDay, Long userId) {
         Assert.hasText(title, "The credit card title is required");
         Assert.hasText(number, "The credit card number is required");
@@ -72,5 +75,11 @@ public class CreditCard {
                 .map(Invoice::calculateTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return totalInvoiceAmount;
+    }
+
+    public Invoice getInvoice(YearMonth yearMonth) {
+        return invoices.stream().filter(invoice -> yearMonth.equals(invoice.getYearMonth()))
+                .findFirst()
+                .orElseThrow(() -> new InvoiceNotFoundException(id, yearMonth));
     }
 }

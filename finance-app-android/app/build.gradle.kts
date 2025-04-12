@@ -90,4 +90,5 @@ dependencies {
     implementation(libs.play.services.basement)
     implementation(libs.coil.compose)
     implementation(libs.androidx.foundation)
+    implementation(libs.navigation.compose)
 }

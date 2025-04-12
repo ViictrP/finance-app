@@ -5,6 +5,7 @@ import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,6 +17,12 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
     @Override
     public Flux<CreditCard> findUserCreditCards(Long userId) {
         return repository.findByUserIdAndDeletedIsFalse(userId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<CreditCard> findCreditCard(Long creditCardId) {
+        return repository.findById(creditCardId)
                 .map(mapper::toDomain);
     }
 }
