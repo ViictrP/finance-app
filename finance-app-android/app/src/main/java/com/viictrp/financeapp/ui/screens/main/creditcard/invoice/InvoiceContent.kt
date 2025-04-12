@@ -22,6 +22,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,14 +66,24 @@ internal fun InvoiceContent(
     val invoice by balanceViewModel.invoice.collectAsState()
     var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
     val coroutineScope = rememberCoroutineScope()
-    val transactions = remember(invoice) {
-        invoice?.transactions ?: creditCard?.invoices[0]?.transactions ?: emptyList()
+    var transactions = remember(invoice) {
+        invoice?.transactions ?: emptyList()
     }
 
     LaunchedEffect(refreshing) {
         if (!refreshing && creditCard != null) {
             selectedYearMonth = YearMonth.now()
             balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        balanceViewModel.invoice.value = creditCard?.invoices?.get(0)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            balanceViewModel.invoice.value = null
         }
     }
 
@@ -160,20 +171,21 @@ internal fun InvoiceContent(
                 }
                 Column(
                     horizontalAlignment = Alignment.End,
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .animateItem()
                 ) {
-                    Text(
-                        text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                            .format(
-                                transactions
-                                    .map { it.amount }
-                                    .fold(BigDecimal.ZERO) { acc, value -> acc + value }
-                                    ?: BigDecimal(
-                                        0.0
-                                    )),
-                        fontWeight = FontWeight.Normal,
-                        style = LocalTextStyle.current.copy(fontSize = 20.sp)
-                    )
+                    invoice?.let {
+                        Text(
+                            text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                .format(
+                                    transactions
+                                        .map { it.amount }
+                                        .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
+                            fontWeight = FontWeight.Normal,
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        )
+                    }
                 }
             }
         }
