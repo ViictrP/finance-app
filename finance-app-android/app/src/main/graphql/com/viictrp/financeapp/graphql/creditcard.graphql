@@ -1,0 +1,21 @@
+query FindInvoice($creditCardId: Int!, $yearMonth: YearMonth!) {
+    findInvoice(creditCardId: $creditCardId, yearMonth: $yearMonth) {
+        id
+        creditCardId
+        isClosed
+        yearMonth
+        transactions {
+            id
+            description
+            amount
+            type
+            date
+            category
+            isInstallment
+            installmentAmount
+            installmentId
+            installmentNumber
+            creditCardId
+        }
+    }
+}

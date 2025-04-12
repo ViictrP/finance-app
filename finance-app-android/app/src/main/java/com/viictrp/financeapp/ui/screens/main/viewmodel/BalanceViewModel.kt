@@ -3,6 +3,7 @@ package com.viictrp.financeapp.ui.screens.main.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viictrp.financeapp.application.dto.BalanceDTO
+import com.viictrp.financeapp.application.dto.InvoiceDTO
 import com.viictrp.financeapp.application.service.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,9 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     private val _balance = MutableStateFlow<BalanceDTO?>(null)
     val balance = _balance
 
+    private val _invoice = MutableStateFlow<InvoiceDTO?>(null)
+    val invoice = _invoice
+
     private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
     val currentBalance = _currentBalance
 
@@ -24,6 +28,10 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
         if (defineCurrent) {
             setCurrentBalance(balance.value)
         }
+    }
+
+    suspend fun getInvoice(creditCardId: Long, yearMonth: YearMonth) {
+        _invoice.value = apiService.getInvoice(creditCardId, yearMonth)
     }
 
     fun setCurrentBalance(balance: BalanceDTO?) {
