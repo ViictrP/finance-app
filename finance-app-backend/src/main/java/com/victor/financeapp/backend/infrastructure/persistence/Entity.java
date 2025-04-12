@@ -2,6 +2,7 @@ package com.victor.financeapp.backend.infrastructure.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public abstract class Entity<ID extends Serializable> {
+    @Id
     private ID id;
     private LocalDateTime createdAt;
     private LocalDateTime modificatedAt;

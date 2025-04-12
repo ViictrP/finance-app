@@ -34,18 +34,6 @@ type TransactionDTO {
     creditCardId: Int
 }
 
-type CreditCardDTO {
-    id: Int!
-    userId: ID!
-    title: String!
-    description: String!
-    invoiceClosingDay: Int!
-    totalInvoiceAmount: BigDecimal
-    color: String
-    number: String
-    invoices: [InvoiceDTO]
-}
-
 type MonthClosureDTO {
     month: String!
     year: Int!
@@ -54,10 +42,4 @@ type MonthClosureDTO {
     expenses: BigDecimal!
     index: Int!
     finalUsdToBRL: BigDecimal!
-}
-
-type InvoiceDTO {
-    id: Int!
-    creditCardId: Int!
-    transactions: [TransactionDTO]
 }
