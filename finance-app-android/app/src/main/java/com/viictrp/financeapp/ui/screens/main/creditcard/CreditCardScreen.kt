@@ -35,14 +35,15 @@ import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CardCarousel
 import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
+import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.YearMonth
 import java.util.Locale
 
 data class CreditCardCarouselItem(
@@ -151,10 +152,7 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                         )
                         Text(
                             "Lançamentos da fatura de ${
-                                SimpleDateFormat(
-                                    "MMMM",
-                                    Locale.getDefault()
-                                ).format(Calendar.getInstance().time)
+                                YearMonth.now().toFormattedYearMonth("MMMM")
                             }",
                             fontWeight = FontWeight.Normal
                         )

@@ -19,10 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -40,25 +37,24 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
-    val balance by viewModel.balance.collectAsState()
+fun BalanceContent(
+    balanceViewModel: BalanceViewModel,
+    contentPadding: PaddingValues
+) {
     val spacing = Modifier.height(48.dp)
 
-    var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
+    val balance by balanceViewModel.balance.collectAsState()
+    val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
+    val loading by balanceViewModel.loading.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
 
-    val recurringExpenses = remember(balance) {
-        balance?.recurringExpenses ?: emptyList()
-    }
-
-    val transactions = remember(balance) {
-        balance?.transactions ?: emptyList()
-    }
+    val recurringExpenses = balance?.recurringExpenses ?: emptyList()
+    val transactions = balance?.transactions ?: emptyList()
 
     LazyColumn(
         contentPadding = contentPadding,
@@ -93,129 +89,131 @@ fun BalanceContent(viewModel: BalanceViewModel, contentPadding: PaddingValues) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                MonthPicker(selectedYearMonth) { yearMonth ->
-                    selectedYearMonth = yearMonth
+                MonthPicker(selectedYearMonth, loading) { yearMonth ->
+                    balanceViewModel.updateYearMonth(yearMonth)
                     coroutineScope.launch {
-                        viewModel.loadBalance(selectedYearMonth)
+                        balanceViewModel.loadBalance(selectedYearMonth)
                     }
                 }
             }
         }
 
-        item {
-            Spacer(modifier = spacing)
-        }
-
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                balance?.let {
-                    SummaryCard(it.salary, it.expenses, it.available)
-                }
+        if (!loading) {
+            item {
+                Spacer(modifier = spacing)
             }
-        }
 
-        item {
-            Spacer(modifier = spacing)
-        }
-
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    "Impacto nos gastos",
-                    style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                    fontWeight = FontWeight.Bold,
+            item {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.size(24.dp))
-                balance?.let {
-                    ExpensesCarousel(it.creditCards, it.salary)
+                ) {
+                    balance?.let {
+                        SummaryCard(it.salary, it.expenses, it.available)
+                    }
                 }
             }
-        }
 
-        item {
-            Spacer(modifier = spacing)
-        }
+            item {
+                Spacer(modifier = spacing)
+            }
 
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp)
-            ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        "Impacto nos gastos",
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.size(24.dp))
+                    balance?.let {
+                        ExpensesCarousel(it.creditCards, it.salary)
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = spacing)
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp)
+                ) {
+                    Text(
+                        "Compras",
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            item {
                 Text(
-                    "Compras",
-                    style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                    fontWeight = FontWeight.Bold
+                    "Gastos Fixos",
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
+                    style = LocalTextStyle.current.copy(
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
                 )
             }
-        }
 
-        item {
-            Text(
-                "Gastos Fixos",
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 24.dp),
-                style = LocalTextStyle.current.copy(
-                    fontSize = 20.sp,
-                    fontStyle = FontStyle.Italic
-                ),
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-            )
-        }
-
-        items(recurringExpenses.size) { index ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            ) {
-                TransactionCard(recurringExpenses[index])
+            items(recurringExpenses.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    TransactionCard(recurringExpenses[index])
+                }
             }
-        }
 
-        item {
-            Spacer(modifier = spacing)
-        }
-
-        item {
-            Text(
-                "Compras",
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 24.dp),
-                style = LocalTextStyle.current.copy(
-                    fontSize = 20.sp,
-                    fontStyle = FontStyle.Italic
-                ),
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-            )
-        }
-
-        items(transactions.size) { index ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .animateItem()
-            ) {
-                TransactionCard(transactions[index])
+            item {
+                Spacer(modifier = spacing)
             }
-        }
 
-        item {
-            Spacer(modifier = Modifier.height(100.dp))
+            item {
+                Text(
+                    "Compras",
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
+                    style = LocalTextStyle.current.copy(
+                        fontSize = 20.sp,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                )
+            }
+
+            items(transactions.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .animateItem()
+                ) {
+                    TransactionCard(transactions[index])
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
+            }
         }
     }
 }

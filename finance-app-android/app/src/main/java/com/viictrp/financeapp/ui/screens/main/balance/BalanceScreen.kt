@@ -22,9 +22,9 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BalanceScreen(viewModel: BalanceViewModel) {
-    var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
     val coroutineScope = rememberCoroutineScope()
 
+    //TODO trocar todos por loading do viewBalance
     var refreshing by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -35,8 +35,8 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
             onRefresh = {
                 coroutineScope.launch {
                     refreshing = true
-                    selectedYearMonth = YearMonth.now()
-                    viewModel.loadBalance(selectedYearMonth, defineCurrent = true)
+                    viewModel.updateYearMonth(YearMonth.now())
+                    viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
                     refreshing = false
                 }
             },
