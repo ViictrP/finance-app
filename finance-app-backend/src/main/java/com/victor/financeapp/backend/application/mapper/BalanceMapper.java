@@ -5,6 +5,6 @@ import com.victor.financeapp.backend.domain.model.user.Balance;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {CreditCardMapper.class, TransactionMapper.class})
-public interface UserMapper {
-    UserBalanceDTO toBalanceDTO(Balance balance);
+public interface BalanceMapper {
+    UserBalanceDTO toDTO(Balance balance);
 }

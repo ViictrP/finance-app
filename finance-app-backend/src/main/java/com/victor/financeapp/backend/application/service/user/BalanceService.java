@@ -4,7 +4,9 @@ import com.victor.financeapp.backend.domain.model.user.Balance;
 import com.victor.financeapp.backend.domain.model.user.User;
 import reactor.core.publisher.Mono;
 
-public interface UserDomainService {
+import java.time.YearMonth;
 
-    Mono<Balance> calculateUserBalance(User user);
+public interface BalanceService {
+
+    Mono<Balance> loadUserBalance(User user, YearMonth yearMonth);
 }

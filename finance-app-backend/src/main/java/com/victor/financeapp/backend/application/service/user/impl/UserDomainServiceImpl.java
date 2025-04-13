@@ -1,51 +1,25 @@
 package com.victor.financeapp.backend.application.service.user.impl;
 
 import com.victor.financeapp.backend.application.service.currency.CurrencyService;
-import com.victor.financeapp.backend.application.service.user.InvoiceDomainService;
 import com.victor.financeapp.backend.application.service.user.UserDomainService;
 import com.victor.financeapp.backend.domain.model.user.Balance;
 import com.victor.financeapp.backend.domain.model.user.User;
-import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
-import com.victor.financeapp.backend.domain.repository.MonthClosureRepository;
-import com.victor.financeapp.backend.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-
-import java.time.YearMonth;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDomainServiceImpl implements UserDomainService {
 
-    private final CreditCardRepository creditCardRepository;
-    private final TransactionRepository transactionRepository;
-    private final MonthClosureRepository monthClosureRepository;
-    private final InvoiceDomainService invoiceDomainService;
-
     private final CurrencyService currencyService;
-
-    public Mono<User> loadUserData(User user, YearMonth yearMonth) {
-        return Mono.zip(creditCardRepository.findUserCreditCards(user.getId())
-                                .flatMap(creditCard -> invoiceDomainService.populateCreditCardInvoice(creditCard, yearMonth))
-                                .collectList(),
-                        transactionRepository.findUserTransactionsOn(user.getId(), yearMonth).collectList(),
-                        monthClosureRepository.findUsersLastFiveMonthClosures(user.getId()).collectList(),
-                        transactionRepository.findAllRecurringExpenses(user.getId()).collectList())
-                .doOnNext(tuple -> {
-                    user.addCreditCards(tuple.getT1());
-                    user.addTransactions(tuple.getT2());
-                    user.addMonthClosures(tuple.getT3());
-                    user.addRecurringExpenses(tuple.getT4());
-                })
-                .thenReturn(user);
-    }
 
     @Override
     public Mono<Balance> calculateUserBalance(User user) {
         return currencyService.getDollarExchangeRates()
-                .map(user::calculateBalance);
+                .doOnNext(user::calculateBalance)
+                .thenReturn(user.getBalance());
     }
 }
