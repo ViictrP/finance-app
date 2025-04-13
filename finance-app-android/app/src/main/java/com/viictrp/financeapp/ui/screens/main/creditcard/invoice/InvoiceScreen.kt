@@ -10,18 +10,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-//import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.viictrp.financeapp.ui.components.custom.PullToRefreshContainer
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
-
-//import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch
+import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
-//    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val balance = balanceViewModel.balance.collectAsState()
 
     val creditCard = remember(balance) {
@@ -35,11 +35,11 @@ fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
         PullToRefreshContainer(
             isRefreshing = refreshing,
             onRefresh = {
-//                coroutineScope.launch {
-//                    refreshing = true
-//                    viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-//                    refreshing = false
-//                }
+                coroutineScope.launch {
+                    refreshing = true
+                    balanceViewModel.getInvoice(creditCardId.toLong(), YearMonth.now())
+                    refreshing = false
+                }
             },
             state = pullRefreshState,
             modifier = Modifier.fillMaxSize(),

@@ -22,6 +22,9 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,10 +63,28 @@ internal fun InvoiceContent(
     balanceViewModel: BalanceViewModel
 ) {
     val spacing = 48.dp
+    val invoice by balanceViewModel.invoice.collectAsState()
     var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
     val coroutineScope = rememberCoroutineScope()
-    val transactions = remember(creditCard) {
-        creditCard?.invoices[0]?.transactions ?: emptyList()
+    var transactions = remember(invoice) {
+        invoice?.transactions ?: emptyList()
+    }
+
+    LaunchedEffect(refreshing) {
+        if (!refreshing && creditCard != null) {
+            selectedYearMonth = YearMonth.now()
+            balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        balanceViewModel.invoice.value = creditCard?.invoices?.get(0)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            balanceViewModel.invoice.value = null
+        }
     }
 
     LazyColumn(
@@ -76,7 +97,7 @@ internal fun InvoiceContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp), Arrangement.SpaceBetween
             ) {
-                if (creditCard != null && !refreshing) {
+                if (creditCard != null) {
                     Card(
                         modifier = Modifier
                             .height(180.dp),
@@ -113,7 +134,9 @@ internal fun InvoiceContent(
                 MonthPicker(selectedYearMonth) { yearMonth ->
                     selectedYearMonth = yearMonth
                     coroutineScope.launch {
-                        balanceViewModel.loadBalance(selectedYearMonth)
+                        creditCard?.let {
+                            balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
+                        }
                     }
                 }
             }
@@ -148,14 +171,21 @@ internal fun InvoiceContent(
                 }
                 Column(
                     horizontalAlignment = Alignment.End,
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .animateItem()
                 ) {
-                    Text(
-                        text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                            .format(creditCard?.totalInvoiceAmount ?: BigDecimal(0.0)),
-                        fontWeight = FontWeight.Normal,
-                        style = LocalTextStyle.current.copy(fontSize = 20.sp)
-                    )
+                    invoice?.let {
+                        Text(
+                            text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                .format(
+                                    transactions
+                                        .map { it.amount }
+                                        .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
+                            fontWeight = FontWeight.Normal,
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        )
+                    }
                 }
             }
         }

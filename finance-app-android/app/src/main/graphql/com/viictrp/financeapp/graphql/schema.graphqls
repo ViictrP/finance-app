@@ -7,6 +7,7 @@ schema {
 
 type Query {
     getBalance(yearMonth: YearMonth!): BalanceDTO
+    findInvoice(creditCardId: Int!, yearMonth: YearMonth!): InvoiceDTO
 }
 
 enum TransactionType {
@@ -44,6 +45,8 @@ type InvoiceDTO {
     id: ID!
     creditCardId: ID!
     transactions: [TransactionDTO]!
+    isClosed: Boolean
+    yearMonth: YearMonth
 }
 
 type BalanceDTO {

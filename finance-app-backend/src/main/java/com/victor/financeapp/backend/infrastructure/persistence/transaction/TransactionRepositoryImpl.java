@@ -31,7 +31,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId) {
-        return repository.findByInvoiceIdAndDeletedIsFalse(invoiceId)
+        return repository.findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(invoiceId)
                 .map(mapper::toDomain);
     }
 }
