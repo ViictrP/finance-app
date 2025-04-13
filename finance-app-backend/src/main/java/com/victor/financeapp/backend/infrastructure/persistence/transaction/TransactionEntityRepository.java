@@ -18,10 +18,11 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
                         AND EXTRACT(YEAR FROM date) = :year
                         AND deleted IS FALSE
                         AND delete_date IS NULL
+                        ORDER BY date DESC
                     """)
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
 
-    Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalse(Long invoiceId);
+    Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(Long invoiceId);
 
     @Query(
             """
