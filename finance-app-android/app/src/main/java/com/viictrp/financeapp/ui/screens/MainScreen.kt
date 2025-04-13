@@ -34,9 +34,10 @@ fun MainScreen() {
     val balanceViewModel = hiltViewModel<BalanceViewModel>()
 
     val user by authViewModel.user.collectAsState()
+    val balance by balanceViewModel.balance.collectAsState()
 
     LaunchedEffect(currentDestination) {
-        if (currentDestination == "home" && balanceViewModel.balance.value == null) {
+        if (currentDestination == "home" && balance == null) {
             balanceViewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         }
     }

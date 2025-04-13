@@ -17,7 +17,7 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     val balance = _balance
 
     private val _invoice = MutableStateFlow<InvoiceDTO?>(null)
-    val invoice = _invoice
+    val selectedInvoice = _invoice
 
     private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
     val currentBalance = _currentBalance
@@ -48,7 +48,7 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     }
 
     fun setInvoice(creditCard: CreditCardDTO?) {
-        invoice.value = creditCard?.invoices?.getOrNull(0)
+        selectedInvoice.value = creditCard?.invoices?.getOrNull(0)
     }
 
     fun updateYearMonth(yearMonth: YearMonth) {
@@ -57,5 +57,10 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
 
     fun setLoading(loading: Boolean) {
         _loading.value = loading
+    }
+
+    fun clear() {
+        selectedInvoice.value = null
+        selectedYearMonth.value = YearMonth.now()
     }
 }

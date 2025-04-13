@@ -22,6 +22,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,7 +60,7 @@ internal fun InvoiceContent(
     balanceViewModel: BalanceViewModel
 ) {
     val spacing = 48.dp
-    val invoice by balanceViewModel.invoice.collectAsState()
+    val invoice by balanceViewModel.selectedInvoice.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
 
@@ -69,6 +70,12 @@ internal fun InvoiceContent(
 
     LaunchedEffect(creditCard) {
         balanceViewModel.setInvoice(creditCard)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            balanceViewModel.clear()
+        }
     }
 
     LazyColumn(

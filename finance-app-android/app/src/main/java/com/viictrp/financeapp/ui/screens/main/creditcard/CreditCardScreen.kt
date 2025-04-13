@@ -36,7 +36,6 @@ import com.viictrp.financeapp.ui.components.CardCarousel
 import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
-import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
