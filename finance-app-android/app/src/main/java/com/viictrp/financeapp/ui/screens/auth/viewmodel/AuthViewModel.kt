@@ -18,7 +18,6 @@ class AuthViewModel @Inject constructor(private val authManager: AuthManager) : 
     val isAuthenticated: StateFlow<Boolean?> = _isAuthenticated
 
     private val _loading = MutableStateFlow(true)
-    val loading: StateFlow<Boolean> = _loading
 
     private val _user = MutableStateFlow<UserDTO?>(null)
     val user = _user

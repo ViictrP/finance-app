@@ -22,14 +22,10 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -45,46 +41,34 @@ import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.colorMap
+import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
+import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
-import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun InvoiceContent(
     creditCard: CreditCardDTO?,
-    refreshing: Boolean,
     padding: PaddingValues,
     balanceViewModel: BalanceViewModel
 ) {
     val spacing = 48.dp
     val invoice by balanceViewModel.invoice.collectAsState()
-    var selectedYearMonth by remember { mutableStateOf(YearMonth.now()) }
+    val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
+    val loading by balanceViewModel.loading.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
-    var transactions = remember(invoice) {
-        invoice?.transactions ?: emptyList()
-    }
 
-    LaunchedEffect(refreshing) {
-        if (!refreshing && creditCard != null) {
-            selectedYearMonth = YearMonth.now()
-            balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
-        }
-    }
+    val transactions = invoice?.transactions ?: emptyList()
 
-    LaunchedEffect(Unit) {
-        balanceViewModel.invoice.value = creditCard?.invoices?.get(0)
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            balanceViewModel.invoice.value = null
-        }
+    LaunchedEffect(creditCard) {
+        balanceViewModel.setInvoice(creditCard)
     }
 
     LazyColumn(
@@ -131,8 +115,8 @@ internal fun InvoiceContent(
                     .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 16.dp)
             ) {
-                MonthPicker(selectedYearMonth) { yearMonth ->
-                    selectedYearMonth = yearMonth
+                MonthPicker(selectedYearMonth, loading) { yearMonth ->
+                    balanceViewModel.updateYearMonth(yearMonth)
                     coroutineScope.launch {
                         creditCard?.let {
                             balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
@@ -165,7 +149,10 @@ internal fun InvoiceContent(
                         style = LocalTextStyle.current.copy(fontSize = 20.sp)
                     )
                     Text(
-                        "Lançamentos da fatura de ${selectedYearMonth.month}",
+                        "Lançamentos da fatura de ${
+                            selectedYearMonth.toLong()
+                                .toFormattedYearMonth("MMMM")
+                        }",
                         fontWeight = FontWeight.Normal
                     )
                 }
@@ -190,14 +177,16 @@ internal fun InvoiceContent(
             }
         }
 
-        items(transactions.size) { index ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .animateItem()
-            ) {
-                TransactionCard(transactions[index])
+        if (!loading) {
+            items(transactions.size) { index ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .animateItem()
+                ) {
+                    TransactionCard(transactions[index])
+                }
             }
         }
 
@@ -232,6 +221,6 @@ fun InvoiceContentPreview() {
             invoiceClosingDay = 10,
             totalInvoiceAmount = BigDecimal(1000),
             invoices = emptyList()
-        ), false, PaddingValues(), balanceViewModel
+        ), PaddingValues(), balanceViewModel
     )
 }

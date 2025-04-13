@@ -19,38 +19,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
+import com.viictrp.financeapp.ui.components.extension.toLong
+import com.viictrp.financeapp.ui.components.extension.toYearMonth
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import java.time.Instant
 import java.time.YearMonth
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MonthPicker(initial: YearMonth?, onMonthChanged: (YearMonth) -> Unit) {
-    var selectedDate by remember {
-        mutableStateOf(initial ?: YearMonth.now())
+fun MonthPicker(
+    initial: YearMonth?,
+    refreshing: Boolean = false,
+    onMonthChanged: (YearMonth) -> Unit
+) {
+
+    var selectedMilis: Long = remember(initial) {
+        val initialDate = initial ?: YearMonth.now()
+        initialDate.toLong()
     }
+
     val openDialog = remember { mutableStateOf(false) }
 
-    LaunchedEffect(initial) {
-        selectedDate = initial ?: YearMonth.now()
-    }
-
     if (openDialog.value) {
-        val datePickerState = rememberDatePickerState()
+        val datePickerState = rememberDatePickerState(selectedMilis)
+
         val confirmEnabled = remember {
             derivedStateOf { datePickerState.selectedDateMillis != null }
         }
@@ -63,12 +63,8 @@ fun MonthPicker(initial: YearMonth?, onMonthChanged: (YearMonth) -> Unit) {
                     onClick = {
                         openDialog.value = false
                         datePickerState.selectedDateMillis?.let {
-                            val yearMonth = Instant.ofEpochMilli(it)
-                                .atZone(ZoneId.systemDefault())  // Convert to ZonedDateTime
-                                .toLocalDate()                   // Extract LocalDate
-                                .let { YearMonth.from(it) }
-                            selectedDate = yearMonth
-                            onMonthChanged(yearMonth)
+                            selectedMilis = it
+                            onMonthChanged(it.toYearMonth())
                         }
                     },
                     enabled = confirmEnabled.value
@@ -93,9 +89,7 @@ fun MonthPicker(initial: YearMonth?, onMonthChanged: (YearMonth) -> Unit) {
     }
 
     OutlinedTextField(
-        value = selectedDate?.format(
-            DateTimeFormatter.ofPattern("MMMM, yyyy", Locale.getDefault())
-        ) ?: "Selecione uma data",
+        value = if (refreshing) "carregando..." else selectedMilis.toFormattedYearMonth(),
         onValueChange = {},
         readOnly = true,
         modifier = Modifier.fillMaxWidth(),

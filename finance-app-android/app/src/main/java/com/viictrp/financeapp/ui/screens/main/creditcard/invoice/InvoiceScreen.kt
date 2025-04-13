@@ -37,6 +37,7 @@ fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
             onRefresh = {
                 coroutineScope.launch {
                     refreshing = true
+                    balanceViewModel.updateYearMonth(YearMonth.now())
                     balanceViewModel.getInvoice(creditCardId.toLong(), YearMonth.now())
                     refreshing = false
                 }
@@ -44,7 +45,7 @@ fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
             state = pullRefreshState,
             modifier = Modifier.fillMaxSize(),
             content = {
-                InvoiceContent(creditCard, refreshing, padding, balanceViewModel)
+                InvoiceContent(creditCard, padding, balanceViewModel)
             }
         )
     }

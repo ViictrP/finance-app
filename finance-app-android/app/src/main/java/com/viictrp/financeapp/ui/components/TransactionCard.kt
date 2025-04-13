@@ -71,11 +71,20 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
                         }
                     }
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text(
-                        transaction.description,
-                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
+
+                    if (transaction.isInstallment) {
+                        Text(
+                            text = "${transaction.description} (${transaction.installmentNumber}/${transaction.installmentAmount})",
+                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    } else {
+                        Text(
+                            transaction.description,
+                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
