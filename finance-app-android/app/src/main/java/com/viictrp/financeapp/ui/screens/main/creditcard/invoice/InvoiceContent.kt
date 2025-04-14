@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -69,6 +70,7 @@ internal fun SharedTransitionScope.InvoiceContent(
     val coroutineScope = rememberCoroutineScope()
 
     val transactions = invoice?.transactions ?: emptyList()
+    val animationDuration = 200
 
     LaunchedEffect(creditCard) {
         balanceViewModel.setInvoice(creditCard)
@@ -96,7 +98,10 @@ internal fun SharedTransitionScope.InvoiceContent(
                         modifier = Modifier
                             .sharedElement(
                                 state = rememberSharedContentState(key = creditCard?.id.toString()),
-                                animatedVisibilityScope = animatedVisibilityScope
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = {_,_ ->
+                                    tween(durationMillis = animationDuration)
+                                }
                             )
                             .sharedCardStyle(
                                 color = colorMap[creditCard?.color] ?: Secondary,
@@ -104,7 +109,7 @@ internal fun SharedTransitionScope.InvoiceContent(
                                 height = 180.dp
                             )
                     ) {
-                        CarouselCardContent(getItem(creditCard), animatedVisibilityScope)
+                        CarouselCardContent(getItem(creditCard), animatedVisibilityScope, animationDuration)
                     }
                 }
             }
@@ -160,7 +165,10 @@ internal fun SharedTransitionScope.InvoiceContent(
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
                         modifier = Modifier.sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "${creditCard?.id}__title"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
                         )
                     )
                     Text(
@@ -171,7 +179,10 @@ internal fun SharedTransitionScope.InvoiceContent(
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_month"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
                         )
                     )
                 }
@@ -192,7 +203,10 @@ internal fun SharedTransitionScope.InvoiceContent(
                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
                             modifier = Modifier.sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_total"),
-                                animatedVisibilityScope = animatedVisibilityScope
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = {_,_ ->
+                                    tween(durationMillis = animationDuration)
+                                }
                             )
                         )
                     }

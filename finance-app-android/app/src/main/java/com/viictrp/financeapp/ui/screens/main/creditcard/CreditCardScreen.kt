@@ -3,6 +3,7 @@ package com.viictrp.financeapp.ui.screens.main.creditcard
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -121,7 +122,7 @@ fun SharedTransitionScope.CreditCardScreen(
                             )
                         },
                         sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
                     )
                 }
 
@@ -148,7 +149,10 @@ fun SharedTransitionScope.CreditCardScreen(
                                 style = LocalTextStyle.current.copy(fontSize = 20.sp),
                                 modifier = Modifier.sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}__title"),
-                                    animatedVisibilityScope = animatedVisibilityScope
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = {_,_ ->
+                                        tween(durationMillis = 200)
+                                    }
                                 )
                             )
                             Text(
@@ -158,7 +162,10 @@ fun SharedTransitionScope.CreditCardScreen(
                                 fontWeight = FontWeight.Normal,
                                 modifier = Modifier.sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_month"),
-                                    animatedVisibilityScope = animatedVisibilityScope
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = {_,_ ->
+                                        tween(durationMillis = 200)
+                                    }
                                 )
                             )
                         }
@@ -190,7 +197,10 @@ fun SharedTransitionScope.CreditCardScreen(
                                 modifier = Modifier
                                     .sharedBounds(
                                         sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_total"),
-                                        animatedVisibilityScope = animatedVisibilityScope
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        boundsTransform = {_,_ ->
+                                            tween(durationMillis = 200)
+                                        }
                                     )
                             )
                         }

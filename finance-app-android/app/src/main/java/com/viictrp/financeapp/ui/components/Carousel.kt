@@ -5,6 +5,7 @@ package com.viictrp.financeapp.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,7 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
     val onPageChangedState by rememberUpdatedState(onPageChanged)
 
     val shape = MaterialTheme.shapes.medium
+    val animationDuration = 200
 
     LaunchedEffect(pagerState.settledPage) {
         if (items.isNotEmpty()) {
@@ -98,6 +100,9 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
                     .sharedElement(
                         state = rememberSharedContentState(key = item.getKey().toString()),
                         animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = {_,_ ->
+                            tween(durationMillis = animationDuration)
+                        }
                     )
                     .sharedCardStyle(
                         color = colorMap[item.getColor()] ?: Secondary,
@@ -105,7 +110,7 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
                         height = 180.dp
                     )
             ) {
-                CarouselCardContent(item, animatedVisibilityScope)
+                CarouselCardContent(item, animatedVisibilityScope, animationDuration)
             }
         }
     }
@@ -114,7 +119,8 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
 @Composable
 fun SharedTransitionScope.CarouselCardContent(
     item: CarouselItem,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    animationDuration: Int
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
@@ -128,7 +134,10 @@ fun SharedTransitionScope.CarouselCardContent(
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
                 modifier = Modifier.sharedBounds(
                     sharedContentState = rememberSharedContentState(key = "${item.getKey()}_title"),
-                    animatedVisibilityScope
+                    animatedVisibilityScope,
+                    boundsTransform = {_,_ ->
+                        tween(durationMillis = animationDuration)
+                    }
                 )
             )
             IconButton(onClick = {}) {
@@ -137,7 +146,10 @@ fun SharedTransitionScope.CarouselCardContent(
                     modifier = Modifier
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "${item.getKey()}_title_icon"),
-                            animatedVisibilityScope
+                            animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
                         )
                         .size(24.dp),
                     contentDescription = "Select Month",
@@ -159,7 +171,10 @@ fun SharedTransitionScope.CarouselCardContent(
                     modifier = Modifier
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = "${item.getKey()}_detail_icon"),
-                            animatedVisibilityScope
+                            animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
                         )
                         .size(24.dp),
                     contentDescription = "Select Month",
@@ -171,7 +186,10 @@ fun SharedTransitionScope.CarouselCardContent(
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
                     modifier = Modifier.sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "${item.getKey()}_detail"),
-                        animatedVisibilityScope
+                        animatedVisibilityScope,
+                        boundsTransform = {_,_ ->
+                            tween(durationMillis = animationDuration)
+                        }
                     )
                 )
             }
@@ -184,7 +202,10 @@ fun SharedTransitionScope.CarouselCardContent(
                 ),
                 modifier = Modifier.sharedBounds(
                     sharedContentState = rememberSharedContentState(key = "${item.getKey()}_description"),
-                    animatedVisibilityScope
+                    animatedVisibilityScope,
+                    boundsTransform = {_,_ ->
+                        tween(durationMillis = animationDuration)
+                    }
                 )
             )
         }
