@@ -91,23 +91,30 @@ internal fun SharedTransitionScope.InvoiceContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp), Arrangement.SpaceBetween
             ) {
-                if (creditCard != null) {
-                    Card(
+                Card(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = creditCard?.id.toString()),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                        .height(180.dp),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = colorMap[creditCard?.color] ?: Secondary
+                    )
+                ) {
+                    Column(
                         modifier = Modifier
                             .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = creditCard.id.toString()),
-                                animatedVisibilityScope = animatedVisibilityScope
+                                sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_content"),
+                                animatedVisibilityScope
                             )
-                            .height(180.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorMap[creditCard.color] ?: Secondary
-                        )
+                            .padding(horizontal = 16.dp)
                     ) {
-                        CarouselCardContent(getItem(creditCard))
+                        CarouselCardContent(getItem(creditCard), animatedVisibilityScope)
                     }
                 }
             }
@@ -160,14 +167,22 @@ internal fun SharedTransitionScope.InvoiceContent(
                     Text(
                         text = creditCard?.title ?: "",
                         fontWeight = FontWeight.Bold,
-                        style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}__title"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
                     )
                     Text(
                         "Lançamentos da fatura de ${
                             selectedYearMonth.toLong()
                                 .toFormattedYearMonth("MMMM")
                         }",
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_month"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
                     )
                 }
                 Column(
@@ -184,7 +199,11 @@ internal fun SharedTransitionScope.InvoiceContent(
                                         .map { it.amount }
                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                             fontWeight = FontWeight.Normal,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                            modifier = Modifier.sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_total"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                         )
                     }
                 }
@@ -210,10 +229,10 @@ internal fun SharedTransitionScope.InvoiceContent(
     }
 }
 
-private fun getItem(creditCard: CreditCardDTO) = object : CarouselItem {
-    override fun getKey() = creditCard.id.toString()
-    override fun getColor() = creditCard.color
-    override fun getTitle() = creditCard.title
-    override fun getDescription() = creditCard.number
-    override fun getDetail() = creditCard.invoiceClosingDay.toString()
+private fun getItem(creditCard: CreditCardDTO?) = object : CarouselItem {
+    override fun getKey() = creditCard?.id.toString()
+    override fun getColor() = creditCard?.color ?: ""
+    override fun getTitle() = creditCard?.title ?: ""
+    override fun getDescription() = creditCard?.number ?: ""
+    override fun getDetail() = creditCard?.invoiceClosingDay.toString()
 }

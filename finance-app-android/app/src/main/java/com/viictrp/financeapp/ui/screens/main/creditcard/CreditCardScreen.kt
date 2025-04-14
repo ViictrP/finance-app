@@ -22,9 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -64,18 +62,9 @@ fun SharedTransitionScope.CreditCardScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val balance by balanceViewModel.currentBalance.collectAsState()
+    val selectedCreditCard by balanceViewModel.selectedCreditCard.collectAsState()
 
-    var selectedCardId by remember {
-        mutableStateOf(balance?.creditCards?.firstOrNull()?.id?.toString())
-    }
-
-    val selectedCreditCard = remember(selectedCardId, balance) {
-        balance?.creditCards?.find { it.id.toString() == selectedCardId }
-    }
-
-    val transactions = remember(selectedCreditCard) {
-        selectedCreditCard?.invoices?.firstOrNull()?.transactions ?: emptyList()
-    }
+    val transactions = selectedCreditCard?.invoices?.firstOrNull()?.transactions ?: emptyList()
 
     var carouselItems: List<CreditCardCarouselItem> = remember(balance) {
         balance?.creditCards
@@ -124,7 +113,11 @@ fun SharedTransitionScope.CreditCardScreen(
             item {
                 CardCarousel(
                     carouselItems,
-                    onPageChanged = { card -> selectedCardId = card.getKey() },
+                    onPageChanged = { card ->
+                        balanceViewModel.selectCreditCard(
+                            card.getKey().toLong()
+                        )
+                    },
                     cardHeight = 180.dp,
                     animatedVisibilityScope = animatedVisibilityScope
                 )
@@ -150,13 +143,21 @@ fun SharedTransitionScope.CreditCardScreen(
                         Text(
                             text = selectedCreditCard?.title ?: "",
                             fontWeight = FontWeight.Bold,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                            modifier = Modifier.sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}__title"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                         )
                         Text(
                             "Lançamentos da fatura de ${
                                 YearMonth.now().toFormattedYearMonth("MMMM")
                             }",
-                            fontWeight = FontWeight.Normal
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_month"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                         )
                     }
                     Column(
@@ -165,7 +166,7 @@ fun SharedTransitionScope.CreditCardScreen(
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.clickable { navController.navigate("invoice/$selectedCardId") }) {
+                            modifier = Modifier.clickable { navController.navigate("invoice/${selectedCreditCard?.id}") }) {
                             Text(
                                 "Ver faturas",
                                 style = LocalTextStyle.current.copy(fontSize = 18.sp),
@@ -183,7 +184,12 @@ fun SharedTransitionScope.CreditCardScreen(
                             text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
                                 .format(selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)),
                             fontWeight = FontWeight.Normal,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                            modifier = Modifier
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_total"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
                         )
                     }
                 }
