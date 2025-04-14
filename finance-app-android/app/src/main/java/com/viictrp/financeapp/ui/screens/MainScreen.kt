@@ -2,6 +2,8 @@ package com.viictrp.financeapp.ui.screens
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,6 +24,7 @@ import com.viictrp.financeapp.ui.screens.graph.mainGraph
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import java.time.YearMonth
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -55,16 +58,18 @@ fun MainScreen() {
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = "auth",
-            route = "root",
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
-            modifier = Modifier.padding(padding)
-        ) {
-            authGraph(navController, authViewModel)
-            mainGraph(navController, balanceViewModel)
+        SharedTransitionLayout {
+            NavHost(
+                navController = navController,
+                startDestination = "auth",
+                route = "root",
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                modifier = Modifier.padding(padding)
+            ) {
+                authGraph(navController, authViewModel)
+                mainGraph(navController, balanceViewModel, this@SharedTransitionLayout)
+            }
         }
     }
 }

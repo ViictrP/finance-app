@@ -1,6 +1,9 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard.invoice
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -31,12 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CarouselCardContent
 import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.MonthPicker
@@ -45,19 +45,22 @@ import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalAnimationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
-internal fun InvoiceContent(
+internal fun SharedTransitionScope.InvoiceContent(
     creditCard: CreditCardDTO?,
     padding: PaddingValues,
-    balanceViewModel: BalanceViewModel
+    balanceViewModel: BalanceViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val spacing = 48.dp
     val invoice by balanceViewModel.selectedInvoice.collectAsState()
@@ -91,6 +94,10 @@ internal fun InvoiceContent(
                 if (creditCard != null) {
                     Card(
                         modifier = Modifier
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = creditCard.id.toString()),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                             .height(180.dp),
                         border = BorderStroke(
                             1.dp,
@@ -209,25 +216,4 @@ private fun getItem(creditCard: CreditCardDTO) = object : CarouselItem {
     override fun getTitle() = creditCard.title
     override fun getDescription() = creditCard.number
     override fun getDetail() = creditCard.invoiceClosingDay.toString()
-}
-
-@Preview
-@Composable
-fun InvoiceContentPreview() {
-    val balanceViewModel: BalanceViewModel = viewModel(
-        factory = BalanceViewModelFactory(ApiService())
-    )
-
-    InvoiceContent(
-        CreditCardDTO(
-            id = 1,
-            title = "Title",
-            description = 4422.toString(),
-            color = "orange",
-            number = 4422.toString(),
-            invoiceClosingDay = 10,
-            totalInvoiceAmount = BigDecimal(1000),
-            invoices = emptyList()
-        ), PaddingValues(), balanceViewModel
-    )
 }

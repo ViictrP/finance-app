@@ -1,5 +1,8 @@
 package com.viictrp.financeapp.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,15 +59,17 @@ val colorMap = mapOf(
     "purple" to Purple
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun <T : CarouselItem> CardCarousel(
+fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
     items: List<T>,
     onPageChanged: (T) -> Unit,
     modifier: Modifier = Modifier,
     pageSpacing: Dp = (-8).dp,
     contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 64.dp),
     cardHeight: Dp = 180.dp,
-    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size })
+    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size }),
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val haptics = LocalHapticFeedback.current
     val onPageChangedState by rememberUpdatedState(onPageChanged)
@@ -91,6 +96,10 @@ fun <T : CarouselItem> CardCarousel(
 
         Card(
             modifier = Modifier
+                .sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = item.getKey()),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
                 .graphicsLayer {
                     alpha = when {
                         offset < 0f -> 1f + offset

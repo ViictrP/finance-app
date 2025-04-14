@@ -1,5 +1,8 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,21 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CardCarousel
 import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.time.YearMonth
@@ -59,8 +56,13 @@ data class CreditCardCarouselItem(
     override fun getDetail(): String = detail
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceViewModel) {
+fun SharedTransitionScope.CreditCardScreen(
+    navController: NavController,
+    balanceViewModel: BalanceViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val balance by balanceViewModel.currentBalance.collectAsState()
 
     var selectedCardId by remember {
@@ -123,7 +125,8 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                 CardCarousel(
                     carouselItems,
                     onPageChanged = { card -> selectedCardId = card.getKey() },
-                    cardHeight = 180.dp
+                    cardHeight = 180.dp,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
 
@@ -201,18 +204,5 @@ fun CreditCardScreen(navController: NavController, balanceViewModel: BalanceView
                 Spacer(modifier = Modifier.height(100.dp))
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CreditCardScreenPreview() {
-    val navController = rememberNavController()
-    val balanceViewModel: BalanceViewModel = viewModel(
-        factory = BalanceViewModelFactory(ApiService())
-    )
-
-    FinanceAppTheme {
-        CreditCardScreen(navController, balanceViewModel)
     }
 }

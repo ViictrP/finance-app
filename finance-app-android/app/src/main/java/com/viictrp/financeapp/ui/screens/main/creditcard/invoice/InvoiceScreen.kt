@@ -1,5 +1,8 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard.invoice
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,9 +21,13 @@ import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
+fun SharedTransitionScope.InvoiceScreen(
+    creditCardId: String,
+    balanceViewModel: BalanceViewModel,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val coroutineScope = rememberCoroutineScope()
     val balance = balanceViewModel.balance.collectAsState()
 
@@ -45,7 +52,7 @@ fun InvoiceScreen(creditCardId: String, balanceViewModel: BalanceViewModel) {
             state = pullRefreshState,
             modifier = Modifier.fillMaxSize(),
             content = {
-                InvoiceContent(creditCard, padding, balanceViewModel)
+                InvoiceContent(creditCard, padding, balanceViewModel, animatedVisibilityScope)
             }
         )
     }
