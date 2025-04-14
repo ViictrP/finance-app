@@ -6,9 +6,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.viictrp.financeapp.ui.screens.main.balance.BalanceScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardFormScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardScreen
-import com.viictrp.financeapp.ui.screens.main.balance.BalanceScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.invoice.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.main.home.HomeScreen
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
@@ -24,7 +24,12 @@ fun NavGraphBuilder.mainGraph(
             HomeScreen(navController, balanceModel)
         }
         composable("credit_card") {
-            sharedTransitionScope.CreditCardScreen(navController, balanceModel, this@composable)
+            sharedTransitionScope.CreditCardScreen(
+                navController,
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
         }
         composable("balance") {
             BalanceScreen(balanceModel)
@@ -33,7 +38,12 @@ fun NavGraphBuilder.mainGraph(
             CreditCardFormScreen(navController, balanceModel)
         }
         composable("invoice/{creditCardId}") { backStackEntry ->
-            sharedTransitionScope.InvoiceScreen(backStackEntry.arguments?.getString("creditCardId").toString(), balanceModel, this@composable)
+            sharedTransitionScope.InvoiceScreen(
+                backStackEntry.arguments?.getString("creditCardId").toString(),
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
         }
     }
 }

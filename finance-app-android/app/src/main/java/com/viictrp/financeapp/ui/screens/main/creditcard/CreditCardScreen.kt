@@ -59,6 +59,7 @@ data class CreditCardCarouselItem(
 fun SharedTransitionScope.CreditCardScreen(
     navController: NavController,
     balanceViewModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val balance by balanceViewModel.currentBalance.collectAsState()
@@ -81,133 +82,135 @@ fun SharedTransitionScope.CreditCardScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = padding
-        ) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row {
-                        Text(
-                            "Seus Cartões",
-                            fontWeight = FontWeight.Bold,
-                            style = LocalTextStyle.current.copy(fontSize = 24.sp)
-                        )
-                        Text(
-                            " (${carouselItems.size})",
-                            fontWeight = FontWeight.Normal,
-                            style = LocalTextStyle.current.copy(fontSize = 24.sp)
-                        )
-                    }
-                }
-            }
-
-            item {
-                CardCarousel(
-                    carouselItems,
-                    onPageChanged = { card ->
-                        balanceViewModel.selectCreditCard(
-                            card.getKey().toLong()
-                        )
-                    },
-                    cardHeight = 180.dp,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.size(48.dp))
-            }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+        with(sharedTransitionScope) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = padding
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = selectedCreditCard?.title ?: "",
-                            fontWeight = FontWeight.Bold,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                            modifier = Modifier.sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}__title"),
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
-                        )
-                        Text(
-                            "Lançamentos da fatura de ${
-                                YearMonth.now().toFormattedYearMonth("MMMM")
-                            }",
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_month"),
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
-                        )
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.clickable { navController.navigate("invoice/${selectedCreditCard?.id}") }) {
+                        Row {
                             Text(
-                                "Ver faturas",
-                                style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                color = MaterialTheme.colorScheme.tertiary,
-                                fontWeight = FontWeight.Medium
+                                "Seus Cartões",
+                                fontWeight = FontWeight.Bold,
+                                style = LocalTextStyle.current.copy(fontSize = 24.sp)
                             )
-                            Icon(
-                                CustomIcons.DuoTone.Calendar,
-                                modifier = Modifier.size(24.dp),
-                                contentDescription = "Select Month",
-                                tint = MaterialTheme.colorScheme.tertiary,
+                            Text(
+                                " (${carouselItems.size})",
+                                fontWeight = FontWeight.Normal,
+                                style = LocalTextStyle.current.copy(fontSize = 24.sp)
                             )
                         }
-                        Text(
-                            text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                .format(selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)),
-                            fontWeight = FontWeight.Normal,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                            modifier = Modifier
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_total"),
-                                    animatedVisibilityScope = animatedVisibilityScope
-                                )
-                        )
                     }
                 }
-            }
 
-            items(transactions.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                        .animateItem()
-                ) {
-                    TransactionCard(transactions[index])
+                item {
+                    CardCarousel(
+                        carouselItems,
+                        onPageChanged = { card ->
+                            balanceViewModel.selectCreditCard(
+                                card.getKey().toLong()
+                            )
+                        },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 }
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
+                item {
+                    Spacer(modifier = Modifier.size(48.dp))
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = selectedCreditCard?.title ?: "",
+                                fontWeight = FontWeight.Bold,
+                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                modifier = Modifier.sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}__title"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                            )
+                            Text(
+                                "Lançamentos da fatura de ${
+                                    YearMonth.now().toFormattedYearMonth("MMMM")
+                                }",
+                                fontWeight = FontWeight.Normal,
+                                modifier = Modifier.sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_month"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                            )
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.clickable { navController.navigate("invoice/${selectedCreditCard?.id}") }) {
+                                Text(
+                                    "Ver faturas",
+                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Icon(
+                                    CustomIcons.DuoTone.Calendar,
+                                    modifier = Modifier.size(24.dp),
+                                    contentDescription = "Select Month",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                )
+                            }
+                            Text(
+                                text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                    .format(selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)),
+                                fontWeight = FontWeight.Normal,
+                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_total"),
+                                        animatedVisibilityScope = animatedVisibilityScope
+                                    )
+                            )
+                        }
+                    }
+                }
+
+                items(transactions.size) { index ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .animateItem()
+                    ) {
+                        TransactionCard(transactions[index])
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
             }
         }
     }

@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +39,7 @@ import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.colorMap
+import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
@@ -60,6 +58,7 @@ internal fun SharedTransitionScope.InvoiceContent(
     creditCard: CreditCardDTO?,
     padding: PaddingValues,
     balanceViewModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val spacing = 48.dp
@@ -91,28 +90,19 @@ internal fun SharedTransitionScope.InvoiceContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp), Arrangement.SpaceBetween
             ) {
-                Card(
-                    modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = creditCard?.id.toString()),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                        .height(180.dp),
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colorMap[creditCard?.color] ?: Secondary
-                    )
-                ) {
-                    Column(
+                with(sharedTransitionScope) {
+                    val shape = MaterialTheme.shapes.medium
+                    Box(
                         modifier = Modifier
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_content"),
-                                animatedVisibilityScope
+                            .sharedElement(
+                                state = rememberSharedContentState(key = creditCard?.id.toString()),
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
-                            .padding(horizontal = 16.dp)
+                            .sharedCardStyle(
+                                color = colorMap[creditCard?.color] ?: Secondary,
+                                shape = shape,
+                                height = 180.dp
+                            )
                     ) {
                         CarouselCardContent(getItem(creditCard), animatedVisibilityScope)
                     }

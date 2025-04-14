@@ -26,6 +26,7 @@ import java.time.YearMonth
 fun SharedTransitionScope.InvoiceScreen(
     creditCardId: String,
     balanceViewModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -52,7 +53,7 @@ fun SharedTransitionScope.InvoiceScreen(
             state = pullRefreshState,
             modifier = Modifier.fillMaxSize(),
             content = {
-                InvoiceContent(creditCard, padding, balanceViewModel, animatedVisibilityScope)
+                InvoiceContent(creditCard, padding, balanceViewModel, sharedTransitionScope, animatedVisibilityScope)
             }
         )
     }
