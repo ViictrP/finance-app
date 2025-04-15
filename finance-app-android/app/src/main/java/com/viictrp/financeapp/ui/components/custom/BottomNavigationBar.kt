@@ -64,9 +64,9 @@ fun BottomNavigationBar(navController: NavController) {
         CustomIcons.Fill.CreditCard
     )
     val unselectedIcons = listOf(
-        CustomIcons.OutlineBold.House,
+        CustomIcons.Outline.House,
         CustomIcons.DuoTone.AddCircle,
-        CustomIcons.OutlineBold.CreditCard
+        CustomIcons.Outline.CreditCard
     )
 
     if (bottomSheetVisible) {
@@ -91,7 +91,7 @@ fun BottomNavigationBar(navController: NavController) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.OutlineBold.CreditCard,
+                                painter = CustomIcons.Outline.CreditCard,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.tertiary
@@ -110,7 +110,7 @@ fun BottomNavigationBar(navController: NavController) {
                         Spacer(modifier = Modifier.size(24.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.OutlineBold.ShoppingBag,
+                                painter = CustomIcons.Outline.ShoppingBag,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.tertiary
@@ -143,7 +143,7 @@ fun BottomNavigationBar(navController: NavController) {
                     Icon(
                         painter = if (isSelected) selectedIcons[index] else unselectedIcons[index],
                         contentDescription = item,
-                        modifier = Modifier.size(if (index == 1) 48.dp else 24.dp),
+                        modifier = Modifier.size(if (index == 1) 48.dp else 28.dp),
                         tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                     )
                 },
