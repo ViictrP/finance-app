@@ -109,7 +109,7 @@ internal fun SharedTransitionScope.InvoiceContent(
                                 height = 180.dp
                             )
                     ) {
-                        CarouselCardContent(getItem(creditCard), animatedVisibilityScope, animationDuration)
+                        CarouselCardContent(getItem(creditCard))
                     }
                 }
             }

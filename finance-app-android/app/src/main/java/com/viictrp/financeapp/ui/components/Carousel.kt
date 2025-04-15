@@ -110,7 +110,7 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
                         height = 180.dp
                     )
             ) {
-                CarouselCardContent(item, animatedVisibilityScope, animationDuration)
+                CarouselCardContent(item)
             }
         }
     }
@@ -119,8 +119,6 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
 @Composable
 fun SharedTransitionScope.CarouselCardContent(
     item: CarouselItem,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    animationDuration: Int
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
@@ -132,25 +130,11 @@ fun SharedTransitionScope.CarouselCardContent(
                 text = item.getTitle(),
                 color = SecondaryDark,
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
-                modifier = Modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "${item.getKey()}_title"),
-                    animatedVisibilityScope,
-                    boundsTransform = {_,_ ->
-                        tween(durationMillis = animationDuration)
-                    }
-                )
             )
             IconButton(onClick = {}) {
                 Icon(
                     CustomIcons.DuoTone.AddCircle,
                     modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "${item.getKey()}_title_icon"),
-                            animatedVisibilityScope,
-                            boundsTransform = {_,_ ->
-                                tween(durationMillis = animationDuration)
-                            }
-                        )
                         .size(24.dp),
                     contentDescription = "Select Month",
                     tint = Color.White,
@@ -169,13 +153,6 @@ fun SharedTransitionScope.CarouselCardContent(
                 Icon(
                     CustomIcons.DuoTone.Calendar,
                     modifier = Modifier
-                        .sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "${item.getKey()}_detail_icon"),
-                            animatedVisibilityScope,
-                            boundsTransform = {_,_ ->
-                                tween(durationMillis = animationDuration)
-                            }
-                        )
                         .size(24.dp),
                     contentDescription = "Select Month",
                     tint = SecondaryDark,
@@ -184,13 +161,6 @@ fun SharedTransitionScope.CarouselCardContent(
                     text = " ${item.getDetail()}",
                     color = SecondaryDark,
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
-                    modifier = Modifier.sharedBounds(
-                        sharedContentState = rememberSharedContentState(key = "${item.getKey()}_detail"),
-                        animatedVisibilityScope,
-                        boundsTransform = {_,_ ->
-                            tween(durationMillis = animationDuration)
-                        }
-                    )
                 )
             }
             Text(
@@ -199,13 +169,6 @@ fun SharedTransitionScope.CarouselCardContent(
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "${item.getKey()}_description"),
-                    animatedVisibilityScope,
-                    boundsTransform = {_,_ ->
-                        tween(durationMillis = animationDuration)
-                    }
                 )
             )
         }
