@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -183,7 +182,7 @@ fun SharedTransitionScope.CreditCardScreen(
                                     fontWeight = FontWeight.Medium
                                 )
                                 Icon(
-                                    CustomIcons.DuoTone.Calendar,
+                                    CustomIcons.Fill.Calendar,
                                     modifier = Modifier.size(24.dp),
                                     contentDescription = "Select Month",
                                     tint = MaterialTheme.colorScheme.tertiary,
@@ -216,10 +215,6 @@ fun SharedTransitionScope.CreditCardScreen(
                     ) {
                         TransactionCard(transactions[index])
                     }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(100.dp))
                 }
             }
         }

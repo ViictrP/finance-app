@@ -105,7 +105,7 @@ internal fun HomeScreenContent(
                                     fontWeight = FontWeight.Medium
                                 )
                                 Icon(
-                                    CustomIcons.DuoTone.Calendar,
+                                    CustomIcons.Fill.Calendar,
                                     modifier = Modifier.size(24.dp),
                                     contentDescription = "Select Month",
                                     tint = MaterialTheme.colorScheme.tertiary,
@@ -182,10 +182,6 @@ internal fun HomeScreenContent(
                     MaterialTheme.colorScheme.tertiary
                 )
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

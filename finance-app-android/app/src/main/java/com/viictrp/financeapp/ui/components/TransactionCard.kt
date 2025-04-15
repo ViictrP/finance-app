@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,20 +44,23 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    CustomIcons.DuoTone.ShoppingBag,
+                    CustomIcons.Outline.Burger,
                     modifier = Modifier.size(26.dp),
                     contentDescription = "Select Month",
                     tint = MaterialTheme.colorScheme.tertiary,
                 )
                 Spacer(modifier = Modifier.size(16.dp))
-                Column {
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Column {
                         Text(
                             categoryHelper(transaction.category),
@@ -70,27 +75,30 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
                             )
                         }
                     }
+
                     Spacer(modifier = Modifier.size(8.dp))
 
-                    if (transaction.isInstallment) {
-                        Text(
-                            text = "${transaction.description} (${transaction.installmentNumber}/${transaction.installmentAmount})",
-                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
-                    } else {
-                        Text(
-                            transaction.description,
-                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
-                    }
+                    val description = if (transaction.isInstallment) {
+                        "${transaction.description} (${transaction.installmentNumber}/${transaction.installmentAmount})"
+                    } else transaction.description
+
+                    Text(
+                        text = description,
+                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
-            Column(horizontalAlignment = Alignment.End) {
+
+            Column(
+                modifier = Modifier.wrapContentWidth(),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
                     text = transaction.date.format(
-                        DateTimeFormatter.ofPattern("dd MMM, yyyy", Locale.getDefault())
+                        DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
                     ),
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5F)

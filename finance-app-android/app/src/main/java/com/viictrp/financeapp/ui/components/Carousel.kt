@@ -133,7 +133,7 @@ fun SharedTransitionScope.CarouselCardContent(
             )
             IconButton(onClick = {}) {
                 Icon(
-                    CustomIcons.DuoTone.AddCircle,
+                    CustomIcons.Fill.Settings,
                     modifier = Modifier
                         .size(24.dp),
                     contentDescription = "Select Month",
@@ -151,7 +151,7 @@ fun SharedTransitionScope.CarouselCardContent(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    CustomIcons.DuoTone.Calendar,
+                    CustomIcons.Fill.Calendar,
                     modifier = Modifier
                         .size(24.dp),
                     contentDescription = "Select Month",

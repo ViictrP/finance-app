@@ -26,14 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -61,13 +59,14 @@ fun BottomNavigationBar(navController: NavController) {
         "Cartões" to "credit_card"
     )
     val selectedIcons = listOf(
-        CustomIcons.DuoTone.Dashboard, CustomIcons.DuoTone.AddCircle,
-        CustomIcons.DuoTone.CreditCard
+        CustomIcons.Fill.House,
+        CustomIcons.DuoTone.AddCircle,
+        CustomIcons.Fill.CreditCard
     )
     val unselectedIcons = listOf(
-        CustomIcons.DuoTone.Dashboard,
+        CustomIcons.OutlineBold.House,
         CustomIcons.DuoTone.AddCircle,
-        CustomIcons.DuoTone.CreditCard
+        CustomIcons.OutlineBold.CreditCard
     )
 
     if (bottomSheetVisible) {
@@ -92,7 +91,7 @@ fun BottomNavigationBar(navController: NavController) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.DuoTone.CreditCard,
+                                painter = CustomIcons.OutlineBold.CreditCard,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.tertiary
@@ -111,7 +110,7 @@ fun BottomNavigationBar(navController: NavController) {
                         Spacer(modifier = Modifier.size(24.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                painter = CustomIcons.DuoTone.ShoppingBag,
+                                painter = CustomIcons.OutlineBold.ShoppingBag,
                                 contentDescription = "Settings",
                                 modifier = Modifier.size(32.dp),
                                 tint = MaterialTheme.colorScheme.tertiary
@@ -133,7 +132,7 @@ fun BottomNavigationBar(navController: NavController) {
     // Navigation Bar
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.zIndex(1f)
+        modifier = Modifier.height(80.dp)
     ) {
         items.forEachIndexed { index, item ->
             val route = routesMap[item]
@@ -144,14 +143,12 @@ fun BottomNavigationBar(navController: NavController) {
                     Icon(
                         painter = if (isSelected) selectedIcons[index] else unselectedIcons[index],
                         contentDescription = item,
-                        modifier = Modifier.size(if (index == 1) 48.dp else 24.dp)
+                        modifier = Modifier.size(if (index == 1) 48.dp else 24.dp),
+                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
                     )
                 },
                 label = {
-                    Text(
-                        item,
-                        color = if (index == 1) Color.Transparent else MaterialTheme.colorScheme.secondary
-                    )
+
                 },
                 selected = selectedIndex == index,
                 onClick = {
@@ -170,7 +167,6 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
                     indicatorColor = MaterialTheme.colorScheme.tertiary
                 )
             )
