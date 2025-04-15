@@ -118,7 +118,7 @@ fun FTextField(
             errorTrailingIconColor = MaterialTheme.colorScheme.error,
             errorCursorColor = MaterialTheme.colorScheme.error,
             errorTextColor = MaterialTheme.colorScheme.error,
-            errorContainerColor = MaterialTheme.colorScheme.error.copy(alpha = .1f)
+            errorContainerColor = MaterialTheme.colorScheme.primary
         )
     )
 }
