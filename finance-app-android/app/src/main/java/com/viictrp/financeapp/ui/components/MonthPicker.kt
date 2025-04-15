@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import com.viictrp.financeapp.ui.components.extension.toYearMonth
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.time.YearMonth
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthPicker(
@@ -54,7 +56,9 @@ fun MonthPicker(
         val confirmEnabled = remember {
             derivedStateOf { datePickerState.selectedDateMillis != null }
         }
+
         DatePickerDialog(
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.primary),
             onDismissRequest = {
                 openDialog.value = false
             },
@@ -84,6 +88,14 @@ fun MonthPicker(
             DatePicker(
                 state = datePickerState,
                 modifier = Modifier.verticalScroll(rememberScrollState()),
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.primary, // fundo da área do calendário
+                    selectedDayContentColor = MaterialTheme.colorScheme.primary, // texto dentro da bolinha
+                    selectedDayContainerColor = MaterialTheme.colorScheme.tertiary, // bolinha
+                    todayContentColor = MaterialTheme.colorScheme.onTertiary, // dia atual (sem seleção)
+                    dayContentColor = MaterialTheme.colorScheme.onPrimary, // dias normais
+                    disabledDayContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f), // dias desabilitados
+                ),
             )
         }
     }
