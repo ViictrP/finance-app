@@ -59,9 +59,9 @@ fun BottomNavigationBar(navController: NavController) {
         "Cartões" to "credit_card"
     )
     val selectedIcons = listOf(
-        CustomIcons.Fill.House,
+        CustomIcons.Filled.House,
         CustomIcons.DuoTone.AddCircle,
-        CustomIcons.Fill.CreditCard
+        CustomIcons.Filled.CreditCard
     )
     val unselectedIcons = listOf(
         CustomIcons.Outline.House,

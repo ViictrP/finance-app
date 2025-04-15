@@ -42,9 +42,25 @@ object CustomIcons {
         val User: Painter
             @Composable
             get() = painterResource(id = R.drawable.user_circle_duotone)
+
+        val Info: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.info_duotone)
+
+        val Description: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.text_aa_duotone)
+
+        val Number: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.hash_duotone)
+
+        val Color: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.paint_bucket_duotone)
     }
 
-    object Fill {
+    object Filled {
         val AddCircle: Painter
             @Composable
             get() = painterResource(id = R.drawable.plus_circle_fill)
@@ -92,6 +108,22 @@ object CustomIcons {
         val DotsVertical: Painter
             @Composable
             get() = painterResource(id = R.drawable.dots_three_outline_vertical_fill)
+
+        val Info: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.info_fill)
+
+        val Description: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.text_aa_fill)
+
+        val Number: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.hash_fill)
+
+        val Color: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.paint_bucket_fill)
     }
 
     object Outline {
@@ -130,6 +162,22 @@ object CustomIcons {
         val User: Painter
             @Composable
             get() = painterResource(id = R.drawable.user_circle)
+
+        val Info: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.info)
+
+        val Description: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.text_aa)
+
+        val Number: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.hash)
+
+        val Color: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.paint_bucket)
     }
 
     object OutlineBold {
@@ -168,5 +216,21 @@ object CustomIcons {
         val User: Painter
             @Composable
             get() = painterResource(id = R.drawable.user_circle_bold)
+
+        val Info: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.info_bold)
+
+        val Description: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.text_aa_bold)
+
+        val Number: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.hash_bold)
+
+        val Color: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.paint_bucket_bold)
     }
 }

@@ -107,7 +107,7 @@ fun MonthPicker(
         trailingIcon = {
             IconButton(onClick = { openDialog.value = true }) {
                 Icon(
-                    CustomIcons.Fill.Calendar,
+                    CustomIcons.Filled.Calendar,
                     tint = MaterialTheme.colorScheme.tertiary,
                     contentDescription = "Select Month"
                 )

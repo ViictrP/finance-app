@@ -182,7 +182,7 @@ fun SharedTransitionScope.CreditCardScreen(
                                     fontWeight = FontWeight.Medium
                                 )
                                 Icon(
-                                    CustomIcons.Fill.Calendar,
+                                    CustomIcons.Filled.Calendar,
                                     modifier = Modifier.size(24.dp),
                                     contentDescription = "Select Month",
                                     tint = MaterialTheme.colorScheme.tertiary,
