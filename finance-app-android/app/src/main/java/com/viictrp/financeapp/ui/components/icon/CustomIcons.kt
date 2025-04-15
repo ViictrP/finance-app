@@ -9,34 +9,34 @@ object CustomIcons {
     object DuoTone {
         val AddCircle: Painter
             @Composable
-            get() = painterResource(id = R.drawable.add_circle)
+            get() = painterResource(id = R.drawable.plus_circle_duotone)
 
         val AirPlay: Painter
             @Composable
-            get() = painterResource(id = R.drawable.airplay)
+            get() = painterResource(id = R.drawable.airplay_duotone)
 
         val CreditCard: Painter
             @Composable
-            get() = painterResource(id = R.drawable.credit_card)
+            get() = painterResource(id = R.drawable.credit_card_duotone)
 
         val ShoppingBag: Painter
             @Composable
-            get() = painterResource(id = R.drawable.shopping_bag)
+            get() = painterResource(id = R.drawable.shopping_bag_duotone)
 
         val Settings: Painter
             @Composable
-            get() = painterResource(id = R.drawable.settings)
+            get() = painterResource(id = R.drawable.gear_duotone)
 
         val Dashboard: Painter
             @Composable
-            get() = painterResource(id = R.drawable.dashboard)
+            get() = painterResource(id = R.drawable.house_duotone)
 
         val Calendar: Painter
             @Composable
-            get() = painterResource(id = R.drawable.calendar)
+            get() = painterResource(id = R.drawable.calendar_duotone)
 
         val User: Painter
             @Composable
-            get() = painterResource(id = R.drawable.user)
+            get() = painterResource(id = R.drawable.user_duotone)
     }
 }
