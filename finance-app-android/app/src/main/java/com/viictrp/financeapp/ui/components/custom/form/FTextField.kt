@@ -54,6 +54,7 @@ fun FTextField(
 
     TextField(
         value = state.text,
+        textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
         onValueChange = { form.update(fieldName, it) },
         label = {
             Text(
