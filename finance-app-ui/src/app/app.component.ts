@@ -12,5 +12,5 @@ import { MatIconModule } from '@angular/material/icon';
     styleUrl: './app.component.scss',
 })
 export class AppComponent {
-    title = 'finance-app-ui';
+    title = 'Finance App';
 }
