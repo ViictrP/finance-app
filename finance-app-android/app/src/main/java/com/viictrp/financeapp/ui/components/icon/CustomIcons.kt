@@ -69,6 +69,18 @@ object CustomIcons {
         val Save: Painter
             @Composable
             get() = painterResource(id = R.drawable.floppy_disk_duotone)
+
+        val ArrowDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.arrow_down_duotone)
+
+        val CaretDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.caret_down_duotone)
+
+        val Selection: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.selection_duotone)
     }
 
     object Filled {
@@ -147,6 +159,18 @@ object CustomIcons {
         val Save: Painter
             @Composable
             get() = painterResource(id = R.drawable.floppy_disk_back_fill)
+
+        val ArrowDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.arrow_down_fill)
+
+        val CaretDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.caret_down_fill)
+
+        val Selection: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.selection_fill)
     }
 
     object Outline {
@@ -213,6 +237,18 @@ object CustomIcons {
         val Save: Painter
             @Composable
             get() = painterResource(id = R.drawable.floppy_disk)
+
+        val ArrowDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.arrow_down)
+
+        val CaretDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.caret_down)
+
+        val Selection: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.selection)
     }
 
     object OutlineBold {
@@ -279,5 +315,17 @@ object CustomIcons {
         val Save: Painter
             @Composable
             get() = painterResource(id = R.drawable.floppy_disk_bold)
+
+        val ArrowDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.arrow_down_bold)
+
+        val CaretDown: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.caret_down_bold)
+
+        val Selection: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.selection_bold)
     }
 }

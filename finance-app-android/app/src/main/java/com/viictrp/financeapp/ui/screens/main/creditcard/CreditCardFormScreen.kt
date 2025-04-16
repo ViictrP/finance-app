@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.components.custom.form.FSelectField
 import com.viictrp.financeapp.ui.components.custom.form.FTextField
 import com.viictrp.financeapp.ui.components.custom.form.controller.Field
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidator
@@ -90,7 +92,8 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (isEnabled) { /* ação */
+                    if (isEnabled) {
+                        Log.d("CreditCardFormScreen", "form.value: ${form.value}")
                     }
                 },
                 containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
@@ -210,6 +213,7 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         fieldName = "closingDate",
                         label = "Data de fechamento",
                         modifier = Modifier.fillMaxWidth(),
+                        keyboardType = KeyboardType.Number,
                         leadingIcon = CustomIcons.Outline.Calendar
                     )
                 }
@@ -225,12 +229,13 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
-                    FTextField(
+                    FSelectField(
                         form = form,
                         fieldName = "color",
                         label = "Cor do cartão",
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = CustomIcons.Outline.Color
+                        leadingIcon = CustomIcons.Outline.Color,
+                        options = listOf("Black", "Orange", "Blue", "Purple")
                     )
                 }
             }

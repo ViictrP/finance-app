@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,7 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -39,14 +43,29 @@ fun FTextField(
 ) {
     var showTooltip by remember { mutableStateOf(false) }
     val state = form.get(fieldName)
+    val focusRequester = form.getFocusRequester(fieldName)
+    val focusManager = LocalFocusManager.current
+    val imeAction = form.imeActionFor(fieldName)
+    val onNext = form.nextFieldAfter(fieldName)
 
     TextField(
         value = state.text,
         onValueChange = { form.update(fieldName, it) },
         label = { Text("$label ${if (state.required) " *" else ""}") },
-        modifier = modifier,
+        modifier = modifier.focusRequester(focusRequester),
         isError = state.required && state.error != null,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = {
+                onNext?.invoke() ?: focusManager.moveFocus(FocusDirection.Down)
+            },
+            onDone = {
+                focusManager.clearFocus()
+            }
+        ),
         enabled = enabled,
         leadingIcon = {
             leadingIcon?.let {
