@@ -1,1 +1,11 @@
-app-component works!
+<mat-toolbar color="primary">
+    <span>{{ title }}</span>
+    <span class="spacer"></span>
+    <button mat-icon-button aria-label="Menu">
+        <mat-icon>menu</mat-icon>
+    </button>
+</mat-toolbar>
+
+<div class="content">
+    <router-outlet></router-outlet>
+</div>
