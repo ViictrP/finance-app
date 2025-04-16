@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -39,6 +40,7 @@ fun FTextField(
     label: String = "",
     leadingIcon: Painter? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     enabled: Boolean = true
 ) {
     var showTooltip by remember { mutableStateOf(false) }
@@ -54,6 +56,7 @@ fun FTextField(
         label = { Text("$label ${if (state.required) " *" else ""}") },
         modifier = modifier.focusRequester(focusRequester),
         isError = state.required && state.error != null,
+        visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
             imeAction = imeAction
