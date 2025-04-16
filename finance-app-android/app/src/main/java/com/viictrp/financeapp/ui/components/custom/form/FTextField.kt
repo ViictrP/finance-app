@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.viictrp.financeapp.ui.components.custom.form.controller.FormController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
@@ -53,7 +55,12 @@ fun FTextField(
     TextField(
         value = state.text,
         onValueChange = { form.update(fieldName, it) },
-        label = { Text("$label ${if (state.required) " *" else ""}") },
+        label = {
+            Text(
+                "$label ${if (state.required) " *" else ""}",
+                style = LocalTextStyle.current.copy(fontSize = 16.sp)
+            )
+        },
         modifier = modifier.focusRequester(focusRequester),
         isError = state.required && state.error != null,
         visualTransformation = visualTransformation,
