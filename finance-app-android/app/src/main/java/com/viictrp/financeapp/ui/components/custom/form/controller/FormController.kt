@@ -9,14 +9,15 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.ImeAction
 
-class FormController(
+class FormController<T>(
     fields: Map<String, InputFieldState>,
-    private val focusRequesters: Map<String, FocusRequester>
+    private val focusRequesters: Map<String, FocusRequester>,
+    private val mapper: (Map<String, InputFieldState>) -> T
 ) {
     private val _fields: SnapshotStateMap<String, InputFieldState> =
         mutableStateMapOf<String, InputFieldState>().apply { putAll(fields) }
     val fields: Map<String, InputFieldState> get() = _fields
-    val value: Map<String, String> get() = _fields.mapValues { it.value.text }
+    val value: T get() = mapper(_fields)
 
     val isValid: Boolean
         get() = _fields.values.all { it.isValid }
@@ -52,7 +53,10 @@ data class Field(
 )
 
 @Composable
-fun rememberFormController(fields: List<Field>): FormController {
+fun <T> rememberFormController(
+    fields: List<Field>,
+    toDto: (Map<String, InputFieldState>) -> T
+): FormController<T> {
     val focusRequesters = remember(fields) {
         fields.associate { it.name to FocusRequester() }
     }
@@ -88,14 +92,14 @@ fun rememberFormController(fields: List<Field>): FormController {
                         ?: InputFieldState(required = field.required, validators = field.validators)
                 }
 
-                FormController(restored, focusRequesters)
+                FormController(restored, focusRequesters, toDto)
             }
         )
     ) {
         val initial = fields.associate { field ->
             field.name to InputFieldState(required = field.required, validators = field.validators)
         }
-        FormController(initial, focusRequesters)
+        FormController(initial, focusRequesters, toDto)
     }
 }
 

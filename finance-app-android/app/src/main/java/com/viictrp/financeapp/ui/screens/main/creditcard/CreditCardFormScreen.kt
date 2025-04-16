@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.custom.form.FSelectField
 import com.viictrp.financeapp.ui.components.custom.form.FTextField
@@ -39,6 +40,7 @@ import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import java.math.BigDecimal
 
 
 @Composable
@@ -46,7 +48,7 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
 
     val spacing = 48.dp
 
-    val form = rememberFormController(
+    val form = rememberFormController<CreditCardDTO>(
         listOf(
             Field(
                 "title",
@@ -71,7 +73,7 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                 )
             ),
             Field(
-                "closingDate", required = true, validators = listOf(
+                "invoiceClosingDay", required = true, validators = listOf(
                     StateValidatorType.REQUIRED.validator,
                     StateValidator(
                         validator = {
@@ -84,7 +86,18 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
             ),
             Field("color")
         )
-    )
+    ) { fields ->
+        CreditCardDTO(
+            id = 0L,
+            title = fields["title"]!!.text,
+            description = fields["description"]!!.text,
+            color = fields["color"]!!.text,
+            number = fields["number"]!!.text,
+            invoiceClosingDay = fields["invoiceClosingDay"]!!.text.toInt(),
+            totalInvoiceAmount = BigDecimal.ZERO,
+            invoices = emptyList()
+        )
+    }
 
     val isEnabled = form.isValid
 
@@ -210,7 +223,7 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                 ) {
                     FTextField(
                         form = form,
-                        fieldName = "closingDate",
+                        fieldName = "invoiceClosingDay",
                         label = "Data de fechamento",
                         modifier = Modifier.fillMaxWidth(),
                         keyboardType = KeyboardType.Number,

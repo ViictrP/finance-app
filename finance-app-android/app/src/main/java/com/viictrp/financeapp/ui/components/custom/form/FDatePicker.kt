@@ -11,6 +11,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.custom.form.controller.FormController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import java.time.Instant
@@ -35,7 +37,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FDateField(
-    form: FormController,
+    form: FormController<*>,
     fieldName: String,
     modifier: Modifier = Modifier,
     label: String = "",
@@ -77,7 +79,12 @@ fun FDateField(
             value = state.text,
             onValueChange = {},
             readOnly = true,
-            label = { Text(label) },
+            label = {
+                Text(
+                    "$label ${if (state.required) " *" else ""}",
+                    style = LocalTextStyle.current.copy(fontSize = 16.sp)
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
@@ -100,8 +107,8 @@ fun FDateField(
                 onDone = { focusManager.clearFocus() }
             ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.primary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.8f),
+                unfocusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.6f),
                 focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
                 errorIndicatorColor = MaterialTheme.colorScheme.error,

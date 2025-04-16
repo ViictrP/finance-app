@@ -36,7 +36,7 @@ import com.viictrp.financeapp.ui.components.icon.CustomIcons
 
 @Composable
 fun FTextField(
-    form: FormController,
+    form: FormController<*>,
     fieldName: String,
     modifier: Modifier = Modifier,
     label: String = "",
@@ -140,8 +140,8 @@ fun FTextField(
             }
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.8f),
+            unfocusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.6f),
             focusedContainerColor = MaterialTheme.colorScheme.primary,
             unfocusedContainerColor = MaterialTheme.colorScheme.primary,
             focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
