@@ -11,6 +11,10 @@ object CustomIcons {
             @Composable
             get() = painterResource(id = R.drawable.plus_circle_duotone)
 
+        val Add: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.plus_duotone)
+
         val AirPlay: Painter
             @Composable
             get() = painterResource(id = R.drawable.airplay_duotone)
@@ -58,12 +62,23 @@ object CustomIcons {
         val Color: Painter
             @Composable
             get() = painterResource(id = R.drawable.paint_bucket_duotone)
+
+        val Close: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.x_duotone)
+        val Save: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.floppy_disk_duotone)
     }
 
     object Filled {
         val AddCircle: Painter
             @Composable
             get() = painterResource(id = R.drawable.plus_circle_fill)
+
+        val Add: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.plus_fill)
 
         val AirPlay: Painter
             @Composable
@@ -124,12 +139,24 @@ object CustomIcons {
         val Color: Painter
             @Composable
             get() = painterResource(id = R.drawable.paint_bucket_fill)
+
+        val Close: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.x_fill)
+
+        val Save: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.floppy_disk_back_fill)
     }
 
     object Outline {
         val AddCircle: Painter
             @Composable
             get() = painterResource(id = R.drawable.plus_circle)
+
+        val Add: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.plus)
 
         val AirPlay: Painter
             @Composable
@@ -178,12 +205,24 @@ object CustomIcons {
         val Color: Painter
             @Composable
             get() = painterResource(id = R.drawable.paint_bucket)
+
+        val Close: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.x)
+
+        val Save: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.floppy_disk)
     }
 
     object OutlineBold {
         val AddCircle: Painter
             @Composable
             get() = painterResource(id = R.drawable.plus_circle_bold)
+
+        val Add: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.plus_bold)
 
         val AirPlay: Painter
             @Composable
@@ -232,5 +271,13 @@ object CustomIcons {
         val Color: Painter
             @Composable
             get() = painterResource(id = R.drawable.paint_bucket_bold)
+
+        val Close: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.x_bold)
+
+        val Save: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.floppy_disk_bold)
     }
 }

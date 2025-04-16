@@ -8,14 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,6 +29,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.custom.form.FTextField
+import com.viictrp.financeapp.ui.components.custom.form.controller.Field
+import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidator
+import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.custom.form.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
@@ -39,10 +44,70 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
 
     val spacing = 48.dp
 
-    val form = rememberFormController()
+    val form = rememberFormController(
+        listOf(
+            Field(
+                "title",
+                required = true,
+                validators = listOf(StateValidatorType.REQUIRED.validator)
+            ),
+            Field(
+                "description",
+                required = true,
+                validators = listOf(StateValidatorType.REQUIRED.validator)
+            ),
+            Field(
+                "number", required = true, validators = listOf(
+                    StateValidatorType.REQUIRED.validator,
+                    StateValidator(
+                        validator = {
+                            val number = it.toIntOrNull()
+                            number != null
+                        },
+                        errorMessage = "Informe um número"
+                    )
+                )
+            ),
+            Field(
+                "closingDate", required = true, validators = listOf(
+                    StateValidatorType.REQUIRED.validator,
+                    StateValidator(
+                        validator = {
+                            val number = it.toIntOrNull()
+                            number != null && number in 1..31
+                        },
+                        errorMessage = "Informe um número entre 1 e 31"
+                    )
+                )
+            ),
+            Field("color")
+        )
+    )
+
+    val isEnabled = form.isValid
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (isEnabled) { /* ação */
+                    }
+                },
+                containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
+                else MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
+                contentColor = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier
+                    .alpha(if (isEnabled) 1f else 0.6f)
+            ) {
+                Icon(
+                    painter = CustomIcons.Filled.Save,
+                    contentDescription = "Salvar",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -80,13 +145,11 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     FTextField(
-                        state = form.get("title"),
-                        onStateChanged = { form.updateFieldState("title", it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        form = form,
+                        fieldName = "title",
                         label = "Título do cartão",
-                        tooltipMessage = "Campo obrigatório",
-                        leadingIcon = CustomIcons.Outline.Description,
-                        showError = true
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Description
                     )
                 }
             }
@@ -102,13 +165,11 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     FTextField(
-                        state = form.get("description"),
-                        onStateChanged = { form.updateFieldState("description", it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        form = form,
+                        fieldName = "description",
                         label = "Descrição do cartão",
-                        tooltipMessage = "Campo obrigatório",
-                        leadingIcon = CustomIcons.Outline.Description,
-                        showError = true
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Description
                     )
                 }
             }
@@ -124,14 +185,12 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     FTextField(
-                        state = form.get("number"),
-                        onStateChanged = { form.updateFieldState("number", it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        form = form,
+                        fieldName = "number",
                         label = "Número do cartão",
-                        tooltipMessage = "Campo obrigatório",
+                        modifier = Modifier.fillMaxWidth(),
                         leadingIcon = CustomIcons.Outline.Number,
                         keyboardType = KeyboardType.Number,
-                        showError = true
                     )
                 }
             }
@@ -147,13 +206,11 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     FTextField(
-                        state = form.get("closingDate"),
-                        onStateChanged = { form.updateFieldState("closingDate", it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        form = form,
+                        fieldName = "closingDate",
                         label = "Data de fechamento",
-                        tooltipMessage = "Campo obrigatório",
-                        leadingIcon = CustomIcons.Outline.Calendar,
-                        showError = true
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Calendar
                     )
                 }
             }
@@ -169,37 +226,17 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     FTextField(
-                        state = form.get("color"),
-                        onStateChanged = { form.updateFieldState("color", it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        form = form,
+                        fieldName = "color",
                         label = "Cor do cartão",
-                        tooltipMessage = "Campo obrigatório",
-                        leadingIcon = CustomIcons.Outline.Color,
-                        showError = true
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Color
                     )
                 }
             }
 
             item {
                 Spacer(modifier = Modifier.size(spacing / 2))
-            }
-
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(
-                        onClick = { /* salvar */ },
-                        enabled = form.isValid,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors()
-                    ) {
-                        Text("Salvar")
-                    }
-                }
             }
         }
     }

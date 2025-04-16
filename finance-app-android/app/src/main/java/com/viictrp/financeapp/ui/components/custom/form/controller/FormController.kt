@@ -12,54 +12,62 @@ class FormController(fields: Map<String, InputFieldState>) {
     val isValid: Boolean
         get() = _fields.values.all { it.isValid }
 
-    fun get(name: String): InputFieldState = _fields[name] ?: InputFieldState()
+    fun get(name: String): InputFieldState = _fields[name] ?: error("Campo '$name' não encontrado no form")
 
-    fun update(name: String, text: String, validator: (String) -> String?) {
-        val prev = _fields[name] ?: InputFieldState()
-        _fields[name] = prev.update(text, validator)
-    }
-
-    fun updateFieldState(name: String, state: InputFieldState) {
-        _fields[name] = state
-    }
-
-    fun markTouched(name: String) {
-        _fields[name]?.let {
-            _fields[name] = it.copy(touched = true)
-        }
-    }
-
-    fun markAllTouched() {
-        _fields.keys.forEach { markTouched(it) }
+    fun update(name: String, text: String) {
+        val prev = _fields[name] ?: error("Campo '$name' não existe")
+        _fields[name] = prev.update(text)
     }
 }
+
+data class Field(
+    val name: String = "",
+    val required: Boolean = false,
+    val validators: List<StateValidator> = emptyList()
+)
 
 @Composable
-fun rememberFormController(): FormController {
-    return rememberSaveable(saver = mapSaver(
-        save = { it.fields.mapValues { entry -> listOf(entry.value.text, entry.value.touched, entry.value.dirty, entry.value.error) } },
-        restore = {
-            val restored = it.mapValues { entry ->
-                val list = entry.value as List<*>
-                InputFieldState(
-                    text = list[0] as String,
-                    touched = list[1] as Boolean,
-                    dirty = list[2] as Boolean,
-                    error = list[3] as String?
-                )
+fun rememberFormController(fields: List<Field>): FormController {
+    return rememberSaveable(
+        saver = mapSaver(
+            save = { controller ->
+                controller.fields.mapValues { entry ->
+                    listOf(
+                        entry.value.text,
+                        entry.value.touched,
+                        entry.value.dirty,
+                        entry.value.error,
+                        entry.value.required
+                    )
+                }
+            },
+            restore = {
+                val restored = it.mapValues { entry ->
+                    val list = entry.value as List<*>
+                    InputFieldState(
+                        text = list[0] as String,
+                        touched = list[1] as Boolean,
+                        dirty = list[2] as Boolean,
+                        error = list[3] as String?,
+                        required = list[4] as Boolean,
+                        validators = mutableListOf()
+                    )
+                }.toMutableMap()
+
+                fields.forEach { field ->
+                    restored[field.name] = restored[field.name]?.copy(validators = field.validators)
+                        ?: InputFieldState(required = field.required, validators = field.validators)
+                }
+
+                FormController(restored)
             }
-            FormController(restored)
-        }
-    )) {
-        FormController(
-            mapOf(
-                "title" to InputFieldState(),
-                "description" to InputFieldState(),
-                "number" to InputFieldState(),
-                "closingDate" to InputFieldState(),
-                "color" to InputFieldState()
-            )
         )
+    ) {
+        val initial = fields.associate { field ->
+            field.name to InputFieldState(required = field.required, validators = field.validators)
+        }
+        FormController(initial)
     }
 }
+
 
