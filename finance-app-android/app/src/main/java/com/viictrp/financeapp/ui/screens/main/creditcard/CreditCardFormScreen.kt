@@ -126,9 +126,8 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize(),
+            contentPadding =  padding
         ) {
             item {
                 Column(
