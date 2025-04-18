@@ -1,5 +1,6 @@
 package com.victor.financeapp.backend.domain.model.user;
 
+import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.Assert;
@@ -54,5 +55,15 @@ public class User {
 
     public void addProperty(String name, String value) {
         this.properties.put(name, value);
+    }
+
+    public CreditCard addNewCreditCard(String title, String description, String color, String number, Integer invoiceClosingDay) {
+        var newCreditCard = CreditCard.createNew(this.id, title, description, color, number, invoiceClosingDay);
+
+        if (balance != null) {
+            this.balance.addCreditCard(newCreditCard);
+        }
+
+        return newCreditCard;
     }
 }

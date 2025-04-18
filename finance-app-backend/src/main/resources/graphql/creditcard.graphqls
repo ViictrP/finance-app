@@ -2,6 +2,20 @@ extend type Query {
     findInvoice(creditCardId: Int, yearMonth: YearMonth): InvoiceDTO
 }
 
+extend type Mutation {
+    saveCreditCard(newCreditCard: NewCreditCardDTO!): CreditCardDTO
+}
+
+input NewCreditCardDTO {
+    id: Int!
+    userId: ID!
+    title: String!
+    description: String!
+    invoiceClosingDay: Int!
+    color: String
+    number: String
+}
+
 type CreditCardDTO {
     id: Int!
     userId: ID!

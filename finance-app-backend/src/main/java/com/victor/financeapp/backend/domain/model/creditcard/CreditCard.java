@@ -82,4 +82,18 @@ public class CreditCard {
                 .findFirst()
                 .orElseThrow(() -> new InvoiceNotFoundException(id, yearMonth));
     }
+
+    public static CreditCard createNew(Long userId, String title, String description, String color, String number, Integer invoiceClosingDay) {
+        var newCreditCard = CreditCard.builder()
+                .title(title)
+                .number(number)
+                .userId(userId)
+                .invoiceClosingDay(invoiceClosingDay)
+                .build();
+
+        newCreditCard.setDescription(description);
+        newCreditCard.setColor(color);
+
+        return newCreditCard;
+    }
 }
