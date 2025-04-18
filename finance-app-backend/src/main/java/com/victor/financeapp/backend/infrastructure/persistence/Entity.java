@@ -17,6 +17,11 @@ public abstract class Entity<ID extends Serializable> {
     private Boolean deleted = false;
     private LocalDateTime deleteDate;
 
+    protected Entity() {
+        this.createdAt = LocalDateTime.now();
+        this.modificatedAt = LocalDateTime.now();
+    }
+
     public boolean isNew() {
         return this.id == null;
     }

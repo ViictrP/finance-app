@@ -28,7 +28,7 @@ public class CreditCardController {
     }
 
     @MutationMapping
-    public Mono<CreditCardDTO> saveCreditCard(@Argument CreditCardDTO creditCardDTO) {
-        return saveCreditCardUseCase.execute(creditCardDTO);
+    public Mono<CreditCardDTO> saveCreditCard(@Argument CreditCardDTO newCreditCard) {
+        return saveCreditCardUseCase.execute(newCreditCard);
     }
 }
