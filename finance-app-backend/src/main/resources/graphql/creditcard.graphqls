@@ -7,8 +7,6 @@ extend type Mutation {
 }
 
 input NewCreditCardDTO {
-    id: Int!
-    userId: ID!
     title: String!
     description: String!
     invoiceClosingDay: Int!

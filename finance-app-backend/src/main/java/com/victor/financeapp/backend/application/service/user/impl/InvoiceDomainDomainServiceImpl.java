@@ -26,7 +26,8 @@ public class InvoiceDomainDomainServiceImpl implements InvoiceDomainService {
                 .flatMap(invoice -> {
                     creditCard.addInvoice(invoice);
                     return Mono.just(creditCard);
-                });
+                })
+                .switchIfEmpty(Mono.just(creditCard));
     }
 
     private Mono<Invoice> populateInvoiceTransactions(Invoice invoice) {

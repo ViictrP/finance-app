@@ -16,7 +16,7 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
 
     @Override
     public Flux<CreditCard> findUserCreditCards(Long userId) {
-        return repository.findByUserIdAndDeletedIsFalse(userId)
+        return repository.findByUserIdAndDeletedIsFalseOrderByTitle(userId)
                 .map(mapper::toDomain);
     }
 
