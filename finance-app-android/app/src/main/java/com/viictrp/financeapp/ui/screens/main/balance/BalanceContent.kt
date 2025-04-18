@@ -210,10 +210,6 @@ fun BalanceContent(
                     TransactionCard(transactions[index])
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(100.dp))
-            }
         }
     }
 }

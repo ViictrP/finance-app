@@ -25,4 +25,10 @@ class CreditCardRepositoryImpl implements CreditCardRepository {
         return repository.findById(creditCardId)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<CreditCard> save(CreditCard creditCard) {
+        return repository.save(mapper.toEntity(creditCard))
+                .map(mapper::toDomain);
+    }
 }

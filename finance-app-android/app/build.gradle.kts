@@ -91,4 +91,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.foundation)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.animation)
 }

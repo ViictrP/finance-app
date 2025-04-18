@@ -1,26 +1,35 @@
 package com.viictrp.financeapp.ui.screens.graph
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.viictrp.financeapp.ui.screens.main.balance.BalanceScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardFormScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardScreen
-import com.viictrp.financeapp.ui.screens.main.balance.BalanceScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.invoice.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.main.home.HomeScreen
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.mainGraph(
     navController: NavController,
-    balanceModel: BalanceViewModel
+    balanceModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     navigation(startDestination = "home", route = "main_graph") {
         composable("home") {
             HomeScreen(navController, balanceModel)
         }
         composable("credit_card") {
-            CreditCardScreen(navController, balanceModel)
+            sharedTransitionScope.CreditCardScreen(
+                navController,
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
         }
         composable("balance") {
             BalanceScreen(balanceModel)
@@ -29,7 +38,12 @@ fun NavGraphBuilder.mainGraph(
             CreditCardFormScreen(navController, balanceModel)
         }
         composable("invoice/{creditCardId}") { backStackEntry ->
-            InvoiceScreen(backStackEntry.arguments?.getString("creditCardId").toString(), balanceModel)
+            sharedTransitionScope.InvoiceScreen(
+                backStackEntry.arguments?.getString("creditCardId").toString(),
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
         }
     }
 }

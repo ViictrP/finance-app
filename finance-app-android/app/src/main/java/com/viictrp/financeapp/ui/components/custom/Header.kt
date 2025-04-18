@@ -58,7 +58,7 @@ fun Header(user: UserDTO?) {
         actions = {
             IconButton(onClick = { /* Open settings */ }) {
                 Icon(
-                    CustomIcons.DuoTone.Settings,
+                    CustomIcons.Filled.Settings,
                     contentDescription = "Settings",
                     modifier = Modifier.size(32.dp)
                 )
@@ -67,7 +67,7 @@ fun Header(user: UserDTO?) {
                 modifier = Modifier.padding(end = 16.dp),
                 onClick = { /* Sync or refresh */ }) {
                 Icon(
-                    CustomIcons.DuoTone.User,
+                    CustomIcons.Filled.User,
                     contentDescription = "Sync",
                     modifier = Modifier
                         .size(32.dp)

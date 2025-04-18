@@ -10,4 +10,7 @@ interface CreditCardEntityMapper {
 
     @Mapping(target = "color", source = "backgroundColor")
     CreditCard toDomain(CreditCardEntity entity);
+
+    @Mapping(target = "backgroundColor", source = "color")
+    CreditCardEntity toEntity(CreditCard creditCard);
 }

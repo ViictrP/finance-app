@@ -1,29 +1,47 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.viictrp.financeapp.ui.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.theme.Blue
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.theme.SecondaryDark
-import kotlin.math.absoluteValue
 
 interface CarouselItem {
     fun getKey(): String
@@ -41,17 +59,21 @@ val colorMap = mapOf(
 )
 
 @Composable
-fun <T : CarouselItem> CardCarousel(
+fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
     items: List<T>,
     onPageChanged: (T) -> Unit,
     modifier: Modifier = Modifier,
-    pageSpacing: Dp = (-8).dp,
+    pageSpacing: Dp = 16.dp,
     contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 64.dp),
-    cardHeight: Dp = 180.dp,
-    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size })
+    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size }),
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     val haptics = LocalHapticFeedback.current
     val onPageChangedState by rememberUpdatedState(onPageChanged)
+
+    val shape = MaterialTheme.shapes.medium
+    val animationDuration = 200
 
     LaunchedEffect(pagerState.settledPage) {
         if (items.isNotEmpty()) {
@@ -71,32 +93,33 @@ fun <T : CarouselItem> CardCarousel(
         key = { items[it].getKey() }
     ) { page ->
         val item = items[page]
-        val offset = pagerState.getOffsetDistanceInPages(page).coerceIn(-1f, 1f)
 
-        Card(
-            modifier = Modifier
-                .graphicsLayer {
-                    alpha = when {
-                        offset < 0f -> 1f + offset
-                        offset > 0f -> 1f - (offset * 0.2f)
-                        else -> 1f
-                    }
-                    scaleX = lerp(1f, 0.88f, offset.absoluteValue)
-                    scaleY = lerp(1f, 0.88f, offset.absoluteValue)
-                }
-                .height(cardHeight),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)),
-            colors = CardDefaults.cardColors(
-                containerColor = colorMap[item.getColor()] ?: Secondary
-            )
-        ) {
-            CarouselCardContent(item)
+        with(sharedTransitionScope) {
+            Box(
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = item.getKey().toString()),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = {_,_ ->
+                            tween(durationMillis = animationDuration)
+                        }
+                    )
+                    .sharedCardStyle(
+                        color = colorMap[item.getColor()] ?: Secondary,
+                        shape = shape,
+                        height = 180.dp
+                    )
+            ) {
+                CarouselCardContent(item)
+            }
         }
     }
 }
 
 @Composable
-fun CarouselCardContent(item: CarouselItem) {
+fun SharedTransitionScope.CarouselCardContent(
+    item: CarouselItem,
+) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -106,12 +129,13 @@ fun CarouselCardContent(item: CarouselItem) {
             Text(
                 text = item.getTitle(),
                 color = SecondaryDark,
-                style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
             )
             IconButton(onClick = {}) {
                 Icon(
-                    CustomIcons.DuoTone.AddCircle,
-                    modifier = Modifier.size(24.dp),
+                    CustomIcons.Filled.Settings,
+                    modifier = Modifier
+                        .size(24.dp),
                     contentDescription = "Select Month",
                     tint = Color.White,
                 )
@@ -127,15 +151,16 @@ fun CarouselCardContent(item: CarouselItem) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    CustomIcons.DuoTone.Calendar,
-                    modifier = Modifier.size(24.dp),
+                    CustomIcons.Filled.Calendar,
+                    modifier = Modifier
+                        .size(24.dp),
                     contentDescription = "Select Month",
                     tint = SecondaryDark,
                 )
                 Text(
                     text = " ${item.getDetail()}",
                     color = SecondaryDark,
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp)
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
                 )
             }
             Text(
@@ -149,6 +174,3 @@ fun CarouselCardContent(item: CarouselItem) {
         }
     }
 }
-
-fun lerp(start: Float, stop: Float, fraction: Float): Float =
-    start + (stop - start) * fraction.coerceIn(0f, 1f)

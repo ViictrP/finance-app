@@ -55,4 +55,8 @@ public class Balance {
 
         return transactionsAmount.add(creditCardsTotal).add(recurringExpensesAmount);
     }
+
+    public void addCreditCard(CreditCard newCreditCard) {
+        this.creditCards.add(newCreditCard);
+    }
 }

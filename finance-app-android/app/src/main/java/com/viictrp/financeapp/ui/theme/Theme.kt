@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 private val DarkColorScheme = darkColorScheme(
     primary = PrimaryDark,
     secondary = SecondaryDark,
+    onPrimary = SecondaryDark,
+    onSecondary = PrimaryDark,
     tertiary = AccentDark,
     background = BackgroundDark,
     error = danger,
@@ -18,6 +20,8 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     secondary = Secondary,
+    onPrimary = Secondary,
+    onSecondary = Primary,
     tertiary = Accent,
     background = Background,
     error = danger,

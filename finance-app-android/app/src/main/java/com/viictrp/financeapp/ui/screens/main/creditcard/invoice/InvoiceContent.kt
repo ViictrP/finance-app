@@ -1,7 +1,10 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard.invoice
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,45 +32,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.CarouselCardContent
 import com.viictrp.financeapp.ui.components.CarouselItem
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.colorMap
+import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalAnimationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
-internal fun InvoiceContent(
+internal fun SharedTransitionScope.InvoiceContent(
     creditCard: CreditCardDTO?,
     padding: PaddingValues,
-    balanceViewModel: BalanceViewModel
+    balanceViewModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val spacing = 48.dp
-    val invoice by balanceViewModel.invoice.collectAsState()
+    val invoice by balanceViewModel.selectedInvoice.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
     val transactions = invoice?.transactions ?: emptyList()
+    val animationDuration = 200
 
     LaunchedEffect(creditCard) {
         balanceViewModel.setInvoice(creditCard)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            balanceViewModel.clear()
+        }
     }
 
     LazyColumn(
@@ -81,17 +92,22 @@ internal fun InvoiceContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp), Arrangement.SpaceBetween
             ) {
-                if (creditCard != null) {
-                    Card(
+                with(sharedTransitionScope) {
+                    val shape = MaterialTheme.shapes.medium
+                    Box(
                         modifier = Modifier
-                            .height(180.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorMap[creditCard.color] ?: Secondary
-                        )
+                            .sharedElement(
+                                state = rememberSharedContentState(key = creditCard?.id.toString()),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = {_,_ ->
+                                    tween(durationMillis = animationDuration)
+                                }
+                            )
+                            .sharedCardStyle(
+                                color = colorMap[creditCard?.color] ?: Secondary,
+                                shape = shape,
+                                height = 180.dp
+                            )
                     ) {
                         CarouselCardContent(getItem(creditCard))
                     }
@@ -146,14 +162,28 @@ internal fun InvoiceContent(
                     Text(
                         text = creditCard?.title ?: "",
                         fontWeight = FontWeight.Bold,
-                        style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}__title"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
+                        )
                     )
                     Text(
                         "Lançamentos da fatura de ${
                             selectedYearMonth.toLong()
                                 .toFormattedYearMonth("MMMM")
                         }",
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_month"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = {_,_ ->
+                                tween(durationMillis = animationDuration)
+                            }
+                        )
                     )
                 }
                 Column(
@@ -170,7 +200,14 @@ internal fun InvoiceContent(
                                         .map { it.amount }
                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                             fontWeight = FontWeight.Normal,
-                            style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                            modifier = Modifier.sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_total"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = {_,_ ->
+                                    tween(durationMillis = animationDuration)
+                                }
+                            )
                         )
                     }
                 }
@@ -189,38 +226,13 @@ internal fun InvoiceContent(
                 }
             }
         }
-
-        item {
-            Spacer(modifier = Modifier.height(100.dp))
-        }
     }
 }
 
-private fun getItem(creditCard: CreditCardDTO) = object : CarouselItem {
-    override fun getKey() = creditCard.id.toString()
-    override fun getColor() = creditCard.color
-    override fun getTitle() = creditCard.title
-    override fun getDescription() = creditCard.number
-    override fun getDetail() = creditCard.invoiceClosingDay.toString()
-}
-
-@Preview
-@Composable
-fun InvoiceContentPreview() {
-    val balanceViewModel: BalanceViewModel = viewModel(
-        factory = BalanceViewModelFactory(ApiService())
-    )
-
-    InvoiceContent(
-        CreditCardDTO(
-            id = 1,
-            title = "Title",
-            description = 4422.toString(),
-            color = "orange",
-            number = 4422.toString(),
-            invoiceClosingDay = 10,
-            totalInvoiceAmount = BigDecimal(1000),
-            invoices = emptyList()
-        ), PaddingValues(), balanceViewModel
-    )
+private fun getItem(creditCard: CreditCardDTO?) = object : CarouselItem {
+    override fun getKey() = creditCard?.id.toString()
+    override fun getColor() = creditCard?.color ?: ""
+    override fun getTitle() = creditCard?.title ?: ""
+    override fun getDescription() = creditCard?.number ?: ""
+    override fun getDetail() = creditCard?.invoiceClosingDay.toString()
 }

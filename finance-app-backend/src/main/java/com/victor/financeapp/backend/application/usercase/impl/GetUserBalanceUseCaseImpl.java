@@ -3,11 +3,9 @@ package com.victor.financeapp.backend.application.usercase.impl;
 import com.victor.financeapp.backend.application.dto.UserBalanceDTO;
 import com.victor.financeapp.backend.application.mapper.BalanceMapper;
 import com.victor.financeapp.backend.application.service.user.BalanceService;
-import com.victor.financeapp.backend.application.service.user.UserDomainService;
+import com.victor.financeapp.backend.application.service.user.UserService;
 import com.victor.financeapp.backend.application.usercase.GetBalanceUseCase;
 import com.victor.financeapp.backend.domain.model.user.User;
-import com.victor.financeapp.backend.domain.repository.UserRepository;
-import com.victor.financeapp.backend.infrastructure.security.SecurityContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,22 +18,16 @@ import java.time.YearMonth;
 @RequiredArgsConstructor
 public class GetUserBalanceUseCaseImpl implements GetBalanceUseCase {
 
-    private final UserRepository userRepository;
-    private final UserDomainService userDomainService;
+    private final UserService userService;
     private final BalanceService balanceService;
 
     private final BalanceMapper balanceMapper;
 
     @Override
     public Mono<UserBalanceDTO> execute(YearMonth yearMonth) {
-        return SecurityContext.getUserEmail()
-                .flatMap(email -> loadUser(yearMonth, email));
-    }
-
-    private Mono<UserBalanceDTO> loadUser(YearMonth yearMonth, String userEmail) {
-        return userRepository.findUser(userEmail)
+        return userService.getLoggedInUser()
                 .flatMap(user -> loadUserBalance(yearMonth, user))
-                .flatMap(userDomainService::calculateUserBalance)
+                .flatMap(userService::calculateUserBalance)
                 .map(balanceMapper::toDTO);
     }
 

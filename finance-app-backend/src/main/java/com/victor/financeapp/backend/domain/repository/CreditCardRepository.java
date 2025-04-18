@@ -8,4 +8,6 @@ public interface CreditCardRepository {
     Flux<CreditCard> findUserCreditCards(Long userId);
 
     Mono<CreditCard> findCreditCard(Long creditCardId);
+
+    Mono<CreditCard> save(CreditCard creditCard);
 }
