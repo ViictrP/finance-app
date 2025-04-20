@@ -8,15 +8,10 @@ on:
       - synchronize
     branches:
       - develop
-    paths:
-      - 'finance-app-backend/**' # Only trigger if changes are inside finance-app-backend
-
   push:
     branches:
       - main
       - develop
-    paths:
-      - 'finance-app-backend/**' # Only trigger if changes are inside finance-app-backend
 
 jobs:
   build:
@@ -24,6 +19,39 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Pegamos o commit anterior para comparação
+
+      - name: Check if changes were made in finance-app-backend
+        id: check_changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Arquivos modificados: $CHANGED_FILES"
+
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-backend/"; then
+            echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+
+      - name: Delete old 'java-app' artifacts
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Procurando artifacts com nome 'java-app'..."
+          curl -s -H "Authorization: token $GH_PAT" \
+            https://api.github.com/repos/$REPO/actions/artifacts \
+          | jq -r '.artifacts[] | select(.name=="java-app" and .expired==false) | .id' \
+          | while read -r artifact_id; do
+              echo "🗑️  Deletando artifact $artifact_id"
+              curl -s -X DELETE -H "Authorization: token $GH_PAT" \
+                https://api.github.com/repos/$REPO/actions/artifacts/$artifact_id
+            done
+
+      - name: Stop if no changes in finance-app-backend
+        if: env.changes == 'false'
+        run: echo "No changes in finance-app-backend, skipping build." && exit 0
 
       - name: Set up Java version
         uses: actions/setup-java@v4.2.1
@@ -33,7 +61,7 @@ jobs:
 
       # TODO fix tests
       - name: Build with Maven
-        working-directory: finance-app-backend # Ensure Maven runs inside the backend folder
+        working-directory: finance-app-backend
         run: mvn clean install -DskipTests
 
       - name: Upload artifact for deployment job
