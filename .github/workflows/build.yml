@@ -1,43 +1,81 @@
-name: Build - finance-app-backend
-
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-    branches:
-      - develop
-    paths:
-      - 'finance-app-backend/**' # Only trigger if changes are inside finance-app-backend
-
   push:
-    branches:
-      - main
-      - develop
-    paths:
-      - 'finance-app-backend/**' # Only trigger if changes are inside finance-app-backend
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-  build:
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
+      ui_changed: ${{ steps.changes.outputs.ui }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # necessário para HEAD^ funcionar
 
+      - name: Detect changes (backend/ui)
+        id: changes
+        run: |
+          echo "backend=false" >> $GITHUB_OUTPUT
+          echo "ui=false" >> $GITHUB_OUTPUT
+
+          # Detecta se é PR ou push
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+            git fetch origin ${{ github.base_ref }} --depth=1
+          else
+            BASE_REF="HEAD^"
+          fi
+
+          echo "Comparando com: $BASE_REF"
+          CHANGED_FILES=$(git diff --name-only "$BASE_REF")
+
+          echo "Arquivos modificados:"
+          echo "$CHANGED_FILES"
+
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-backend/"; then
+            echo "✅ Mudanças detectadas em 'finance-app-backend/'"
+            echo "backend=true" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-ui/"; then
+            echo "✅ Mudanças detectadas em 'finance-app-ui/'"
+            echo "ui=true" >> $GITHUB_OUTPUT
+          fi
+
+  build-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend_changed == 'true'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Java version
-        uses: actions/setup-java@v4.2.1
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '21'
 
-      # TODO fix tests
-      - name: Build with Maven
-        working-directory: finance-app-backend # Ensure Maven runs inside the backend folder
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build Backend
+        working-directory: finance-app-backend
         run: mvn clean install -DskipTests
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: java-app
-          path: 'finance-app-backend/target/*.jar'
+  build-ui:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ui_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build UI
+        working-directory: finance-app-ui
+        run: npm install && npm run build

@@ -59,8 +59,7 @@ public class CreditCard {
     }
 
 
-    //TODO implementar lógica para parcelas
-    public Transaction addTransaction(Transaction transaction) {
+    public void addTransaction(Transaction transaction) {
         var transactionDate = YearMonth.from(transaction.getDate());
 
         if (transaction.getDate().getDayOfMonth() > invoiceClosingDay) {
@@ -69,7 +68,6 @@ public class CreditCard {
 
         var invoice = getOrCreateInvoice(transactionDate);
         invoice.addTransaction(transaction);
-        return transaction;
     }
 
     public BigDecimal calculateTotal() {
