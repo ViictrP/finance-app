@@ -12,20 +12,36 @@ jobs:
       ui_changed: ${{ steps.changes.outputs.ui }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # necessário para HEAD^ funcionar
 
-      - name: Check changed folders
+      - name: Detect changes (backend/ui)
         id: changes
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }})
-
           echo "backend=false" >> $GITHUB_OUTPUT
           echo "ui=false" >> $GITHUB_OUTPUT
 
+          # Detecta se é PR ou push
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+            git fetch origin ${{ github.base_ref }} --depth=1
+          else
+            BASE_REF="HEAD^"
+          fi
+
+          echo "Comparando com: $BASE_REF"
+          CHANGED_FILES=$(git diff --name-only "$BASE_REF")
+
+          echo "Arquivos modificados:"
+          echo "$CHANGED_FILES"
+
           if echo "$CHANGED_FILES" | grep -q "^backend/"; then
+            echo "✅ Mudanças detectadas em 'backend/'"
             echo "backend=true" >> $GITHUB_OUTPUT
           fi
+
           if echo "$CHANGED_FILES" | grep -q "^ui/"; then
+            echo "✅ Mudanças detectadas em 'ui/'"
             echo "ui=true" >> $GITHUB_OUTPUT
           fi
 
