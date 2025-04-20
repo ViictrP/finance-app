@@ -35,13 +35,13 @@ jobs:
           echo "Arquivos modificados:"
           echo "$CHANGED_FILES"
 
-          if echo "$CHANGED_FILES" | grep -q "^backend/"; then
-            echo "✅ Mudanças detectadas em 'backend/'"
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-backend/"; then
+            echo "✅ Mudanças detectadas em 'finance-app-backend/'"
             echo "backend=true" >> $GITHUB_OUTPUT
           fi
 
-          if echo "$CHANGED_FILES" | grep -q "^ui/"; then
-            echo "✅ Mudanças detectadas em 'ui/'"
+          if echo "$CHANGED_FILES" | grep -q "^finance-app-ui/"; then
+            echo "✅ Mudanças detectadas em 'finance-app-ui/'"
             echo "ui=true" >> $GITHUB_OUTPUT
           fi
 
