@@ -39,21 +39,6 @@ jobs:
             echo "changes=false" >> $GITHUB_ENV
           fi
 
-      - name: Delete old 'java-app' artifacts
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-          REPO: ${{ github.repository }}
-        run: |
-          echo "Procurando artifacts com nome 'java-app'..."
-          curl -s -H "Authorization: token $GH_PAT" \
-            https://api.github.com/repos/$REPO/actions/artifacts \
-          | jq -r '.artifacts[] | select(.name=="java-app" and .expired==false) | .id' \
-          | while read -r artifact_id; do
-              echo "🗑️  Deletando artifact $artifact_id"
-              curl -s -X DELETE -H "Authorization: token $GH_PAT" \
-                https://api.github.com/repos/$REPO/actions/artifacts/$artifact_id
-            done
-
       - name: Stop if no changes in finance-app-backend
         if: env.changes == 'false'
         run: echo "No changes in finance-app-backend, skipping build." && exit 0
@@ -69,8 +54,8 @@ jobs:
         working-directory: finance-app-backend
         run: mvn clean install -DskipTests
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: java-app
-          path: 'finance-app-backend/target/*.jar'
+#      - name: Upload artifact for deployment job
+#        uses: actions/upload-artifact@v4.3.3
+#        with:
+#          name: java-app
+#          path: 'finance-app-backend/target/*.jar'
