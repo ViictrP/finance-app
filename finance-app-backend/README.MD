@@ -7,7 +7,7 @@ API for Finance App
     docker build --tag finance-app-server -f ./Dockerfile .
 
 ## Running the application
-> Before running the application in Docker, you must run docker compose on `docker-compose.yml`.
+>Before running the application in Docker, you must run docker compose on `docker-compose.yml`.
 This will run all the dependencies for this application to start.
 
 Now you can run the docker image you have built
