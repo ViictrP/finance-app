@@ -49,8 +49,8 @@ jobs:
         working-directory: finance-app-backend
         run: mvn clean install -DskipTests
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4.3.3
-        with:
-          name: java-app
-          path: 'finance-app-backend/target/*.jar'
+#      - name: Upload artifact for deployment job
+#        uses: actions/upload-artifact@v4.3.3
+#        with:
+#          name: java-app
+#          path: 'finance-app-backend/target/*.jar'
