@@ -5,6 +5,7 @@ import com.victor.financeapp.backend.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.YearMonth;
 
@@ -33,5 +34,15 @@ class TransactionRepositoryImpl implements TransactionRepository {
     public Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId) {
         return repository.findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(invoiceId)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<Transaction> save(Transaction transaction) {
+        return repository.save(mapper.toEntity(transaction))
+                .map(saved -> {
+                    var domain = mapper.toDomain(saved);
+                    domain.setInvoice(transaction.getInvoice());
+                    return domain;
+                });
     }
 }

@@ -1,8 +1,3 @@
-scalar YearMonth
-scalar DateTime
-@specifiedBy(url: "https://scalars.graphql.org/andimarek/date-time.html")
-scalar BigDecimal
-
 extend type Query {
     getBalance(yearMonth: YearMonth!): UserBalanceDTO
 }
@@ -25,7 +20,7 @@ type TransactionDTO {
     description: String!
     amount: BigDecimal!
     type: String!
-    date: DateTime!
+    date: LocalDateTime!
     category: String
     isInstallment: Boolean!
     installmentAmount: BigDecimal
