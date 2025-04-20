@@ -3,7 +3,7 @@ package com.viictrp.financeapp.application.dto
 import androidx.compose.runtime.Immutable
 import com.viictrp.financeapp.application.enums.TransactionType
 import java.math.BigDecimal
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 
 @Immutable
 data class TransactionDTO(
@@ -12,7 +12,7 @@ data class TransactionDTO(
     val amount: BigDecimal,
     val category: String,
     val type: TransactionType,
-    val date: OffsetDateTime,
+    val date: LocalDateTime,
     val isInstallment: Boolean,
     val installmentAmount: BigDecimal,
     val installmentId: String?,

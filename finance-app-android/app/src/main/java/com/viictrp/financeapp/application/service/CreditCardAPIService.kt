@@ -15,7 +15,7 @@ import com.viictrp.financeapp.graphql.type.NewCreditCardDTO
 import com.viictrp.financeapp.graphql.type.NewTransactionDTO
 import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 import java.time.YearMonth
 
 class CreditCardAPIService(private val apolloClient: ApolloClient) {
@@ -37,7 +37,7 @@ class CreditCardAPIService(private val apolloClient: ApolloClient) {
                             description = transaction.description,
                             amount = transaction.amount,
                             type = TransactionType.valueOf(transaction.type.toString()),
-                            date = OffsetDateTime.parse(transaction.date),
+                            date = LocalDateTime.parse(transaction.date),
                             isInstallment = transaction.isInstallment,
                             installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
                             installmentId = transaction.installmentId,
@@ -70,7 +70,7 @@ class CreditCardAPIService(private val apolloClient: ApolloClient) {
                     description = data.description,
                     amount = data.amount,
                     type = TransactionType.valueOf(data.type.toString()),
-                    date = OffsetDateTime.parse(data.date),
+                    date = LocalDateTime.parse(data.date),
                     isInstallment = data.isInstallment,
                     installmentAmount = data.installmentAmount ?: BigDecimal.ZERO,
                     installmentId = data.installmentId,

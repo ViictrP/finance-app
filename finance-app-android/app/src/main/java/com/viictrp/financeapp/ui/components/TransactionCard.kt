@@ -1,6 +1,5 @@
 package com.viictrp.financeapp.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +29,7 @@ import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -126,7 +125,7 @@ fun TransactionCardPreview() {
                 amount = BigDecimal.valueOf(100.0),
                 category = "shop",
                 type = TransactionType.RECURRING,
-                date = OffsetDateTime.now(),
+                date = LocalDateTime.now(),
                 isInstallment = false,
                 installmentAmount = BigDecimal.valueOf(100.0),
                 installmentId = null,

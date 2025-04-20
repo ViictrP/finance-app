@@ -46,6 +46,7 @@ import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
@@ -124,6 +125,8 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
                         coroutine.launch {
                             showDialog = true
                             balanceModel.saveCreditCard(form.value)
+                            delay(500)
+                            form.clear()
                             showDialog = false
                         }
                     }

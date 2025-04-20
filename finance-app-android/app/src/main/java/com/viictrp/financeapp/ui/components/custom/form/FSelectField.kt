@@ -153,7 +153,7 @@ fun FSelectField(
                             ) {}
                         },
                         onClick = {
-                            form.update(fieldName, option)
+                            form.update(fieldName, option.lowercase())
                             expanded = false
                         }
                     )

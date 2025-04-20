@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +36,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.ui.components.CarouselCardContent
 import com.viictrp.financeapp.ui.components.CarouselItem
@@ -215,14 +222,39 @@ internal fun SharedTransitionScope.InvoiceContent(
         }
 
         if (!loading) {
-            items(transactions.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                        .animateItem()
-                ) {
-                    TransactionCard(transactions[index])
+            if (transactions.isNotEmpty()) {
+                itemsIndexed(transactions, key = { _, item -> item.id }) { index, transaction ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .animateItem()
+                    ) {
+                        TransactionCard(transaction)
+                    }
+                }
+            } else {
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val composition by rememberLottieComposition(
+                            LottieCompositionSpec.Asset("empty-lottie.json")
+                        )
+                        val progress by animateLottieCompositionAsState(
+                            composition,
+                            iterations = LottieConstants.IterateForever,
+                            restartOnPlay = true
+                        )
+
+                        LottieAnimation(
+                            composition = composition,
+                            progress = { progress },
+                            modifier = Modifier.size(230.dp)
+                        )
+                    }
                 }
             }
         }

@@ -13,7 +13,7 @@ import com.viictrp.financeapp.application.service.mapper.mapTransactionDTO
 import com.viictrp.financeapp.graphql.GetBalanceQuery
 import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 import java.time.YearMonth
 
 class UserAPIService(private val apolloClient: ApolloClient) {
@@ -39,7 +39,7 @@ class UserAPIService(private val apolloClient: ApolloClient) {
                             description = transaction.description,
                             amount = transaction.amount,
                             type = TransactionType.valueOf(transaction.type.toString()),
-                            date = OffsetDateTime.parse(transaction.date),
+                            date = LocalDateTime.parse(transaction.date),
                             isInstallment = transaction.isInstallment,
                             installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
                             installmentId = transaction.installmentId,
