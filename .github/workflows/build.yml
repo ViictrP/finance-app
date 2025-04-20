@@ -1,61 +1,50 @@
-name: Build - finance-app-backend
-
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-    branches:
-      - develop
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-  build:
+  detect-changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
+      ui_changed: ${{ steps.changes.outputs.ui }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2  # Pegamos o commit anterior para comparação
 
-      - name: Test env and token
+      - name: Check changed folders
+        id: changes
         run: |
-          echo "Token: $GH_PAT"
-          echo "Repo: $REPO"
+          git fetch origin ${{ github.base_ref }} --depth=1
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }})
 
-      - name: Check if changes were made in finance-app-backend
-        id: check_changes
-        run: |
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
-          echo "Arquivos modificados: $CHANGED_FILES"
-          
-          if echo "$CHANGED_FILES" | grep -q "^finance-app-backend/"; then
-            echo "changes=true" >> $GITHUB_ENV
-          else
-            echo "changes=false" >> $GITHUB_ENV
+          echo "backend=false" >> $GITHUB_OUTPUT
+          echo "ui=false" >> $GITHUB_OUTPUT
+
+          if echo "$CHANGED_FILES" | grep -q "^backend/"; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+          fi
+          if echo "$CHANGED_FILES" | grep -q "^ui/"; then
+            echo "ui=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Stop if no changes in finance-app-backend
-        if: env.changes == 'false'
-        run: echo "No changes in finance-app-backend, skipping build." && exit 0
-
-      - name: Set up Java version
-        uses: actions/setup-java@v4.2.1
-        with:
-          distribution: 'adopt'
-          java-version: '21'
-
-      # TODO fix tests
-      - name: Build with Maven
+  build-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Backend
         working-directory: finance-app-backend
         run: mvn clean install -DskipTests
 
-#      - name: Upload artifact for deployment job
-#        uses: actions/upload-artifact@v4.3.3
-#        with:
-#          name: java-app
-#          path: 'finance-app-backend/target/*.jar'
+  build-ui:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ui_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build UI
+        working-directory: finance-app-ui
+        run: npm install && npm run build
