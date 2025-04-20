@@ -4,6 +4,7 @@ import com.victor.financeapp.backend.domain.model.creditcard.Invoice;
 import com.victor.financeapp.backend.domain.repository.InvoiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.YearMonth;
@@ -19,6 +20,18 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
     public Mono<Invoice> findCreditCardsInvoiceOn(Long creditCardId, YearMonth yearMonth) {
         var month = yearMonth.getMonth().name().substring(0, 3);
         return repository.findByCreditCardIdAndMonthAndYearAndDeletedIsFalse(creditCardId, month, yearMonth.getYear())
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Flux<Invoice> findCreditCardInvoices(Long creditCardId) {
+        return repository.findByCreditCardId(creditCardId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<Invoice> save(Invoice invoice) {
+        return repository.save(mapper.toEntity(invoice))
                 .map(mapper::toDomain);
     }
 }

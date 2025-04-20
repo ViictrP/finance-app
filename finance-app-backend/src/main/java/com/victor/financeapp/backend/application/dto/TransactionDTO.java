@@ -4,7 +4,7 @@ import com.victor.financeapp.backend.domain.model.common.Transaction.Transaction
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Builder
 public record TransactionDTO(
@@ -13,7 +13,7 @@ public record TransactionDTO(
         BigDecimal amount,
         String category,
         TransactionType type,
-        OffsetDateTime date,
+        LocalDateTime date,
         Boolean isInstallment,
         Integer installmentAmount,
         String installmentId,

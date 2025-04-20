@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +18,14 @@ public class CreditCard {
 
     private final Long id;
     private final String title;
-    @Setter
-    private String description;
     private final String number;
-    @Setter
-    private String color;
     private final Integer invoiceClosingDay;
-    private final List<Invoice> invoices;
     private final Long userId;
     private BigDecimal totalInvoiceAmount = BigDecimal.ZERO;
+
+    private @Setter String description;
+    private @Setter String color;
+    private @Setter List<Invoice> invoices;
 
     @Builder
     public CreditCard(Long id, String title, String number, Integer invoiceClosingDay, Long userId) {
@@ -53,13 +53,14 @@ public class CreditCard {
     }
 
     private Invoice getOrCreateInvoice(YearMonth yearMonth) {
-        return invoices.stream()
-                .filter(invoice -> invoice.getYearMonth().equals(yearMonth))
+        return invoices.stream().filter(invoice -> invoice.getYearMonth().equals(yearMonth))
                 .findFirst()
                 .orElse(addInvoice(yearMonth));
     }
 
-    public void addTransaction(Transaction transaction) {
+
+    //TODO implementar lógica para parcelas
+    public Transaction addTransaction(Transaction transaction) {
         var transactionDate = YearMonth.from(transaction.getDate());
 
         if (transaction.getDate().getDayOfMonth() > invoiceClosingDay) {
@@ -68,28 +69,20 @@ public class CreditCard {
 
         var invoice = getOrCreateInvoice(transactionDate);
         invoice.addTransaction(transaction);
+        return transaction;
     }
 
     public BigDecimal calculateTotal() {
-        totalInvoiceAmount = invoices.parallelStream()
-                .map(Invoice::calculateTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        totalInvoiceAmount = invoices.parallelStream().map(Invoice::calculateTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
         return totalInvoiceAmount;
     }
 
     public Invoice getInvoice(YearMonth yearMonth) {
-        return invoices.stream().filter(invoice -> yearMonth.equals(invoice.getYearMonth()))
-                .findFirst()
-                .orElseThrow(() -> new InvoiceNotFoundException(id, yearMonth));
+        return invoices.stream().filter(invoice -> yearMonth.equals(invoice.getYearMonth())).findFirst().orElseThrow(() -> new InvoiceNotFoundException(id, yearMonth));
     }
 
     public static CreditCard createNew(Long userId, String title, String description, String color, String number, Integer invoiceClosingDay) {
-        var newCreditCard = CreditCard.builder()
-                .title(title)
-                .number(number)
-                .userId(userId)
-                .invoiceClosingDay(invoiceClosingDay)
-                .build();
+        var newCreditCard = CreditCard.builder().title(title).number(number).userId(userId).invoiceClosingDay(invoiceClosingDay).build();
 
         newCreditCard.setDescription(description);
         newCreditCard.setColor(color);

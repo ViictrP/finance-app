@@ -2,7 +2,9 @@ package com.victor.financeapp.backend.adapter.in.web.controller;
 
 import com.victor.financeapp.backend.application.dto.CreditCardDTO;
 import com.victor.financeapp.backend.application.dto.InvoiceDTO;
+import com.victor.financeapp.backend.application.dto.TransactionDTO;
 import com.victor.financeapp.backend.application.usercase.GetInvoice;
+import com.victor.financeapp.backend.application.usercase.SaveCreditCardTransactionUseCase;
 import com.victor.financeapp.backend.application.usercase.SaveCreditCardUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ public class CreditCardController {
 
     private final GetInvoice useCase;
     private final SaveCreditCardUseCase saveCreditCardUseCase;
+    private final SaveCreditCardTransactionUseCase saveCreditCardTransactionUseCase;
 
     @QueryMapping
     public Mono<InvoiceDTO> findInvoice(@Argument Long creditCardId, @Argument YearMonth yearMonth) {
@@ -30,5 +33,10 @@ public class CreditCardController {
     @MutationMapping
     public Mono<CreditCardDTO> saveCreditCard(@Argument CreditCardDTO newCreditCard) {
         return saveCreditCardUseCase.execute(newCreditCard);
+    }
+
+    @MutationMapping
+    public Mono<TransactionDTO> saveCreditCardTransaction(@Argument TransactionDTO newTransaction) {
+        return saveCreditCardTransactionUseCase.execute(newTransaction);
     }
 }

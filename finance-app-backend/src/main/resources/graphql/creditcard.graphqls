@@ -4,6 +4,17 @@ extend type Query {
 
 extend type Mutation {
     saveCreditCard(newCreditCard: NewCreditCardDTO!): CreditCardDTO
+    saveCreditCardTransaction(newTransaction: NewTransactionDTO!): TransactionDTO
+}
+
+input NewTransactionDTO {
+    description: String!
+    amount: BigDecimal!
+    type: String!
+    date: LocalDateTime!
+    category: String
+    installmentAmount: Int!
+    creditCardId: Int
 }
 
 input NewCreditCardDTO {

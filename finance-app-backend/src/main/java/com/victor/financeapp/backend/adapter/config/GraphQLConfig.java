@@ -1,5 +1,6 @@
 package com.victor.financeapp.backend.adapter.config;
 
+import com.victor.financeapp.backend.adapter.config.scalar.LocalDateTimeScalar;
 import com.victor.financeapp.backend.adapter.config.scalar.YearMonthScalar;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLScalarType;
@@ -16,11 +17,18 @@ public class GraphQLConfig {
     }
 
     @Bean
-    public RuntimeWiringConfigurer runtimeWiringConfigurer(GraphQLScalarType yearMonthScalar) {
+    public GraphQLScalarType localDateTimeScalar() {
+        return LocalDateTimeScalar.INSTANCE;
+    }
+
+    @Bean
+    public RuntimeWiringConfigurer runtimeWiringConfigurer(GraphQLScalarType yearMonthScalar, GraphQLScalarType localDateTimeScalar) {
         return wiringBuilder -> wiringBuilder
                 .scalar(yearMonthScalar)
+                .scalar(localDateTimeScalar)
                 .scalar(ExtendedScalars.DateTime)
                 .scalar(ExtendedScalars.GraphQLBigDecimal)
-                .scalar(ExtendedScalars.Json);
+                .scalar(ExtendedScalars.Json)
+                .scalar(ExtendedScalars.LocalTime);
     }
 }

@@ -1,5 +1,6 @@
 package com.victor.financeapp.backend.domain.model.user;
 
+import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,5 +66,9 @@ public class User {
         }
 
         return newCreditCard;
+    }
+
+    public void addTransaction(Transaction transaction) {
+        transaction.setUserId(this.id);
     }
 }

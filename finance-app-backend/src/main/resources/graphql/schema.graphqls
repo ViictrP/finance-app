@@ -1,3 +1,7 @@
+scalar YearMonth
+scalar LocalDateTime
+scalar BigDecimal
+
 type Query {
 
 }
