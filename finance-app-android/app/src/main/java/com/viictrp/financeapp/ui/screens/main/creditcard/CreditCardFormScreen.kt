@@ -1,6 +1,5 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -30,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.ui.components.custom.LoadingDialog
 import com.viictrp.financeapp.ui.components.custom.form.FSelectField
 import com.viictrp.financeapp.ui.components.custom.form.FTextField
 import com.viictrp.financeapp.ui.components.custom.form.controller.Field
@@ -40,6 +46,7 @@ import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 
@@ -47,6 +54,10 @@ import java.math.BigDecimal
 fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceViewModel) {
 
     val spacing = 48.dp
+
+    val coroutine = rememberCoroutineScope()
+    var showDialog by remember { mutableStateOf(false) }
+    val loading = balanceModel.loading.collectAsState()
 
     val form = rememberFormController<CreditCardDTO>(
         listOf(
@@ -101,12 +112,20 @@ fun CreditCardFormScreen(navController: NavController, balanceModel: BalanceView
 
     val isEnabled = form.isValid
 
+    if (showDialog) {
+        LoadingDialog(loading = loading.value)
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     if (isEnabled) {
-                        Log.d("CreditCardFormScreen", "form.value: ${form.value}")
+                        coroutine.launch {
+                            showDialog = true
+                            balanceModel.saveCreditCard(form.value)
+                            showDialog = false
+                        }
                     }
                 },
                 containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
