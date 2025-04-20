@@ -2,12 +2,18 @@ scalar BigDecimal
 scalar YearMonth
 
 schema {
-    query: Query
+    query: Query,
+    mutation: Mutation
 }
 
 type Query {
     getBalance(yearMonth: YearMonth!): BalanceDTO
     findInvoice(creditCardId: Int!, yearMonth: YearMonth!): InvoiceDTO
+}
+
+type Mutation {
+    saveCreditCardTransaction(newTransaction: NewTransactionDTO!): TransactionDTO!
+    saveCreditCard(newCreditCard: NewCreditCardDTO!): CreditCardDTO!
 }
 
 enum TransactionType {
@@ -27,6 +33,25 @@ type TransactionDTO {
     installmentId: ID
     installmentNumber: Int
     creditCardId: ID
+}
+
+input NewTransactionDTO {
+    id: ID
+    description: String!
+    amount: BigDecimal!
+    type: TransactionType!
+    date: String!
+    category: String!
+    installmentAmount: BigDecimal!
+    creditCardId: ID!
+}
+
+input NewCreditCardDTO {
+    title: String!
+    description: String!
+    number: String!
+    invoiceClosingDay: Int!
+    color: String
 }
 
 type CreditCardDTO {

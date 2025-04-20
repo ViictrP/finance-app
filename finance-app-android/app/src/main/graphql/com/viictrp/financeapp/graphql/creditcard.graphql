@@ -19,3 +19,32 @@ query FindInvoice($creditCardId: Int!, $yearMonth: YearMonth!) {
         }
     }
 }
+
+mutation SaveTransaction($request: NewTransactionDTO!) {
+    saveCreditCardTransaction(newTransaction: $request) {
+        id
+        description
+        amount
+        type
+        date
+        category
+        isInstallment
+        installmentAmount
+        installmentId
+        installmentNumber
+        creditCardId
+    }
+}
+
+mutation SaveCreditCard($request: NewCreditCardDTO!) {
+    saveCreditCard(newCreditCard: $request) {
+        id
+        userId
+        title
+        description
+        invoiceClosingDay
+        totalInvoiceAmount
+        color
+        number
+    }
+}
