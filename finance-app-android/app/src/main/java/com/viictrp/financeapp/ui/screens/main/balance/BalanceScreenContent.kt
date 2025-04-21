@@ -41,7 +41,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BalanceContent(
+fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
     contentPadding: PaddingValues
 ) {

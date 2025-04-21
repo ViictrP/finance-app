@@ -37,7 +37,7 @@ fun BalanceScreen(viewModel: BalanceViewModel) {
             },
             modifier = Modifier.fillMaxSize(),
             content = {
-                BalanceContent(viewModel, padding)
+                BalanceScreenContent(viewModel, padding)
             }
         )
     }
