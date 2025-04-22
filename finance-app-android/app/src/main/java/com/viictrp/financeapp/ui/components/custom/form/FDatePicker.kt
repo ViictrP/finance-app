@@ -1,6 +1,8 @@
 package com.viictrp.financeapp.ui.components.custom.form
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,6 +20,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,21 +31,26 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.custom.form.controller.FormController
+import com.viictrp.financeapp.ui.components.extension.toLocalDate
+import com.viictrp.financeapp.ui.components.extension.toLocalDateTime
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
-import java.time.Instant
+import com.viictrp.financeapp.ui.theme.Accent
+import com.viictrp.financeapp.ui.theme.Primary
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FDateField(
+fun FDatePickerField(
     form: FormController<*>,
     fieldName: String,
     modifier: Modifier = Modifier,
     label: String = "",
     enabled: Boolean = true,
-    formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 ) {
     val state = form.get(fieldName)
     var showDialog by remember { mutableStateOf(false) }
@@ -50,6 +58,14 @@ fun FDateField(
     val focusRequester = form.getFocusRequester(fieldName)
     val imeAction = form.imeActionFor(fieldName)
     val onNext = form.nextFieldAfter(fieldName)
+    val interactionSource = remember { MutableInteractionSource() }
+    val value = if (state.text.isNotEmpty()) {
+        runCatching {
+            state.text.toLong()
+                .toLocalDateTime()
+                .format(formatter)
+        }.getOrElse { "" }
+    } else ""
 
     val selectedDate = remember(state.text) {
         runCatching {
@@ -74,9 +90,17 @@ fun FDateField(
         yearContentColor = MaterialTheme.colorScheme.secondary
     )
 
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Release && enabled) {
+                showDialog = true
+            }
+        }
+    }
+
     Column(modifier = modifier) {
         TextField(
-            value = state.text,
+            value = value,
             onValueChange = {},
             readOnly = true,
             label = {
@@ -95,7 +119,7 @@ fun FDateField(
                     Icon(
                         painter = CustomIcons.Outline.Calendar,
                         contentDescription = "Abrir calendário",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
             },
@@ -109,11 +133,13 @@ fun FDateField(
             colors = TextFieldDefaults.colors(
                 focusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.8f),
                 unfocusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.6f),
+                focusedContainerColor = MaterialTheme.colorScheme.primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                 focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
                 errorIndicatorColor = MaterialTheme.colorScheme.error,
                 errorLabelColor = MaterialTheme.colorScheme.error,
-                errorContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                errorContainerColor = MaterialTheme.colorScheme.primary
             )
         )
 
@@ -122,18 +148,34 @@ fun FDateField(
                 onDismissRequest = { showDialog = false },
                 confirmButton = {
                     IconButton(onClick = {
+                        val now = LocalTime.now()
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-                            form.update(fieldName, formatter.format(date))
+                            val selected = millis.toLocalDate()
+                            form.update(
+                                fieldName, "${
+                                    LocalDateTime.of(selected, now)
+                                        .atZone(ZoneId.systemDefault())
+                                        .toInstant()
+                                        .toEpochMilli()
+                                }"
+                            )
                             showDialog = false
                         }
                     }) {
-                        Text("Selecionar")
+                        Icon(
+                            painter = CustomIcons.Filled.Save,
+                            contentDescription = "Save",
+                            tint = Accent
+                        )
                     }
                 },
                 dismissButton = {
                     IconButton(onClick = { showDialog = false }) {
-                        Text("Cancelar")
+                        Icon(
+                            painter = CustomIcons.Filled.Close,
+                            contentDescription = "Save",
+                            tint = Primary.copy(alpha = .5f)
+                        )
                     }
                 }
             ) {

@@ -43,6 +43,7 @@ public class SaveCreditCardTransactionUseCaseImpl implements SaveCreditCardTrans
 
     private Mono<Transaction> createAndSaveInstallments(TransactionDTO dto, User user) {
         var transaction = mapper.toDomain(dto);
+        transaction.setType(Transaction.TransactionType.DEFAULT);
 
         var installments = transaction.getInstallmentTransactions();
         log.info("Creating {} installment transaction(s)", installments.size());

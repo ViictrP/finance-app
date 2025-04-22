@@ -1,9 +1,6 @@
-package com.viictrp.financeapp.ui.screens.main.creditcard
+package com.viictrp.financeapp.ui.screens.main.transaction
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,9 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.viictrp.financeapp.application.dto.CreditCardDTO
+import com.viictrp.financeapp.application.dto.TransactionDTO
+import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.custom.LoadingDialog
+import com.viictrp.financeapp.ui.components.custom.form.FDatePickerField
 import com.viictrp.financeapp.ui.components.custom.form.FSelectField
 import com.viictrp.financeapp.ui.components.custom.form.FSelectItem
 import com.viictrp.financeapp.ui.components.custom.form.FTextField
@@ -44,130 +43,145 @@ import com.viictrp.financeapp.ui.components.custom.form.controller.Field
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidator
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.custom.form.controller.rememberFormController
+import com.viictrp.financeapp.ui.components.extension.toLocalDateTime
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModelFactory
-import com.viictrp.financeapp.ui.theme.Accent
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
-import com.viictrp.financeapp.ui.theme.Orange
-import com.viictrp.financeapp.ui.theme.Purple
-import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-
 @Composable
-fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
-
+fun TransactionFormScreen(balanceModel: BalanceViewModel) {
     val spacing = 48.dp
 
+    val balance = balanceModel.currentBalance.collectAsState()
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     val loading = balanceModel.loading.collectAsState()
+    val creditCards = balance.value?.creditCards ?: emptyList()
 
-    val colorOptions by remember {
+    val creditCardOptions = creditCards
+        .map {
+            object : FSelectItem {
+                override fun getLabel(): String = it.title
+                override fun getValue(): String = it.id.toString()
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.CreditCard,
+                        contentDescription = it.title,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
+        }
+
+    val typeOptions by remember {
         mutableStateOf(
-            listOf(
+            listOf<FSelectItem>(
             object : FSelectItem {
-                override fun getLabel(): String {
-                    return "Azul"
-                }
-
-                override fun getValue(): String {
-                    return "azul"
-                }
-
-                override fun getIcon(): @Composable (() -> Unit)? {
-                    return {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(
-                                    Accent,
-                                    shape = MaterialTheme.shapes.extraSmall
-                                )
-                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
-                        )
-                    }
+                override fun getLabel(): String = "Normal"
+                override fun getValue(): String = "DEFAULT"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.Invoice,
+                        contentDescription = "Normal",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
             },
             object : FSelectItem {
-                override fun getLabel(): String {
-                    return "Laranja"
+                override fun getLabel(): String = "Recorrente"
+                override fun getValue(): String = "RECURRING"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.Invoice,
+                        contentDescription = "Recorrente",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
-
-                override fun getValue(): String {
-                    return "orange"
-                }
-
-                override fun getIcon(): @Composable (() -> Unit)? {
-                    return {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(
-                                    Orange,
-                                    shape = MaterialTheme.shapes.extraSmall
-                                )
-                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
-                        )
-                    }
+            }
+        ))
+    }
+    val categoryOptions by remember {
+        mutableStateOf(
+            listOf<FSelectItem>(
+            object : FSelectItem {
+                override fun getLabel(): String = "Casa"
+                override fun getValue(): String = "home"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.House,
+                        contentDescription = "Casa",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
             },
             object : FSelectItem {
-                override fun getLabel(): String {
-                    return "Preto"
-                }
-
-                override fun getValue(): String {
-                    return "black"
-                }
-
-                override fun getIcon(): @Composable (() -> Unit)? {
-                    return {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(
-                                    Secondary,
-                                    shape = MaterialTheme.shapes.extraSmall
-                                )
-                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
-                        )
-                    }
+                override fun getLabel(): String = "Restaurante"
+                override fun getValue(): String = "food"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.Burger,
+                        contentDescription = "Restaurante",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
             },
             object : FSelectItem {
-                override fun getLabel(): String {
-                    return "Roxo"
+                override fun getLabel(): String = "Shop"
+                override fun getValue(): String = "shop"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.ShoppingBag,
+                        contentDescription = "Shop",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
-
-                override fun getValue(): String {
-                    return "purple"
+            },
+            object : FSelectItem {
+                override fun getLabel(): String = "Cartão"
+                override fun getValue(): String = "credit_card"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.CreditCard,
+                        contentDescription = "Cartão",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
-
-                override fun getIcon(): @Composable (() -> Unit)? {
-                    return {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(
-                                    Purple,
-                                    shape = MaterialTheme.shapes.extraSmall
-                                )
-                                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
-                        )
-                    }
+            },
+            object : FSelectItem {
+                override fun getLabel(): String = "Outro"
+                override fun getValue(): String = "other"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.Barcode,
+                        contentDescription = "Outro",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
                 }
             }
         ))
     }
 
-    val form = rememberFormController<CreditCardDTO>(
+    val form = rememberFormController<TransactionDTO>(
         listOf(
             Field(
-                "title",
+                "type",
+                required = true,
+                validators = listOf(StateValidatorType.REQUIRED.validator)
+            ),
+            Field(
+                "category",
                 required = true,
                 validators = listOf(StateValidatorType.REQUIRED.validator)
             ),
@@ -177,7 +191,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                 validators = listOf(StateValidatorType.REQUIRED.validator)
             ),
             Field(
-                "number", required = true, validators = listOf(
+                "amount", required = true, validators = listOf(
                     StateValidatorType.REQUIRED.validator,
                     StateValidator(
                         validator = {
@@ -189,28 +203,30 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                 )
             ),
             Field(
-                "invoiceClosingDay", required = true, validators = listOf(
-                    StateValidatorType.REQUIRED.validator,
+                "date", required = true, validators = listOf(StateValidatorType.REQUIRED.validator)
+            ),
+            Field(
+                "installmentAmount", required = false, validators = listOf(
                     StateValidator(
                         validator = {
                             val number = it.toIntOrNull()
-                            number != null && number in 1..31
+                            number != null
                         },
-                        errorMessage = "Informe um número entre 1 e 31"
+                        errorMessage = "Informe um número"
                     )
                 )
             ),
-            Field("color")
+            Field("creditCardId", required = false)
         )
     ) { fields ->
-        CreditCardDTO(
-            title = fields["title"]!!.text,
+        TransactionDTO(
             description = fields["description"]!!.text,
-            color = fields["color"]!!.text,
-            number = fields["number"]!!.text,
-            invoiceClosingDay = fields["invoiceClosingDay"]!!.text.toInt(),
-            totalInvoiceAmount = BigDecimal.ZERO,
-            invoices = emptyList()
+            amount = BigDecimal.valueOf(fields["amount"]!!.text.toLong()),
+            category = fields["category"]!!.text,
+            type = TransactionType.valueOf(fields["type"]!!.text),
+            date = fields["date"]!!.text.toLong().toLocalDateTime(),
+            installmentNumber = fields["installmentAmount"]!!.text.toInt(),
+            creditCardId = if (fields["creditCardId"]?.text?.isNotEmpty() == true) fields["creditCardId"]?.text?.toLong() else null
         )
     }
 
@@ -227,7 +243,14 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                     if (isEnabled) {
                         coroutine.launch {
                             showDialog = true
-                            balanceModel.saveCreditCard(form.value)
+                            val transaction = form.value
+
+                            if (transaction.creditCardId != null) {
+                                balanceModel.saveCreditCardTransaction(transaction)
+                            } else {
+                                balanceModel.saveTransaction(transaction)
+                            }
+
                             delay(500)
                             form.clear()
                             showDialog = false
@@ -252,7 +275,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding =  padding
+            contentPadding = padding
         ) {
             item {
                 Column(
@@ -261,13 +284,13 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Adicionar um Cartão de Crédito",
+                        "Adicionar uma compra/conta",
                         fontWeight = FontWeight.Bold,
                         style = LocalTextStyle.current.copy(fontSize = 24.sp)
                     )
                     Spacer(modifier = Modifier.size(24.dp))
                     Text(
-                        " Para adicionar um cartão de crédito, preencha todas as informações obrigatórias marcadas com * (asterísco). ",
+                        " Para adicionar uma compra/conta, preencha todas as informações obrigatórias marcadas com * (asterísco). ",
                         style = LocalTextStyle.current.copy(fontSize = 14.sp),
                         color = Color.Gray
                     )
@@ -284,12 +307,34 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp), Arrangement.SpaceBetween
                 ) {
-                    FTextField(
+                    FSelectField(
                         form = form,
-                        fieldName = "title",
-                        label = "Título do cartão",
+                        fieldName = "type",
+                        label = "Tipo",
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = CustomIcons.Outline.Description
+                        leadingIcon = CustomIcons.Outline.Invoice,
+                        options = typeOptions
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(spacing / 2))
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp), Arrangement.SpaceBetween
+                ) {
+                    FSelectField(
+                        form = form,
+                        fieldName = "category",
+                        label = "Category",
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Category,
+                        options = categoryOptions
                     )
                 }
             }
@@ -307,7 +352,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                     FTextField(
                         form = form,
                         fieldName = "description",
-                        label = "Descrição do cartão",
+                        label = "Descrição",
                         modifier = Modifier.fillMaxWidth(),
                         leadingIcon = CustomIcons.Outline.Description
                     )
@@ -326,11 +371,11 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                 ) {
                     FTextField(
                         form = form,
-                        fieldName = "number",
-                        label = "Número do cartão",
+                        fieldName = "amount",
+                        label = "Valor",
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = CustomIcons.Outline.Number,
-                        keyboardType = KeyboardType.Number,
+                        leadingIcon = CustomIcons.Outline.Dollar,
+                        keyboardType = KeyboardType.Decimal
                     )
                 }
             }
@@ -347,11 +392,30 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                 ) {
                     FTextField(
                         form = form,
-                        fieldName = "invoiceClosingDay",
-                        label = "Data de fechamento",
+                        fieldName = "installmentAmount",
+                        label = "Parcelas",
                         modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = CustomIcons.Outline.Copy,
                         keyboardType = KeyboardType.Number,
-                        leadingIcon = CustomIcons.Outline.Calendar
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.size(spacing / 2))
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp), Arrangement.SpaceBetween
+                ) {
+                    FDatePickerField(
+                        form = form,
+                        fieldName = "date",
+                        label = "Data",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -368,11 +432,11 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
                 ) {
                     FSelectField(
                         form = form,
-                        fieldName = "color",
-                        label = "Cor do cartão",
+                        fieldName = "creditCardId",
+                        label = "Cartão de Crédito",
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = CustomIcons.Outline.Color,
-                        options = colorOptions
+                        leadingIcon = CustomIcons.Outline.CreditCard,
+                        options = creditCardOptions
                     )
                 }
             }
@@ -392,6 +456,6 @@ fun CreditCardFormScreenPreview() {
     )
 
     FinanceAppTheme {
-        CreditCardFormScreen(balanceViewModel)
+        TransactionFormScreen(balanceViewModel)
     }
 }

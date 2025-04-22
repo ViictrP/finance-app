@@ -5,11 +5,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.viictrp.financeapp.application.service.ApiService
@@ -24,25 +22,22 @@ import java.time.YearMonth
 fun BalanceScreen(viewModel: BalanceViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
-    //TODO trocar todos por loading do viewBalance
-    var refreshing by remember { mutableStateOf(false) }
+    val loading by viewModel.loading.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         PullToRefreshContainer(
-            isRefreshing = refreshing,
+            isRefreshing = loading,
             onRefresh = {
                 coroutineScope.launch {
-                    refreshing = true
                     viewModel.updateYearMonth(YearMonth.now())
                     viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-                    refreshing = false
                 }
             },
             modifier = Modifier.fillMaxSize(),
             content = {
-                BalanceContent(viewModel, padding)
+                BalanceScreenContent(viewModel, padding)
             }
         )
     }

@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.components.custom
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,6 @@ fun LoadingDialog(
     loading: Boolean,
     onDismiss: (() -> Unit)? = null
 ) {
-    val animationAsset = if (loading) "loading-lottie.json" else "completed-lottie.json"
     val message = if (loading) "carregando..." else "finalizado!"
 
     Dialog(onDismissRequest = { onDismiss?.invoke() }) {
@@ -43,19 +43,24 @@ fun LoadingDialog(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.Asset(animationAsset))
-            val progress by animateLottieCompositionAsState(
-                composition,
-                iterations = if (loading) LottieConstants.IterateForever else 1,
-                speed = 1.0f,
-                restartOnPlay = false
-            )
+            Crossfade(targetState = loading, label = "lottieFade") { isLoading ->
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.Asset(
+                        if (isLoading) "loading-lottie.json" else "completed-lottie.json"
+                    )
+                )
+                val progress by animateLottieCompositionAsState(
+                    composition,
+                    iterations = if (isLoading) LottieConstants.IterateForever else 1,
+                    restartOnPlay = true
+                )
 
-            LottieAnimation(
-                composition = composition,
-                progress = { progress },
-                modifier = Modifier.size(200.dp)
-            )
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(200.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 

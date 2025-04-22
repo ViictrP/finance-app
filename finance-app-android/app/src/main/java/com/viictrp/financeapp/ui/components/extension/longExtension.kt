@@ -1,6 +1,8 @@
 package com.viictrp.financeapp.ui.components.extension
 
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -19,4 +21,16 @@ fun Long.toYearMonth(): YearMonth {
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
         .let { YearMonth.from(it) }
+}
+
+fun Long.toLocalDateTime(): LocalDateTime {
+    return Instant.ofEpochMilli(this)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime()
+}
+
+fun Long.toLocalDate(): LocalDate {
+    return Instant.ofEpochMilli(this)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
 }

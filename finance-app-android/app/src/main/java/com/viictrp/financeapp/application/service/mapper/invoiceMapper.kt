@@ -4,8 +4,7 @@ import com.viictrp.financeapp.application.dto.InvoiceDTO
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.graphql.GetBalanceQuery
-import java.math.BigDecimal
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 import java.time.YearMonth
 
 internal fun mapInvoiceDTO(invoices: List<GetBalanceQuery.Invoice?>): List<InvoiceDTO> =
@@ -21,9 +20,9 @@ internal fun mapInvoiceDTO(invoices: List<GetBalanceQuery.Invoice?>): List<Invoi
                         description = transaction.description,
                         amount = transaction.amount,
                         type = TransactionType.valueOf(transaction.type.toString()),
-                        date = OffsetDateTime.parse(transaction.date),
+                        date = LocalDateTime.parse(transaction.date),
                         isInstallment = transaction.isInstallment,
-                        installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
+                        installmentAmount = transaction.installmentAmount ?: 1,
                         installmentId = transaction.installmentId,
                         installmentNumber = transaction.installmentNumber ?: 0,
                         creditCardId = transaction.creditCardId?.toLong(),

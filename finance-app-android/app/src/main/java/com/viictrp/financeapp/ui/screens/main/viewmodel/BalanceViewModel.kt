@@ -33,33 +33,47 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     internal val loading = _loading
 
     suspend fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
-        _loading.value = true
-        _balance.value = apiService.getBalance(yearMonth)
-        if (defineCurrent) {
-            setCurrentBalance(balance.value)
-            _selectedCreditCard.value = balance.value?.creditCards?.get(0)
+        try {
+            _loading.value = true
+            _balance.value = apiService.getBalance(yearMonth)
+            if (defineCurrent) {
+                setCurrentBalance(balance.value)
+                _selectedCreditCard.value = balance.value?.creditCards?.get(0)
+            }
+        } finally {
+            _loading.value = false
         }
-        _loading.value = false
     }
 
     suspend fun getInvoice(creditCardId: Long, yearMonth: YearMonth) {
-        _loading.value = true
-        _invoice.value = apiService.getInvoice(creditCardId, yearMonth)
-        _loading.value = false
+        try {
+            _loading.value = true
+            _invoice.value = apiService.getInvoice(creditCardId, yearMonth)
+        } finally {
+            _loading.value = false
+        }
     }
 
     suspend fun saveCreditCardTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
         _loading.value = true
-        val transaction = apiService.saveCreditCardTransaction(newTransactionDTO)
-        _loading.value = false
-        return transaction
+        return try {
+            apiService.saveCreditCardTransaction(newTransactionDTO)
+        } finally {
+            _loading.value = false
+        }
+    }
+
+    suspend fun saveTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
+        return null
     }
 
     suspend fun saveCreditCard(newCreditCardDTO: CreditCardDTO): CreditCardDTO? {
         _loading.value = true
-        val creditCard = apiService.saveCreditCard(newCreditCardDTO)
-        _loading.value = false
-        return creditCard
+        return try {
+            apiService.saveCreditCard(newCreditCardDTO)
+        } finally {
+            _loading.value = false
+        }
     }
 
     fun setCurrentBalance(balance: BalanceDTO?) {

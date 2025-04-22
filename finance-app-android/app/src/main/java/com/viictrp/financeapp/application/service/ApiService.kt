@@ -33,7 +33,7 @@ class ApiService {
             date = newTransactionDTO.date.toString(),
             category = newTransactionDTO.category,
             id = Optional.absent(),
-            installmentAmount = newTransactionDTO.installmentAmount,
+            installmentAmount = newTransactionDTO.installmentAmount ?: 1,
             creditCardId = newTransactionDTO.creditCardId.toString(),
         )
         return creditCardApiService.saveTransaction(newTransaction)

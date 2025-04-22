@@ -23,24 +23,4 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
 
     Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(Long invoiceId);
-
-    @Query(
-            """
-                    SELECT id,
-                           description,
-                           category,
-                           amount,
-                           false as is_installment,
-                           0 as installment_number,
-                           null as installment_id,
-                           amount as installment_amount,
-                           created_at as date,
-                           'RECURRING' as type,
-                           user_id,
-                           null as invoice_id
-                    FROM finance_app.recurring_expense
-                    WHERE user_id = :userId
-                    AND delete_date IS NULL
-                    """)
-    Flux<TransactionEntity> findAllRecurringExpenses(Long userId);
 }

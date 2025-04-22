@@ -29,7 +29,7 @@ type TransactionDTO {
     date: String!
     category: String
     isInstallment: Boolean!
-    installmentAmount: BigDecimal
+    installmentAmount: Int
     installmentId: ID
     installmentNumber: Int
     creditCardId: ID
@@ -42,7 +42,7 @@ input NewTransactionDTO {
     type: TransactionType!
     date: String!
     category: String!
-    installmentAmount: BigDecimal!
+    installmentAmount: Int!
     creditCardId: ID!
 }
 

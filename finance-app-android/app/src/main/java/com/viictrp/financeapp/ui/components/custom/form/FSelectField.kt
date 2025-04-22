@@ -36,18 +36,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.custom.form.controller.Field
 import com.viictrp.financeapp.ui.components.custom.form.controller.FormController
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.custom.form.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.theme.Blue
+import com.viictrp.financeapp.ui.theme.Orange
+
+interface FSelectItem {
+    fun getLabel(): String
+    fun getValue(): String
+    fun getIcon(): (@Composable () -> Unit)?
+    fun isSelected(): Boolean = false
+}
 
 @Composable
 fun FSelectField(
     form: FormController<*>,
     fieldName: String,
-    options: List<String>,
+    options: List<FSelectItem>,
     modifier: Modifier = Modifier,
     label: String = "",
     leadingIcon: Painter? = null,
@@ -61,6 +69,10 @@ fun FSelectField(
     val imeAction = form.imeActionFor(fieldName)
     val onNext = form.nextFieldAfter(fieldName)
 
+    val optionToDisplay = options.find { option ->
+        option.getValue() == state.text
+    }
+
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
             if (interaction is PressInteraction.Release && enabled) {
@@ -69,10 +81,17 @@ fun FSelectField(
         }
     }
 
+    LaunchedEffect(Unit) {
+        val preSelectedOption = options.find { option -> option.isSelected() }
+        preSelectedOption?.let {
+            form.update(fieldName, it.getValue())
+        }
+    }
+
     Column(modifier = modifier) {
         Box {
             TextField(
-                value = state.text,
+                value = optionToDisplay?.getLabel() ?: state.text,
                 onValueChange = {},
                 readOnly = true,
                 modifier = Modifier
@@ -138,22 +157,18 @@ fun FSelectField(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f))
             ) {
                 options.forEach { option ->
+                    val label = option.getLabel()
+                    val value = option.getValue()
+                    val icon = option.getIcon()
                     DropdownMenuItem(
-                        text = { Text(option) },
+                        text = { Text(label) },
                         leadingIcon = {
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .background(
-                                        colorMap[option.lowercase()]
-                                            ?: MaterialTheme.colorScheme.secondary,
-                                        shape = MaterialTheme.shapes.extraSmall
-                                    )
-                                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
-                            ) {}
+                            if (icon != null) {
+                                icon()
+                            }
                         },
                         onClick = {
-                            form.update(fieldName, option)
+                            form.update(fieldName, value)
                             expanded = false
                         }
                     )
@@ -166,7 +181,51 @@ fun FSelectField(
 @Preview(showBackground = true)
 @Composable
 fun FSelectFieldPreview() {
-    val options = listOf("Azul", "Verde", "Vermelho")
+    data class SimpleSelectItem(
+        private val label: String,
+        private val value: String = label,
+        private val icon: (@Composable () -> Unit)? = null
+    ) : FSelectItem {
+        override fun getLabel(): String = label
+        override fun getValue(): String = value
+        override fun getIcon(): (@Composable () -> Unit)? = icon
+    }
+
+    val options = listOf<FSelectItem>(
+        SimpleSelectItem("Vermelho", icon = {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        Orange,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
+            )
+        }),
+        SimpleSelectItem("Azul", icon = {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        Blue,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
+            )
+        }),
+        SimpleSelectItem("Outro Azul", icon = {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        Blue,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(.1f)),
+            )
+        })
+    )
 
     val form = rememberFormController(
         fields = listOf(

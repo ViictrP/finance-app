@@ -46,10 +46,10 @@ import java.util.Locale
 internal fun HomeScreenContent(
     navController: NavController,
     viewModel: BalanceViewModel,
-    isRefreshing: Boolean,
     contentPadding: PaddingValues
 ) {
     val balance by viewModel.currentBalance.collectAsState()
+    val loading by viewModel.loading.collectAsState()
     val space = Modifier.height(48.dp)
 
     val transactions = remember(balance) {
@@ -114,7 +114,7 @@ internal fun HomeScreenContent(
                         }
                         Spacer(modifier = Modifier.size(10.dp))
                         Text(
-                            if (balance != null && !isRefreshing) {
+                            if (balance != null && !loading) {
                                 NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
                                     .format(balance?.expenses)
                             } else {

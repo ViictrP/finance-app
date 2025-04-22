@@ -44,6 +44,17 @@ class FormController<T>(
 
     fun imeActionFor(fieldName: String): ImeAction =
         if (focusRequesters.keys.lastOrNull() == fieldName) ImeAction.Done else ImeAction.Next
+
+    fun clear() {
+        _fields.forEach { (key, oldField) ->
+            _fields[key] = oldField.copy(
+                text = "",
+                touched = false,
+                dirty = false,
+                error = null
+            )
+        }
+    }
 }
 
 data class Field(

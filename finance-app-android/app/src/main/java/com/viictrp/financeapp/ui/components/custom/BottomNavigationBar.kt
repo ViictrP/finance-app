@@ -119,7 +119,10 @@ fun BottomNavigationBar(navController: NavController) {
                             Text(
                                 "Nova Transação",
                                 style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                                modifier = Modifier.clickable {},
+                                modifier = Modifier.clickable {
+                                    navController.navigate("transaction_form")
+                                    bottomSheetVisible = false
+                                },
                                 color = MaterialTheme.colorScheme.secondary
                             )
                         }

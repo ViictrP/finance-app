@@ -25,12 +25,6 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Flux<Transaction> findAllRecurringExpenses(Long userId) {
-        return repository.findAllRecurringExpenses(userId)
-                .map(mapper::toDomain);
-    }
-
-    @Override
     public Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId) {
         return repository.findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(invoiceId)
                 .map(mapper::toDomain);
