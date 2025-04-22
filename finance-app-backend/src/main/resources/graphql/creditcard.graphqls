@@ -7,16 +7,6 @@ extend type Mutation {
     saveCreditCardTransaction(newTransaction: NewTransactionDTO!): TransactionDTO
 }
 
-input NewTransactionDTO {
-    description: String!
-    amount: BigDecimal!
-    type: String!
-    date: LocalDateTime!
-    category: String
-    installmentAmount: Int!
-    creditCardId: Int
-}
-
 input NewCreditCardDTO {
     title: String!
     description: String!

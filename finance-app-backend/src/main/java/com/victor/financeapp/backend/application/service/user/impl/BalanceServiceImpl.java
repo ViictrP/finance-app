@@ -29,13 +29,11 @@ public class BalanceServiceImpl implements BalanceService {
                                 .flatMap(creditCard -> invoiceDomainService.populateCreditCardInvoice(creditCard, yearMonth))
                                 .collectList(),
                         transactionRepository.findUserTransactionsOn(user.getId(), yearMonth).collectList(),
-                        monthClosureRepository.findUsersLastFiveMonthClosures(user.getId()).collectList(),
-                        transactionRepository.findAllRecurringExpenses(user.getId()).collectList())
+                        monthClosureRepository.findUsersLastFiveMonthClosures(user.getId()).collectList())
                 .map(tuple -> {
                     balance.creditCards(tuple.getT1());
                     balance.transactions(tuple.getT2());
                     balance.monthClosures(tuple.getT3());
-                    balance.recurringExpenses(tuple.getT4());
                     return balance.build();
                 });
     }

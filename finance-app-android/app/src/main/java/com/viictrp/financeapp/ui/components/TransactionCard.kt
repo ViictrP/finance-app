@@ -77,7 +77,7 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
 
                     Spacer(modifier = Modifier.size(8.dp))
 
-                    val description = if (transaction.isInstallment) {
+                    val description = if (transaction.isInstallment == true) {
                         "${transaction.description} (${transaction.installmentNumber}/${transaction.installmentAmount})"
                     } else transaction.description
 
@@ -127,7 +127,7 @@ fun TransactionCardPreview() {
                 type = TransactionType.RECURRING,
                 date = LocalDateTime.now(),
                 isInstallment = false,
-                installmentAmount = BigDecimal.valueOf(100.0),
+                installmentAmount = 1,
                 installmentId = null,
                 creditCardId = null,
                 installmentNumber = 1

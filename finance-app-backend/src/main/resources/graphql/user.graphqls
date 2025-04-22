@@ -2,9 +2,12 @@ extend type Query {
     getBalance(yearMonth: YearMonth!): UserBalanceDTO
 }
 
+extend type Mutation {
+    saveTransaction(newTransaction: NewTransactionDTO!): TransactionDTO
+}
+
 type UserBalanceDTO {
     transactions: [TransactionDTO]
-    recurringExpenses: [TransactionDTO]
     creditCards: [CreditCardDTO]
     salary: BigDecimal
     expenses: BigDecimal

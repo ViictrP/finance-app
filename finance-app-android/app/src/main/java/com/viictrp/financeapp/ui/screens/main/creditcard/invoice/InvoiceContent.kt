@@ -142,7 +142,7 @@ internal fun SharedTransitionScope.InvoiceContent(
                     balanceViewModel.updateYearMonth(yearMonth)
                     coroutineScope.launch {
                         creditCard?.let {
-                            balanceViewModel.getInvoice(creditCard.id, selectedYearMonth)
+                            balanceViewModel.getInvoice(creditCard.id!!, selectedYearMonth)
                         }
                     }
                 }
@@ -223,7 +223,7 @@ internal fun SharedTransitionScope.InvoiceContent(
 
         if (!loading) {
             if (transactions.isNotEmpty()) {
-                itemsIndexed(transactions, key = { _, item -> item.id }) { index, transaction ->
+                itemsIndexed(transactions, key = { _, item -> item.id!! }) { index, transaction ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -41,7 +41,7 @@ class UserAPIService(private val apolloClient: ApolloClient) {
                             type = TransactionType.valueOf(transaction.type.toString()),
                             date = LocalDateTime.parse(transaction.date),
                             isInstallment = transaction.isInstallment,
-                            installmentAmount = transaction.installmentAmount ?: BigDecimal.ZERO,
+                            installmentAmount = transaction.installmentAmount ?: 1,
                             installmentId = transaction.installmentId,
                             installmentNumber = transaction.installmentNumber ?: 0,
                             creditCardId = transaction.creditCardId?.toLong(),

@@ -201,7 +201,7 @@ fun CreditCardScreenContent(
                 }
 
                 if (transactions.isNotEmpty()) {
-                    itemsIndexed(transactions, key = { _, item -> item.id }) { index, transaction ->
+                    itemsIndexed(transactions, key = { _, item -> item.id!! }) { index, transaction ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

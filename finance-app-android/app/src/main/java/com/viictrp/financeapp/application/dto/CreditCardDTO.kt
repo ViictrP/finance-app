@@ -3,7 +3,7 @@ package com.viictrp.financeapp.application.dto
 import java.math.BigDecimal
 
 data class CreditCardDTO(
-    val id: Long,
+    val id: Long? = null,
     val title: String,
     val description: String,
     val color: String,

@@ -14,7 +14,6 @@ import java.util.Map;
 public class Balance {
 
     private List<Transaction> transactions;
-    private List<Transaction> recurringExpenses;
     private List<CreditCard> creditCards;
     private List<MonthClosure> monthClosures;
     private BigDecimal salary;
@@ -44,16 +43,11 @@ public class Balance {
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
 
-        var recurringExpensesAmount = recurringExpenses.stream()
-                .map(Transaction::getAmount)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-
         BigDecimal creditCardsTotal = creditCards.parallelStream()
                 .map(CreditCard::calculateTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return transactionsAmount.add(creditCardsTotal).add(recurringExpensesAmount);
+        return transactionsAmount.add(creditCardsTotal);
     }
 
     public void addCreditCard(CreditCard newCreditCard) {

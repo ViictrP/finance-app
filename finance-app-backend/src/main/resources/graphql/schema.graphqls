@@ -9,3 +9,13 @@ type Query {
 type Mutation {
 
 }
+
+input NewTransactionDTO {
+    description: String!
+    amount: BigDecimal!
+    type: String!
+    date: LocalDateTime!
+    category: String
+    installmentAmount: Int!
+    creditCardId: Int
+}

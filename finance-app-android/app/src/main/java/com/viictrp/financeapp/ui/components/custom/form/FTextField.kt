@@ -63,7 +63,7 @@ fun FTextField(
             )
         },
         modifier = modifier.focusRequester(focusRequester),
-        isError = state.required && state.error != null,
+        isError = state.error != null,
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
@@ -100,7 +100,7 @@ fun FTextField(
                         )
                     }
                 } else
-                    if (state.error != null && state.required) {
+                    if (state.error != null) {
                     IconButton(onClick = { showTooltip = !showTooltip }) {
                         Icon(
                             painter = CustomIcons.Filled.Info,

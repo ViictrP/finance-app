@@ -63,6 +63,10 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
         }
     }
 
+    suspend fun saveTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
+        return null
+    }
+
     suspend fun saveCreditCard(newCreditCardDTO: CreditCardDTO): CreditCardDTO? {
         _loading.value = true
         return try {

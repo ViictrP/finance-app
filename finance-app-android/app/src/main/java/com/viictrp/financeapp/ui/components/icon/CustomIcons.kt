@@ -81,6 +81,26 @@ object CustomIcons {
         val Selection: Painter
             @Composable
             get() = painterResource(id = R.drawable.selection_duotone)
+
+        val Category: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.tag_duotone)
+
+        val Invoice: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.invoice_duotone)
+
+        val Copy: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.copy_simple_duotone)
+
+        val Dollar: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.currency_dollar_simple_duotone)
+
+        val Barcode: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.barcode_duotone)
     }
 
     object Filled {
@@ -171,6 +191,26 @@ object CustomIcons {
         val Selection: Painter
             @Composable
             get() = painterResource(id = R.drawable.selection_fill)
+
+        val Category: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.tag_fill)
+
+        val Invoice: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.invoice_fill)
+
+        val Copy: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.copy_simple_fill)
+
+        val Dollar: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.currency_dollar_simple_fill)
+
+        val Barcode: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.barcode_fill)
     }
 
     object Outline {
@@ -249,6 +289,26 @@ object CustomIcons {
         val Selection: Painter
             @Composable
             get() = painterResource(id = R.drawable.selection)
+
+        val Category: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.tag)
+
+        val Invoice: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.invoice)
+
+        val Copy: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.copy_simple)
+
+        val Dollar: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.currency_dollar_simple)
+
+        val Barcode: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.barcode)
     }
 
     object OutlineBold {
@@ -327,5 +387,25 @@ object CustomIcons {
         val Selection: Painter
             @Composable
             get() = painterResource(id = R.drawable.selection_bold)
+
+        val Category: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.tag_bold)
+
+        val Invoice: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.invoice_bold)
+
+        val Copy: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.copy_simple_bold)
+
+        val Dollar: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.currency_dollar_simple_bold)
+
+        val Barcode: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.barcode_bold)
     }
 }
