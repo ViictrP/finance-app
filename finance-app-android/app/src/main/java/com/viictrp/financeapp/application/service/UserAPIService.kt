@@ -8,13 +8,15 @@ import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.application.service.mapper.mapCreditCardDTO
 import com.viictrp.financeapp.application.service.mapper.mapMonthClosureDTO
-import com.viictrp.financeapp.application.service.mapper.mapRecurringExpenseDTO
 import com.viictrp.financeapp.application.service.mapper.mapTransactionDTO
 import com.viictrp.financeapp.graphql.GetBalanceQuery
+import com.viictrp.financeapp.graphql.SaveUserTransactionMutation
+import com.viictrp.financeapp.graphql.type.NewTransactionDTO
 import kotlinx.coroutines.CancellationException
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.YearMonth
+import kotlin.toString
 
 class UserAPIService(private val apolloClient: ApolloClient) {
 
@@ -35,7 +37,7 @@ class UserAPIService(private val apolloClient: ApolloClient) {
                     nonConvertedSalary = data.getBalance?.nonConvertedSalary ?: BigDecimal.ZERO,
                     transactions = mapTransactionDTO(data.getBalance?.transactions ?: emptyList()) { transaction ->
                         TransactionDTO(
-                            id = transaction.id.toLong(),
+                            id = transaction.id?.toLong(),
                             description = transaction.description,
                             amount = transaction.amount,
                             type = TransactionType.valueOf(transaction.type.toString()),
@@ -49,9 +51,6 @@ class UserAPIService(private val apolloClient: ApolloClient) {
                         )
                     },
                     creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
-                    recurringExpenses = mapRecurringExpenseDTO(
-                        data.getBalance?.recurringExpenses ?: emptyList()
-                    ),
                     monthClosures = mapMonthClosureDTO(
                         data.getBalance?.monthClosures ?: emptyList()
                     ),
@@ -59,6 +58,35 @@ class UserAPIService(private val apolloClient: ApolloClient) {
             }
         } catch (e: Exception) {
             Log.d("ApiService", "Error fetching balance: ${e.message}")
+            if (e is CancellationException) throw e
+            null
+        }
+    }
+
+    suspend fun saveTransaction(newTransaction: NewTransactionDTO): TransactionDTO? {
+        return try {
+            val response: ApolloResponse<SaveUserTransactionMutation.Data> =
+                apolloClient
+                    .mutation(SaveUserTransactionMutation(newTransaction))
+                    .execute()
+
+            response.data?.saveTransaction?.let { data ->
+                TransactionDTO(
+                    id = data.id?.toLong(),
+                    description = data.description,
+                    amount = data.amount,
+                    type = TransactionType.valueOf(data.type.toString()),
+                    date = LocalDateTime.parse(data.date),
+                    isInstallment = false,
+                    installmentAmount = 1,
+                    installmentId = null,
+                    installmentNumber = 1,
+                    creditCardId = null,
+                    category = data.category.toString()
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("ApiService", "Error saving new transaction: ${e.message}")
             if (e is CancellationException) throw e
             null
         }

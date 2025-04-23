@@ -10,7 +10,7 @@ import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.application.service.mapper.mapTransactionDTO
 import com.viictrp.financeapp.graphql.FindInvoiceQuery
 import com.viictrp.financeapp.graphql.SaveCreditCardMutation
-import com.viictrp.financeapp.graphql.SaveTransactionMutation
+import com.viictrp.financeapp.graphql.SaveCreditCardTransactionMutation
 import com.viictrp.financeapp.graphql.type.NewCreditCardDTO
 import com.viictrp.financeapp.graphql.type.NewTransactionDTO
 import kotlinx.coroutines.CancellationException
@@ -33,7 +33,7 @@ class CreditCardAPIService(private val apolloClient: ApolloClient) {
                     creditCardId = data.creditCardId.toLong(),
                     transactions = mapTransactionDTO<FindInvoiceQuery.Transaction>(data.transactions) { transaction ->
                         TransactionDTO(
-                            id = transaction.id.toLong(),
+                            id = transaction.id?.toLong(),
                             description = transaction.description,
                             amount = transaction.amount,
                             type = TransactionType.valueOf(transaction.type.toString()),
@@ -57,16 +57,16 @@ class CreditCardAPIService(private val apolloClient: ApolloClient) {
         }
     }
 
-    suspend fun saveTransaction(newTransaction: NewTransactionDTO): TransactionDTO? {
+    suspend fun saveCreditCardTransaction(newTransaction: NewTransactionDTO): TransactionDTO? {
         return try {
-            val response: ApolloResponse<SaveTransactionMutation.Data> =
+            val response: ApolloResponse<SaveCreditCardTransactionMutation.Data> =
                 apolloClient
-                    .mutation(SaveTransactionMutation(newTransaction))
+                    .mutation(SaveCreditCardTransactionMutation(newTransaction))
                     .execute()
 
             response.data?.saveCreditCardTransaction?.let { data ->
                 TransactionDTO(
-                    id = data.id.toLong(),
+                    id = data.id?.toLong(),
                     description = data.description,
                     amount = data.amount,
                     type = TransactionType.valueOf(data.type.toString()),
