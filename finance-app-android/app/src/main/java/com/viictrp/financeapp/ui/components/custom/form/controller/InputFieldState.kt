@@ -1,5 +1,9 @@
 package com.viictrp.financeapp.ui.components.custom.form.controller
 
+import com.viictrp.financeapp.ui.components.extension.toLocalDateTime
+import java.math.BigDecimal
+import java.time.LocalDateTime
+
 enum class StateValidatorType(val validator: StateValidator) {
     REQUIRED(
         StateValidator(
@@ -42,3 +46,20 @@ data class InputFieldState(
         )
     }
 }
+
+val InputFieldState.textValue: String?
+    get() = text.takeIf { it.isNotBlank() }
+
+val InputFieldState.longValue: Long?
+    get() = text.takeIf { it.isNotBlank() }?.toLongOrNull()
+
+val InputFieldState.intValue: Int?
+    get() = text.takeIf { it.isNotBlank() }?.toIntOrNull()
+
+val InputFieldState.decimalValue: BigDecimal?
+    get() = text.takeIf { it.isNotBlank() }?.replace(",", ".")?.toBigDecimalOrNull()
+
+val InputFieldState.localDateTimeValue: LocalDateTime?
+    get() = text.takeIf { it.isNotBlank() }?.let {
+        runCatching { it.toLong().toLocalDateTime() }.getOrNull()
+    }

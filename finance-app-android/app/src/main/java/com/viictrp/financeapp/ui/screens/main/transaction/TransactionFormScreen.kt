@@ -42,7 +42,12 @@ import com.viictrp.financeapp.ui.components.custom.form.FTextField
 import com.viictrp.financeapp.ui.components.custom.form.controller.Field
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidator
 import com.viictrp.financeapp.ui.components.custom.form.controller.StateValidatorType
+import com.viictrp.financeapp.ui.components.custom.form.controller.decimalValue
+import com.viictrp.financeapp.ui.components.custom.form.controller.intValue
+import com.viictrp.financeapp.ui.components.custom.form.controller.localDateTimeValue
+import com.viictrp.financeapp.ui.components.custom.form.controller.longValue
 import com.viictrp.financeapp.ui.components.custom.form.controller.rememberFormController
+import com.viictrp.financeapp.ui.components.custom.form.controller.textValue
 import com.viictrp.financeapp.ui.components.extension.toLocalDateTime
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
@@ -195,10 +200,11 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
                     StateValidatorType.REQUIRED.validator,
                     StateValidator(
                         validator = {
-                            val number = it.toIntOrNull()
-                            number != null
+                            it.replace(",", ".")
+                                .toBigDecimal()
+                                .let { value -> value > BigDecimal.ZERO } == true
                         },
-                        errorMessage = "Informe um número"
+                        errorMessage = "Informe um valor válido maior que zero"
                     )
                 )
             ),
@@ -225,13 +231,13 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
         )
     ) { fields ->
         TransactionDTO(
-            description = fields["description"]!!.text,
-            amount = BigDecimal.valueOf(fields["amount"]!!.text.toLong()),
-            category = fields["category"]!!.text,
-            type = TransactionType.valueOf(fields["type"]!!.text),
-            date = fields["date"]!!.text.toLong().toLocalDateTime(),
-            installmentAmount = fields["installmentAmount"]!!.text.toInt(),
-            creditCardId = if (fields["creditCardId"]?.text?.isNotEmpty() == true) fields["creditCardId"]?.text?.toLong() else null
+            description = fields["description"]?.textValue!!,
+            amount = fields["amount"]?.decimalValue!!,
+            category = fields["category"]?.textValue!!,
+            type = TransactionType.valueOf(fields["type"]?.textValue!!),
+            date = fields["date"]?.localDateTimeValue!!,
+            installmentAmount = fields["installmentAmount"]?.intValue,
+            creditCardId = fields["creditCardId"]?.longValue
         )
     }
 
@@ -359,7 +365,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
                         fieldName = "description",
                         label = "Descrição",
                         modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = CustomIcons.Outline.Description
+                        leadingIcon = CustomIcons.Outline.Description,
                     )
                 }
             }
