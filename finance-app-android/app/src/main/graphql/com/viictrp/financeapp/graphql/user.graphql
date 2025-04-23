@@ -1,0 +1,10 @@
+mutation SaveUserTransaction($request: NewTransactionDTO!) {
+    saveTransaction(newTransaction: $request) {
+        id
+        description
+        amount
+        type
+        date
+        category
+    }
+}

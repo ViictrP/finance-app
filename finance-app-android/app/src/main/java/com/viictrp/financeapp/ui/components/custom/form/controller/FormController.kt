@@ -59,6 +59,7 @@ class FormController<T>(
 
 data class Field(
     val name: String = "",
+    val initialValue: String = "",
     val required: Boolean = false,
     val validators: List<StateValidator> = emptyList()
 )
@@ -100,7 +101,11 @@ fun <T> rememberFormController(
 
                 fields.forEach { field ->
                     restored[field.name] = restored[field.name]?.copy(validators = field.validators)
-                        ?: InputFieldState(required = field.required, validators = field.validators)
+                        ?: InputFieldState(
+                            text = field.initialValue,
+                            required = field.required,
+                            validators = field.validators
+                        )
                 }
 
                 FormController(restored, focusRequesters, toDto)
@@ -108,7 +113,11 @@ fun <T> rememberFormController(
         )
     ) {
         val initial = fields.associate { field ->
-            field.name to InputFieldState(required = field.required, validators = field.validators)
+            field.name to InputFieldState(
+                text = field.initialValue,
+                required = field.required,
+                validators = field.validators
+            )
         }
         FormController(initial, focusRequesters, toDto)
     }

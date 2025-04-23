@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.CreditCardDTO
+import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
@@ -53,8 +54,12 @@ fun BalanceScreenContent(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val recurringExpenses = balance?.recurringExpenses ?: emptyList()
-    val transactions = balance?.transactions ?: emptyList()
+    val recurringExpenses = balance?.transactions
+        ?.filter { transaction -> transaction.type == TransactionType.RECURRING } ?: emptyList()
+
+    val transactions =
+        balance?.transactions?.filter { transaction -> transaction.type == TransactionType.DEFAULT }
+            ?: emptyList()
 
     LazyColumn(
         contentPadding = contentPadding,

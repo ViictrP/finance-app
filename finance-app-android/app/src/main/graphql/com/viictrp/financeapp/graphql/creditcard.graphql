@@ -20,7 +20,7 @@ query FindInvoice($creditCardId: Int!, $yearMonth: YearMonth!) {
     }
 }
 
-mutation SaveTransaction($request: NewTransactionDTO!) {
+mutation SaveCreditCardTransaction($request: NewTransactionDTO!) {
     saveCreditCardTransaction(newTransaction: $request) {
         id
         description

@@ -13,6 +13,7 @@ type Query {
 
 type Mutation {
     saveCreditCardTransaction(newTransaction: NewTransactionDTO!): TransactionDTO!
+    saveTransaction(newTransaction: NewTransactionDTO!): TransactionDTO!
     saveCreditCard(newCreditCard: NewCreditCardDTO!): CreditCardDTO!
 }
 
@@ -22,7 +23,7 @@ enum TransactionType {
 }
 
 type TransactionDTO {
-    id: ID!
+    id: Int
     description: String!
     amount: BigDecimal!
     type: TransactionType!
@@ -32,18 +33,17 @@ type TransactionDTO {
     installmentAmount: Int
     installmentId: ID
     installmentNumber: Int
-    creditCardId: ID
+    creditCardId: Int
 }
 
 input NewTransactionDTO {
-    id: ID
     description: String!
     amount: BigDecimal!
     type: TransactionType!
     date: String!
     category: String!
     installmentAmount: Int!
-    creditCardId: ID!
+    creditCardId: Int
 }
 
 input NewCreditCardDTO {
@@ -55,8 +55,8 @@ input NewCreditCardDTO {
 }
 
 type CreditCardDTO {
-    id: ID!
-    userId: ID!
+    id: Int!
+    userId: Int!
     title: String!
     description: String!
     invoiceClosingDay: Int!
@@ -67,8 +67,8 @@ type CreditCardDTO {
 }
 
 type InvoiceDTO {
-    id: ID!
-    creditCardId: ID!
+    id: Int!
+    creditCardId: Int!
     transactions: [TransactionDTO]!
     isClosed: Boolean
     yearMonth: YearMonth
@@ -76,7 +76,6 @@ type InvoiceDTO {
 
 type BalanceDTO {
     transactions: [TransactionDTO]!
-    recurringExpenses: [TransactionDTO]!
     creditCards: [CreditCardDTO]!
     monthClosures: [MonthClosureDTO]
     salary: BigDecimal!

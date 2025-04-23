@@ -176,22 +176,22 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
     val form = rememberFormController<TransactionDTO>(
         listOf(
             Field(
-                "type",
+                name = "type",
                 required = true,
                 validators = listOf(StateValidatorType.REQUIRED.validator)
             ),
             Field(
-                "category",
+                name = "category",
                 required = true,
                 validators = listOf(StateValidatorType.REQUIRED.validator)
             ),
             Field(
-                "description",
+                name = "description",
                 required = true,
                 validators = listOf(StateValidatorType.REQUIRED.validator)
             ),
             Field(
-                "amount", required = true, validators = listOf(
+                name = "amount", required = true, validators = listOf(
                     StateValidatorType.REQUIRED.validator,
                     StateValidator(
                         validator = {
@@ -203,10 +203,10 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
                 )
             ),
             Field(
-                "date", required = true, validators = listOf(StateValidatorType.REQUIRED.validator)
-            ),
-            Field(
-                "installmentAmount", required = false, validators = listOf(
+                name = "installmentAmount",
+                initialValue = "1",
+                required = false,
+                validators = listOf(
                     StateValidator(
                         validator = {
                             val number = it.toIntOrNull()
@@ -216,7 +216,12 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
                     )
                 )
             ),
-            Field("creditCardId", required = false)
+            Field(
+                name = "date",
+                required = true,
+                validators = listOf(StateValidatorType.REQUIRED.validator)
+            ),
+            Field(name = "creditCardId", required = false)
         )
     ) { fields ->
         TransactionDTO(
@@ -225,7 +230,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
             category = fields["category"]!!.text,
             type = TransactionType.valueOf(fields["type"]!!.text),
             date = fields["date"]!!.text.toLong().toLocalDateTime(),
-            installmentNumber = fields["installmentAmount"]!!.text.toInt(),
+            installmentAmount = fields["installmentAmount"]!!.text.toInt(),
             creditCardId = if (fields["creditCardId"]?.text?.isNotEmpty() == true) fields["creditCardId"]?.text?.toLong() else null
         )
     }

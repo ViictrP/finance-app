@@ -16,7 +16,7 @@ internal fun mapInvoiceDTO(invoices: List<GetBalanceQuery.Invoice?>): List<Invoi
                 creditCardId = invoice.creditCardId.toLong(),
                 transactions = mapTransactionDTO(invoice.transactions) { transaction ->
                     TransactionDTO(
-                        id = transaction.id.toLong(),
+                        id = transaction.id?.toLong(),
                         description = transaction.description,
                         amount = transaction.amount,
                         type = TransactionType.valueOf(transaction.type.toString()),

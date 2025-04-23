@@ -32,11 +32,23 @@ class ApiService {
             type = TransactionType.valueOf(newTransactionDTO.type.toString()),
             date = newTransactionDTO.date.toString(),
             category = newTransactionDTO.category,
-            id = Optional.absent(),
             installmentAmount = newTransactionDTO.installmentAmount ?: 1,
-            creditCardId = newTransactionDTO.creditCardId.toString(),
+            creditCardId = Optional.present(newTransactionDTO.creditCardId?.toInt()),
         )
-        return creditCardApiService.saveTransaction(newTransaction)
+        return creditCardApiService.saveCreditCardTransaction(newTransaction)
+    }
+
+    suspend fun saveUserCardTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
+        val newTransaction = NewTransactionDTO(
+            description = newTransactionDTO.description,
+            amount = newTransactionDTO.amount,
+            type = TransactionType.valueOf(newTransactionDTO.type.toString()),
+            date = newTransactionDTO.date.toString(),
+            category = newTransactionDTO.category,
+            installmentAmount = newTransactionDTO.installmentAmount ?: 1,
+            creditCardId = Optional.present(newTransactionDTO.creditCardId?.toInt()),
+        )
+        return userApiService.saveTransaction(newTransaction)
     }
 
     suspend fun saveCreditCard(newCreditCardDTO: CreditCardDTO): CreditCardDTO? {

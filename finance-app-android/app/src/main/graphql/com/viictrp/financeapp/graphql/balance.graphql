@@ -13,19 +13,6 @@ query GetBalance($yearMonth: YearMonth!) {
             installmentNumber
             creditCardId
         }
-        recurringExpenses {
-            id
-            description
-            amount
-            category
-            date
-            isInstallment
-            installmentAmount
-            installmentId
-            installmentNumber
-            creditCardId
-            type
-        }
         creditCards {
             id
             invoices {

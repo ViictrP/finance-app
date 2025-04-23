@@ -3,6 +3,7 @@ package com.viictrp.financeapp.ui.components.custom.form
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -98,91 +99,97 @@ fun FDatePickerField(
         }
     }
 
-    Column(modifier = modifier) {
-        TextField(
-            value = value,
-            onValueChange = {},
-            readOnly = true,
-            label = {
-                Text(
-                    "$label ${if (state.required) " *" else ""}",
-                    style = LocalTextStyle.current.copy(fontSize = 16.sp)
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onFocusChanged { if (it.isFocused && enabled) showDialog = true }
-                .clickable(enabled = enabled) { showDialog = true },
-            trailingIcon = {
-                IconButton(onClick = { showDialog = true }) {
-                    Icon(
-                        painter = CustomIcons.Outline.Calendar,
-                        contentDescription = "Abrir calendário",
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-            },
-            isError = state.error != null,
-            enabled = enabled,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction),
-            keyboardActions = KeyboardActions(
-                onNext = { onNext?.invoke() ?: focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down) },
-                onDone = { focusManager.clearFocus() }
-            ),
-            colors = TextFieldDefaults.colors(
-                focusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.8f),
-                unfocusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.6f),
-                focusedContainerColor = MaterialTheme.colorScheme.primary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
-                errorIndicatorColor = MaterialTheme.colorScheme.error,
-                errorLabelColor = MaterialTheme.colorScheme.error,
-                errorContainerColor = MaterialTheme.colorScheme.primary
-            )
-        )
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
-        if (showDialog) {
-            DatePickerDialog(
-                onDismissRequest = { showDialog = false },
-                confirmButton = {
-                    IconButton(onClick = {
-                        val now = LocalTime.now()
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val selected = millis.toLocalDate()
-                            form.update(
-                                fieldName, "${
-                                    LocalDateTime.of(selected, now)
-                                        .atZone(ZoneId.systemDefault())
-                                        .toInstant()
-                                        .toEpochMilli()
-                                }"
-                            )
-                            showDialog = false
-                        }
-                    }) {
+    Column(modifier = modifier) {
+        Box {
+            TextField(
+                value = value,
+                onValueChange = {},
+                readOnly = true,
+                label = {
+                    Text(
+                        "$label ${if (state.required) " *" else ""}",
+                        style = LocalTextStyle.current.copy(fontSize = 16.sp)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { if (it.isFocused) showDialog = true }
+                    .clickable(enabled = enabled) { showDialog = true },
+                trailingIcon = {
+                    IconButton(onClick = { showDialog = true }) {
                         Icon(
-                            painter = CustomIcons.Filled.Save,
-                            contentDescription = "Save",
-                            tint = Accent
+                            painter = CustomIcons.Outline.Calendar,
+                            contentDescription = "Abrir calendário",
+                            tint = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 },
-                dismissButton = {
-                    IconButton(onClick = { showDialog = false }) {
-                        Icon(
-                            painter = CustomIcons.Filled.Close,
-                            contentDescription = "Save",
-                            tint = Primary.copy(alpha = .5f)
-                        )
-                    }
-                }
-            ) {
-                DatePicker(
-                    state = datePickerState,
-                    colors = datePickerColors
+                isError = state.error != null,
+                enabled = enabled,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction),
+                keyboardActions = KeyboardActions(
+                    onNext = { onNext?.invoke() ?: focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down) },
+                    onDone = { focusManager.clearFocus() }
+                ),
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.8f),
+                    unfocusedLabelColor = MaterialTheme.colorScheme.secondary.copy(.6f),
+                    focusedContainerColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
+                    errorIndicatorColor = MaterialTheme.colorScheme.error,
+                    errorLabelColor = MaterialTheme.colorScheme.error,
+                    errorContainerColor = MaterialTheme.colorScheme.primary
                 )
+            )
+
+            if (showDialog) {
+                DatePickerDialog(
+                    onDismissRequest = { showDialog = false },
+                    confirmButton = {
+                        IconButton(onClick = {
+                            val now = LocalTime.now()
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val selected = millis.toLocalDate()
+                                form.update(
+                                    fieldName, "${
+                                        LocalDateTime.of(selected, now)
+                                            .atZone(ZoneId.systemDefault())
+                                            .toInstant()
+                                            .toEpochMilli()
+                                    }"
+                                )
+                                showDialog = false
+                            }
+                        }) {
+                            Icon(
+                                painter = CustomIcons.Filled.Save,
+                                contentDescription = "Save",
+                                tint = Accent
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        IconButton(onClick = { showDialog = false }) {
+                            Icon(
+                                painter = CustomIcons.Filled.Close,
+                                contentDescription = "Save",
+                                tint = Primary.copy(alpha = .5f)
+                            )
+                        }
+                    }
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        colors = datePickerColors
+                    )
+                }
             }
         }
     }
