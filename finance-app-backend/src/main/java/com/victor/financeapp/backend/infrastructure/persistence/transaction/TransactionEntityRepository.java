@@ -10,16 +10,22 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
 
     @Query(
             """
-                        SELECT *
-                        FROM finance_app.transaction
-                        WHERE user_id = :userId
-                        AND invoice_id IS NULL
-                        AND EXTRACT(MONTH FROM date) = :month
-                        AND EXTRACT(YEAR FROM date) = :year
-                        AND deleted IS FALSE
-                        AND delete_date IS NULL
-                        ORDER BY date DESC
-                    """)
+                SELECT *
+                FROM finance_app.transaction
+                WHERE user_id = :userId
+                  AND invoice_id IS NULL
+                  AND deleted IS FALSE
+                  AND delete_date IS NULL
+                  AND (
+                      type = 'RECURRING'
+                      OR (
+                          type = 'DEFAULT'
+                          AND EXTRACT(MONTH FROM date) = :month
+                          AND EXTRACT(YEAR FROM date) = :year
+                      )
+                  )
+                ORDER BY date DESC;
+            """)
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
 
     Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(Long invoiceId);
