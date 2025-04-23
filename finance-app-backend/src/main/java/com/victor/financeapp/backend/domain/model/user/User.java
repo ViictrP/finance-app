@@ -69,6 +69,10 @@ public class User {
     }
 
     public void addTransaction(Transaction transaction) {
+        transaction.setIsInstallment(false);
+        transaction.setInstallmentAmount(1);
+        transaction.setInstallmentId(null);
+        transaction.setInstallmentNumber(1);
         transaction.setUserId(this.id);
     }
 }

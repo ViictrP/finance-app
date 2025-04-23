@@ -37,10 +37,6 @@ public class SaveUserTransactionUseCaseImpl implements SaveUserTransactionUseCas
         return Mono.just(dto)
                 .map(mapper::toDomain)
                 .flatMap(transaction -> {
-                    transaction.setIsInstallment(false);
-                    transaction.setInstallmentAmount(1);
-                    transaction.setInstallmentId(null);
-                    transaction.setInstallmentNumber(1);
                     user.addTransaction(transaction);
                     return transactionRepository.save(transaction)
                             .doOnNext(tr -> log.info("Transaction {} saved!", tr.getDescription()));
