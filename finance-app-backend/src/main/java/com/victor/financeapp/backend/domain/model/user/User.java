@@ -69,10 +69,12 @@ public class User {
     }
 
     public void addTransaction(Transaction transaction) {
-        transaction.setIsInstallment(false);
-        transaction.setInstallmentAmount(1);
-        transaction.setInstallmentId(null);
-        transaction.setInstallmentNumber(1);
+        if (Transaction.TransactionType.RECURRING.equals(transaction.getType())) {
+            transaction.setIsInstallment(false);
+            transaction.setInstallmentAmount(1);
+            transaction.setInstallmentId(null);
+            transaction.setInstallmentNumber(1);
+        }
         transaction.setUserId(this.id);
     }
 }
