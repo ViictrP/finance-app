@@ -48,7 +48,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreditCardScreenContent(
+fun SharedTransitionScope.CreditCardScreenContent(
     navController: NavController,
     balanceViewModel: BalanceViewModel,
     sharedTransitionScope: SharedTransitionScope,

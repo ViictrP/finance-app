@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.icon.CustomIcons
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
@@ -41,6 +42,11 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
+data class TransactionWithTag(
+    val transaction: TransactionDTO,
+    val tag: String
+) {}
 
 @Composable
 internal fun HomeScreenContent(
@@ -52,15 +58,16 @@ internal fun HomeScreenContent(
     val loading by viewModel.loading.collectAsState()
     val space = Modifier.height(48.dp)
 
-    val transactions = remember(balance) {
-        balance?.let {
-            it.creditCards
-                .flatMap { it.invoices }
-                .flatMap { it.transactions }
-                .plus(it.transactions)
-                .plus(it.recurringExpenses)
-                .sortedByDescending { transition -> transition.id }
-        } ?: emptyList()
+    val transactions: List<TransactionWithTag> = remember(balance) {
+        balance?.creditCards
+            ?.flatMap { creditCard ->
+                creditCard.invoices
+                    .flatMap { it.transactions }
+                    .map { transaction -> TransactionWithTag(transaction, creditCard.title) }
+            }
+            ?.take(5)
+            ?.sortedByDescending { it.transaction.date }
+            ?: emptyList()
     }
 
     LazyColumn(
@@ -170,6 +177,9 @@ internal fun HomeScreenContent(
         }
 
         items(transactions.size) { index ->
+            val transaction = transactions[index].transaction
+            val tag = transactions[index].tag
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -177,8 +187,8 @@ internal fun HomeScreenContent(
                     .animateItem()
             ) {
                 TransactionCard(
-                    transactions[index],
-                    "Nubank",
+                    transaction,
+                    tag,
                     MaterialTheme.colorScheme.tertiary
                 )
             }

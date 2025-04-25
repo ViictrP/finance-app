@@ -22,7 +22,7 @@ fun NavGraphBuilder.mainGraph(
 ) {
     navigation(startDestination = "home", route = "main_graph") {
         composable("home") {
-            HomeScreen(navController, balanceModel)
+            sharedTransitionScope.HomeScreen(navController, balanceModel)
         }
         composable("credit_card") {
             sharedTransitionScope.CreditCardScreen(
