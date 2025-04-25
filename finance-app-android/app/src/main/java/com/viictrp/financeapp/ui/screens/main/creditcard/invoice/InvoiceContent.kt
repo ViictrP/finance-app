@@ -230,7 +230,11 @@ internal fun SharedTransitionScope.InvoiceContent(
                             .padding(horizontal = 16.dp, vertical = 4.dp)
                             .animateItem()
                     ) {
-                        TransactionCard(transaction)
+                        TransactionCard(
+                            transaction,
+                            tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                            tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                        )
                     }
                 }
             } else {

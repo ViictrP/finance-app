@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.main.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,11 @@ import java.time.YearMonth
     ExperimentalMaterial3Api::class,
     ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.HomeScreen(navController: NavController, viewModel: BalanceViewModel) {
+fun SharedTransitionScope.HomeScreen(
+    navController: NavController, viewModel: BalanceViewModel,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val coroutineScope = rememberCoroutineScope()
 
     val loading by viewModel.loading.collectAsState()
@@ -38,7 +43,13 @@ fun SharedTransitionScope.HomeScreen(navController: NavController, viewModel: Ba
             },
             modifier = Modifier.fillMaxSize(),
             content = {
-                HomeScreenContent(navController, viewModel, padding)
+                HomeScreenContent(
+                    navController,
+                    viewModel,
+                    padding,
+                    sharedTransitionScope,
+                    animatedVisibilityScope
+                )
             }
         )
     }

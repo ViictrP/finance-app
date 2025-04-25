@@ -77,12 +77,8 @@ fun TransactionCard(transaction: TransactionDTO, tag: String? = null, tagColor: 
 
                     Spacer(modifier = Modifier.size(8.dp))
 
-                    val description = if (transaction.isInstallment == true) {
-                        "${transaction.description} (${transaction.installmentNumber}/${transaction.installmentAmount})"
-                    } else transaction.description
-
                     Text(
-                        text = description,
+                        text = transaction.description,
                         style = LocalTextStyle.current.copy(fontSize = 18.sp),
                         color = MaterialTheme.colorScheme.secondary,
                         maxLines = 1,

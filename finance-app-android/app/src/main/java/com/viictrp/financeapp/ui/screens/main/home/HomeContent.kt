@@ -1,5 +1,9 @@
 package com.viictrp.financeapp.ui.screens.main.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +53,14 @@ data class TransactionWithTag(
     val tag: String
 ) {}
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HomeScreenContent(
     navController: NavController,
     viewModel: BalanceViewModel,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val balance by viewModel.currentBalance.collectAsState()
     val loading by viewModel.loading.collectAsState()
@@ -65,8 +73,8 @@ internal fun HomeScreenContent(
                     .flatMap { it.transactions }
                     .map { transaction -> TransactionWithTag(transaction, creditCard.title) }
             }
-            ?.take(5)
             ?.sortedByDescending { it.transaction.date }
+            ?.take(5)
             ?: emptyList()
     }
 
@@ -180,17 +188,30 @@ internal fun HomeScreenContent(
             val transaction = transactions[index].transaction
             val tag = transactions[index].tag
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .animateItem()
-            ) {
-                TransactionCard(
-                    transaction,
-                    tag,
-                    MaterialTheme.colorScheme.tertiary
-                )
+            with(sharedTransitionScope) {
+                key(transaction.id) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .sharedElement(
+                                state = rememberSharedContentState(transaction.id.toString()),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ -> tween(durationMillis = 300) }
+                            )
+                            .clickable {
+                                navController.navigate("transaction/${transaction.id}") {
+                                    launchSingleTop = true
+                                }
+                            }
+                    ) {
+                        TransactionCard(
+                            transaction,
+                            tag,
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
             }
         }
     }
