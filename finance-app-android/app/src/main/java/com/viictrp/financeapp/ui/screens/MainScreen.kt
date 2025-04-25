@@ -31,13 +31,14 @@ fun MainScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination?.route
 
-    val shouldShowBottomBar = currentDestination != "splash" && currentDestination != "login"
+    val noBarsIn = listOf("splash", "login", "transaction")
 
     val authViewModel = hiltViewModel<AuthViewModel>()
     val balanceViewModel = hiltViewModel<BalanceViewModel>()
 
     val user by authViewModel.user.collectAsState()
     val balance by balanceViewModel.balance.collectAsState()
+    val showBars = currentDestination != null && noBarsIn.none { route -> currentDestination.startsWith(route.substringBefore("/{")) }
 
     LaunchedEffect(currentDestination) {
         if (currentDestination == "home" && balance == null) {
@@ -47,12 +48,12 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
-            if (shouldShowBottomBar) {
+            if (showBars) {
                 Header(user)
             }
         },
         bottomBar = {
-            if (shouldShowBottomBar) {
+            if (showBars) {
                 BottomNavigationBar(navController)
             }
         },

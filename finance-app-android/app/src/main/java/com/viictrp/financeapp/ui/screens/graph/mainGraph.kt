@@ -12,6 +12,7 @@ import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardScreen
 import com.viictrp.financeapp.ui.screens.main.creditcard.invoice.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.main.home.HomeScreen
 import com.viictrp.financeapp.ui.screens.main.transaction.TransactionFormScreen
+import com.viictrp.financeapp.ui.screens.main.transaction.TransactionScreen
 import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -22,7 +23,12 @@ fun NavGraphBuilder.mainGraph(
 ) {
     navigation(startDestination = "home", route = "main_graph") {
         composable("home") {
-            HomeScreen(navController, balanceModel)
+            sharedTransitionScope.HomeScreen(
+                navController,
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
         }
         composable("credit_card") {
             sharedTransitionScope.CreditCardScreen(
@@ -44,6 +50,14 @@ fun NavGraphBuilder.mainGraph(
         composable("invoice/{creditCardId}") { backStackEntry ->
             sharedTransitionScope.InvoiceScreen(
                 backStackEntry.arguments?.getString("creditCardId").toString(),
+                balanceModel,
+                sharedTransitionScope,
+                this@composable
+            )
+        }
+        composable("transaction/{transactionId}") { backStackEntry ->
+            sharedTransitionScope.TransactionScreen(
+                backStackEntry.arguments?.getString("transactionId").toString(),
                 balanceModel,
                 sharedTransitionScope,
                 this@composable
