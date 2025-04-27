@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,15 +37,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.service.ApiService
-import com.viictrp.financeapp.ui.components.LoadingDialog
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FSelectField
 import com.viictrp.financeapp.ui.components.FSelectItem
 import com.viictrp.financeapp.ui.components.FTextField
+import com.viictrp.financeapp.ui.components.LoadingDialog
 import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
-import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.Accent
@@ -58,7 +59,7 @@ import java.math.BigDecimal
 
 
 @Composable
-fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
+fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding1: PaddingValues) {
 
     val spacing = 48.dp
 
@@ -251,7 +252,9 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel) {
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp),
             contentPadding =  padding
         ) {
             item {
@@ -392,6 +395,6 @@ fun CreditCardFormScreenPreview() {
     )
 
     FinanceAppTheme {
-        CreditCardFormScreen(balanceViewModel)
+        CreditCardFormScreen(balanceViewModel, PaddingValues())
     }
 }

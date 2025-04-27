@@ -1,8 +1,6 @@
 package com.viictrp.financeapp.ui.screens.secure.creditcard.invoice
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -20,18 +18,16 @@ import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.InvoiceScreen(
-    creditCardId: String,
-    balanceViewModel: BalanceViewModel,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+fun InvoiceScreen(
+    creditCardId: Long,
+    balanceViewModel: BalanceViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val balance = balanceViewModel.balance.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
 
     val creditCard = remember(balance) {
-        balance.value?.creditCards?.find { it.id.toString() == creditCardId }
+        balance.value?.creditCards?.find { it.id == creditCardId }
     }
 
 
@@ -46,7 +42,7 @@ fun SharedTransitionScope.InvoiceScreen(
             },
             modifier = Modifier.fillMaxSize(),
             content = {
-                InvoiceContent(creditCard, padding, balanceViewModel, sharedTransitionScope, animatedVisibilityScope)
+                InvoiceContent(creditCard, padding, balanceViewModel)
             }
         )
     }

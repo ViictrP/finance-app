@@ -12,14 +12,15 @@ import androidx.navigation.compose.rememberNavController
 
 object SecureDestinations {
     const val SECURE_ROUTE = "secure"
-    const val HOME_ROUTE = "secure/home"
-    const val CREDIT_CARD_ROUTE = "secure/credit_card"
+    const val HOME_ROUTE = "home"
+    const val CREDIT_CARD_ROUTE = "credit_card"
     const val BALANCE_ROUTE = "balance"
     const val CREDIT_CARD_FORM_ROUTE = "credit_card_form"
     const val TRANSACTION_FORM_ROUTE = "transaction_form"
-    const val INVOICE_ROUTE = "invoice/{creditCardId}"
+    const val INVOICE_ROUTE = "invoice"
     const val TRANSACTION_ROUTE = "transaction"
     const val TRANSACTION_KEY = "transactionId"
+    const val CREDIT_CARD_KEY = "creditCardId"
 }
 
 object PublicDestinations {

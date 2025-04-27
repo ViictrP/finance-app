@@ -32,11 +32,12 @@ import androidx.navigation.navArgument
 import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.components.BottomBarItem
 import com.viictrp.financeapp.ui.components.FinanceAppBottomBar
-import com.viictrp.financeapp.ui.components.FinanceAppSnackBar
 import com.viictrp.financeapp.ui.components.FinanceAppScaffold
-import com.viictrp.financeapp.ui.components.rememberFinanceAppScaffoldState
+import com.viictrp.financeapp.ui.components.FinanceAppSnackBar
+import com.viictrp.financeapp.ui.components.Header
 import com.viictrp.financeapp.ui.components.extension.composableWithCompositionLocal
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
+import com.viictrp.financeapp.ui.components.rememberFinanceAppScaffoldState
 import com.viictrp.financeapp.ui.components.spatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.PublicDestinations
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
@@ -44,7 +45,11 @@ import com.viictrp.financeapp.ui.navigation.rememberFinanceAppController
 import com.viictrp.financeapp.ui.screens.other.LoginScreen
 import com.viictrp.financeapp.ui.screens.other.SplashScreen
 import com.viictrp.financeapp.ui.screens.secure.HomeScreen
+import com.viictrp.financeapp.ui.screens.secure.balance.BalanceScreen
+import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardFormScreen
 import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardScreen
+import com.viictrp.financeapp.ui.screens.secure.creditcard.invoice.InvoiceScreen
+import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionFormScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import java.time.YearMonth
@@ -80,13 +85,27 @@ fun MainScreen() {
                 ) {
                     SecureContainer(
                         viewModel = balanceViewModel,
+                        authViewModel = authViewModel,
                         onNavigation = { id, route, from ->
+
                             if (id != null) {
-                                financeAppNavController.navigateToTransaction(
-                                    id,
-                                    SecureDestinations.HOME_ROUTE,
-                                    from
-                                )
+                                when(route) {
+                                    SecureDestinations.TRANSACTION_ROUTE -> {
+                                        financeAppNavController.navigateToTransaction(
+                                            id,
+                                            route,
+                                            from
+                                        )
+                                    }
+
+                                    SecureDestinations.INVOICE_ROUTE -> {
+                                        financeAppNavController.navigateToInvoice(
+                                            id,
+                                            route,
+                                            from
+                                        )
+                                    }
+                                }
                             } else {
                                 financeAppNavController.navigateTo(
                                     route,
@@ -115,6 +134,21 @@ fun MainScreen() {
                         balanceViewModel
                     )
                 }
+
+                composableWithCompositionLocal(
+                    route = "${SecureDestinations.INVOICE_ROUTE}/" +
+                            "{${SecureDestinations.CREDIT_CARD_KEY}}",
+                    arguments = listOf(
+                        navArgument(SecureDestinations.CREDIT_CARD_KEY) {
+                            type = NavType.LongType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val arguments = requireNotNull(backStackEntry.arguments)
+                    val creditCardId = arguments.getLong(SecureDestinations.CREDIT_CARD_KEY)
+
+                    InvoiceScreen(creditCardId, balanceViewModel)
+                }
             }
         }
     }
@@ -127,10 +161,12 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { nu
 fun SecureContainer(
     modifier: Modifier = Modifier,
     viewModel: BalanceViewModel,
+    authViewModel: AuthViewModel,
     onNavigation: (Long?, String, NavBackStackEntry) -> Unit
 ) {
     val nestedNavController = rememberFinanceAppController()
 
+    val user by authViewModel.user.collectAsState()
     val balance by viewModel.balance.collectAsState()
 
     val navBackStackEntry by nestedNavController.navController.currentBackStackEntryAsState()
@@ -149,6 +185,31 @@ fun SecureContainer(
 
     FinanceAppScaffold(
         modifier = modifier,
+        topBar = {
+            with(animatedVisibilityScope) {
+                with(sharedTransitionScope) {
+                    Header(
+                        user,
+                        modifier = Modifier
+                            .renderInSharedTransitionScopeOverlay(
+                                zIndexInOverlay = 1f,
+                            )
+                            .animateEnterExit(
+                                enter = fadeIn(nonSpatialExpressiveSpring()) + slideInVertically(
+                                    spatialExpressiveSpring()
+                                ) {
+                                    -it
+                                },
+                                exit = fadeOut(nonSpatialExpressiveSpring()) + slideOutVertically(
+                                    spatialExpressiveSpring()
+                                ) {
+                                    -it
+                                }
+                            )
+                    )
+                }
+            }
+        },
         bottomBar = {
             with(animatedVisibilityScope) {
                 with(sharedTransitionScope) {
@@ -185,7 +246,7 @@ fun SecureContainer(
             )
         },
         snackBarHostState = financeAppScaffoldState.snackBarHostState,
-    ) {
+    ) { padding ->
         NavHost(
             navController = nestedNavController.navController,
             startDestination = SecureDestinations.HOME_ROUTE
@@ -193,12 +254,38 @@ fun SecureContainer(
             composable(SecureDestinations.HOME_ROUTE) { from ->
                 HomeScreen(
                     viewModel = viewModel,
+                    padding,
+                    onNavigation = { id, route ->
+                        when (route) {
+                            SecureDestinations.BALANCE_ROUTE -> nestedNavController.navigateTo(
+                                SecureDestinations.BALANCE_ROUTE,
+                                SecureDestinations.HOME_ROUTE,
+                                from
+                            )
+                            else -> onNavigation(id, route, from)
+                        }
+                    }
+                )
+            }
+
+            composable(SecureDestinations.CREDIT_CARD_ROUTE) { from ->
+                CreditCardScreen(
+                    viewModel,
+                    padding,
                     onNavigation = { id, route -> onNavigation(id, route, from) }
                 )
             }
 
-            composable(SecureDestinations.CREDIT_CARD_ROUTE) {
-                CreditCardScreen(nestedNavController.navController, viewModel)
+            composable(SecureDestinations.BALANCE_ROUTE) { from ->
+                BalanceScreen(viewModel, padding)
+            }
+
+            composable(SecureDestinations.TRANSACTION_FORM_ROUTE) { from ->
+                TransactionFormScreen(viewModel, padding)
+            }
+
+            composable(SecureDestinations.CREDIT_CARD_FORM_ROUTE) { from ->
+                CreditCardFormScreen(viewModel, padding)
             }
         }
     }

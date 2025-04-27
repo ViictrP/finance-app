@@ -120,7 +120,7 @@ fun FinanceAppBottomBar(
     contentColor: Color = MaterialTheme.colorScheme.secondary
 ) {
     val routes = remember { tabs.map { it.route } }
-    val currentSection = tabs.first { it.route == currentRoute }
+    val currentSection = tabs.firstOrNull { it.route == currentRoute } ?: tabs.first()
     val springSpec = spatialExpressiveSpring<Float>()
     val bottomSheetState = rememberModalBottomSheetState()
     var bottomSheetVisible by remember { mutableStateOf(false) }

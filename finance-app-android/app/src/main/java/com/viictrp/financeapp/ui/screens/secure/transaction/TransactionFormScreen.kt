@@ -2,6 +2,7 @@ package com.viictrp.financeapp.ui.screens.secure.transaction
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,11 +35,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.application.service.ApiService
-import com.viictrp.financeapp.ui.components.LoadingDialog
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FDatePickerField
 import com.viictrp.financeapp.ui.components.FSelectField
 import com.viictrp.financeapp.ui.components.FSelectItem
 import com.viictrp.financeapp.ui.components.FTextField
+import com.viictrp.financeapp.ui.components.LoadingDialog
 import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
@@ -48,7 +50,6 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModelFactory
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
@@ -57,7 +58,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @Composable
-fun TransactionFormScreen(balanceModel: BalanceViewModel) {
+fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
     val spacing = 48.dp
 
     val balance = balanceModel.currentBalance.collectAsState()
@@ -284,7 +285,9 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel) {
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp),
             contentPadding = padding
         ) {
             item {
@@ -466,6 +469,6 @@ fun CreditCardFormScreenPreview() {
     )
 
     FinanceAppTheme {
-        TransactionFormScreen(balanceViewModel)
+        TransactionFormScreen(balanceViewModel, PaddingValues())
     }
 }

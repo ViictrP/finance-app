@@ -1,10 +1,7 @@
 package com.viictrp.financeapp.ui.screens.secure.creditcard.invoice
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -62,12 +59,10 @@ import java.util.Locale
     ExperimentalSharedTransitionApi::class
 )
 @Composable
-internal fun SharedTransitionScope.InvoiceContent(
+internal fun InvoiceContent(
     creditCard: CreditCardDTO?,
     padding: PaddingValues,
-    balanceViewModel: BalanceViewModel,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    balanceViewModel: BalanceViewModel
 ) {
     val spacing = 48.dp
     val invoice by balanceViewModel.selectedInvoice.collectAsState()
@@ -99,25 +94,16 @@ internal fun SharedTransitionScope.InvoiceContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp), Arrangement.SpaceBetween
             ) {
-                with(sharedTransitionScope) {
-                    val shape = MaterialTheme.shapes.medium
-                    Box(
-                        modifier = Modifier
-                            .sharedElement(
-                                state = rememberSharedContentState(key = creditCard?.id.toString()),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = {_,_ ->
-                                    tween(durationMillis = animationDuration)
-                                }
-                            )
-                            .sharedCardStyle(
-                                color = colorMap[creditCard?.color] ?: Secondary,
-                                shape = shape,
-                                height = 180.dp
-                            )
-                    ) {
-                        CarouselCardContent(getItem(creditCard))
-                    }
+                val shape = MaterialTheme.shapes.medium
+                Box(
+                    modifier = Modifier
+                        .sharedCardStyle(
+                            color = colorMap[creditCard?.color] ?: Secondary,
+                            shape = shape,
+                            height = 180.dp
+                        )
+                ) {
+                    CarouselCardContent(getItem(creditCard))
                 }
             }
         }
@@ -170,13 +156,6 @@ internal fun SharedTransitionScope.InvoiceContent(
                         text = creditCard?.title ?: "",
                         fontWeight = FontWeight.Bold,
                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                        modifier = Modifier.sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}__title"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = {_,_ ->
-                                tween(durationMillis = animationDuration)
-                            }
-                        )
                     )
                     Text(
                         "Lançamentos da fatura de ${
@@ -184,13 +163,6 @@ internal fun SharedTransitionScope.InvoiceContent(
                                 .toFormattedYearMonth("MMMM")
                         }",
                         fontWeight = FontWeight.Normal,
-                        modifier = Modifier.sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_month"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = {_,_ ->
-                                tween(durationMillis = animationDuration)
-                            }
-                        )
                     )
                 }
                 Column(
@@ -208,13 +180,6 @@ internal fun SharedTransitionScope.InvoiceContent(
                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                             fontWeight = FontWeight.Normal,
                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                            modifier = Modifier.sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${creditCard?.id}_total"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = {_,_ ->
-                                    tween(durationMillis = animationDuration)
-                                }
-                            )
                         )
                     }
                 }

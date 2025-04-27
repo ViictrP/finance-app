@@ -28,13 +28,13 @@ import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(user: UserDTO?) {
+fun Header(user: UserDTO?, modifier: Modifier) {
     TopAppBar(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         title = {
             Text(
                 user?.fullName ?: "",
-                Modifier.padding(start = 8.dp),
+                modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
@@ -87,7 +87,8 @@ fun HeaderPreview() {
                 email = "a@a.com",
                 pictureUrl = "",
                 accessToken = ""
-            )
+            ),
+            Modifier
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.viictrp.financeapp.ui.components
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
