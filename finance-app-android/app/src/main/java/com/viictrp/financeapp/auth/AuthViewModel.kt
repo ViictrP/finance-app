@@ -1,9 +1,8 @@
-package com.viictrp.financeapp.ui.screens.auth.viewmodel
+package com.viictrp.financeapp.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viictrp.financeapp.application.dto.UserDTO
-import com.viictrp.financeapp.ui.auth.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

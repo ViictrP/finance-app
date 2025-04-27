@@ -1,8 +1,5 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -33,13 +30,11 @@ data class CreditCardCarouselItem(
     override fun getDetail(): String = detail
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SharedTransitionScope.CreditCardScreen(
+fun CreditCardScreen(
     navController: NavController,
-    balanceViewModel: BalanceViewModel,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    balanceViewModel: BalanceViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -60,8 +55,6 @@ fun SharedTransitionScope.CreditCardScreen(
                 CreditCardScreenContent(
                     navController,
                     balanceViewModel,
-                    sharedTransitionScope,
-                    animatedVisibilityScope,
                     padding
                 )
             }

@@ -1,9 +1,5 @@
 package com.viictrp.financeapp.ui.screens.main.creditcard
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,13 +41,10 @@ import java.text.NumberFormat
 import java.time.YearMonth
 import java.util.Locale
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.CreditCardScreenContent(
+fun CreditCardScreenContent(
     navController: NavController,
     balanceViewModel: BalanceViewModel,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     padding: PaddingValues
 ) {
     val balance by balanceViewModel.currentBalance.collectAsState()
@@ -73,171 +65,143 @@ fun SharedTransitionScope.CreditCardScreenContent(
             } ?: emptyList()
     }
 
-    with(sharedTransitionScope) {
-        key(balance) {
-            LazyColumn(
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentPadding = padding
+    ) {
+        item {
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                contentPadding = padding
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 24.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Row {
-                            Text(
-                                "Seus Cartões",
-                                fontWeight = FontWeight.Bold,
-                                style = LocalTextStyle.current.copy(fontSize = 24.sp)
-                            )
-                            Text(
-                                " (${carouselItems.size})",
-                                fontWeight = FontWeight.Normal,
-                                style = LocalTextStyle.current.copy(fontSize = 24.sp)
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    CardCarousel(
-                        carouselItems,
-                        onPageChanged = { card ->
-                            balanceViewModel.selectCreditCard(
-                                card.getKey().toLong()
-                            )
-                        },
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope,
+                Row {
+                    Text(
+                        "Seus Cartões",
+                        fontWeight = FontWeight.Bold,
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp)
+                    )
+                    Text(
+                        " (${carouselItems.size})",
+                        fontWeight = FontWeight.Normal,
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp)
                     )
                 }
+            }
+        }
 
-                item {
-                    Spacer(modifier = Modifier.size(48.dp))
+        item {
+            CardCarousel(
+                carouselItems,
+                onPageChanged = { card ->
+                    balanceViewModel.selectCreditCard(
+                        card.getKey().toLong()
+                    )
                 }
+            )
+        }
 
-                item {
+        item {
+            Spacer(modifier = Modifier.size(48.dp))
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = selectedCreditCard?.title ?: "",
+                        fontWeight = FontWeight.Bold,
+                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                    )
+                    Text(
+                        "Lançamentos da fatura de ${
+                            YearMonth.now().toFormattedYearMonth("MMMM")
+                        }",
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 24.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = selectedCreditCard?.title ?: "",
-                                fontWeight = FontWeight.Bold,
-                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                modifier = Modifier.sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}__title"),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ ->
-                                        tween(durationMillis = 200)
-                                    }
-                                )
-                            )
-                            Text(
-                                "Lançamentos da fatura de ${
-                                    YearMonth.now().toFormattedYearMonth("MMMM")
-                                }",
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier.sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_month"),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ ->
-                                        tween(durationMillis = 200)
-                                    }
-                                )
-                            )
-                        }
-                        Column(
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.clickable { navController.navigate("invoice/${selectedCreditCard?.id}") }) {
-                                Text(
-                                    "Ver faturas",
-                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Icon(
-                                    CustomIcons.Filled.Calendar,
-                                    modifier = Modifier.size(24.dp),
-                                    contentDescription = "Select Month",
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                )
-                            }
-                            Text(
-                                text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                    .format(
-                                        selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)
-                                    ),
-                                fontWeight = FontWeight.Normal,
-                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        sharedContentState = rememberSharedContentState(key = "${selectedCreditCard?.id}_total"),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ ->
-                                            tween(durationMillis = 200)
-                                        }
-                                    )
-                            )
-                        }
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.clickable { navController.navigate("invoice/${selectedCreditCard?.id}") }) {
+                        Text(
+                            "Ver faturas",
+                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Icon(
+                            CustomIcons.Filled.Calendar,
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
                     }
+                    Text(
+                        text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                            .format(
+                                selectedCreditCard?.totalInvoiceAmount ?: BigDecimal(0.0)
+                            ),
+                        fontWeight = FontWeight.Normal,
+                        style = LocalTextStyle.current.copy(fontSize = 20.sp)
+                    )
                 }
+            }
+        }
 
-                if (transactions.isNotEmpty()) {
-                    itemsIndexed(transactions, key = { _, item -> item.id!! }) { index, transaction ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .animateItem()
-                        ) {
-                            TransactionCard(
-                                transaction,
-                                tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
-                                tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
-                            )
-                        }
-                    }
-                } else {
-                    item {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            val composition by rememberLottieComposition(
-                                LottieCompositionSpec.Asset("empty-lottie.json")
-                            )
-                            val progress by animateLottieCompositionAsState(
-                                composition,
-                                iterations = LottieConstants.IterateForever,
-                                restartOnPlay = true
-                            )
+        if (transactions.isNotEmpty()) {
+            itemsIndexed(transactions, key = { _, item -> item.id!! }) { index, transaction ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .animateItem()
+                ) {
+                    TransactionCard(
+                        transaction,
+                        tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                        tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                    )
+                }
+            }
+        } else {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val composition by rememberLottieComposition(
+                        LottieCompositionSpec.Asset("empty-lottie.json")
+                    )
+                    val progress by animateLottieCompositionAsState(
+                        composition,
+                        iterations = LottieConstants.IterateForever,
+                        restartOnPlay = true
+                    )
 
-                            LottieAnimation(
-                                composition = composition,
-                                progress = { progress },
-                                modifier = Modifier.size(230.dp)
-                            )
-                        }
-                    }
+                    LottieAnimation(
+                        composition = composition,
+                        progress = { progress },
+                        modifier = Modifier.size(230.dp)
+                    )
                 }
             }
         }

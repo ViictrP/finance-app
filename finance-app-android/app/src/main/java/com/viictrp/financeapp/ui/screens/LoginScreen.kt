@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens.auth
+package com.viictrp.financeapp.ui.screens
 
 import android.os.Handler
 import android.os.Looper
@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.viictrp.financeapp.ui.auth.AuthManager
-import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.auth.AuthManager
+import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable

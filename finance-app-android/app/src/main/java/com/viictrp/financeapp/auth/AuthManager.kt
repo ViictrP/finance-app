@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.auth
+package com.viictrp.financeapp.auth
 
 import android.content.Context
 import android.util.Log

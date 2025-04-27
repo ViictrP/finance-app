@@ -1,4 +1,4 @@
-package com.viictrp.financeapp.ui.screens.auth
+package com.viictrp.financeapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +21,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.viictrp.financeapp.ui.auth.AuthManager
-import com.viictrp.financeapp.ui.screens.auth.viewmodel.AuthViewModel
+import com.viictrp.financeapp.auth.AuthManager
+import com.viictrp.financeapp.auth.AuthViewModel
+import com.viictrp.financeapp.ui.navigation.PublicDestinations
+import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import kotlinx.coroutines.delay
 
@@ -49,11 +51,11 @@ fun SplashScreen(
     LaunchedEffect(isAuthenticated, user) {
         if (isAuthenticated == true && user != null) {
             delay(1000)
-            navController.navigate("home") {
+            navController.navigate(SecureDestinations.SECURE_ROUTE) {
                 popUpTo("splash") { inclusive = true }
             }
         } else if (isAuthenticated == false) {
-            navController.navigate("login") {
+            navController.navigate(PublicDestinations.LOGIN_ROUTE) {
                 popUpTo("splash") { inclusive = true }
             }
         }
