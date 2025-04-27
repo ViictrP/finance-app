@@ -190,6 +190,7 @@ fun SecureContainer(
                 with(sharedTransitionScope) {
                     Header(
                         user,
+                        navController = nestedNavController.navController,
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(
                                 zIndexInOverlay = 1f,

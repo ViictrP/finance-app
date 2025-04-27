@@ -89,14 +89,13 @@ fun HomeScreen(
                 viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
             }
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(padding),
         content = {
             FinanceAppSurface(modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 16.dp)) {
+                .fillMaxSize()) {
                 SharedTransitionLayout {
                     LazyColumn(
-                        contentPadding = padding,
+                        contentPadding = PaddingValues(vertical = 16.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         item {

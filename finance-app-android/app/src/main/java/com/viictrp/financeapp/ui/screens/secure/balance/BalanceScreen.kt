@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
@@ -35,9 +34,9 @@ fun BalanceScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
         },
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp),
+            .padding(padding),
         content = {
-            BalanceScreenContent(viewModel, padding)
+            BalanceScreenContent(viewModel)
         }
     )
 }

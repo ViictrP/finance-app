@@ -44,7 +44,6 @@ import java.util.Locale
 @Composable
 fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
-    contentPadding: PaddingValues
 ) {
     val spacing = Modifier.height(48.dp)
 
@@ -62,7 +61,7 @@ fun BalanceScreenContent(
             ?: emptyList()
 
     LazyColumn(
-        contentPadding = contentPadding,
+        contentPadding = PaddingValues(vertical = 16.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         item {

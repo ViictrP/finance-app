@@ -272,6 +272,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                 else MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
                 contentColor = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
+                    .padding(bottom = 80.dp)
                     .alpha(if (isEnabled) 1f else 0.6f)
             ) {
                 Icon(
@@ -282,13 +283,13 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End
-    ) { padding ->
+        floatingActionButtonPosition = FabPosition.EndOverlay
+    ) { _ ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 16.dp),
-            contentPadding = padding
+                .padding(padding),
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             item {
                 Column(

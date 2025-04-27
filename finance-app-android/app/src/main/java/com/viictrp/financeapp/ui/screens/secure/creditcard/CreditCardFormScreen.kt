@@ -59,7 +59,7 @@ import java.math.BigDecimal
 
 
 @Composable
-fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding1: PaddingValues) {
+fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
 
     val spacing = 48.dp
 
@@ -239,6 +239,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding1: PaddingValues
                 else MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
                 contentColor = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
+                    .padding(bottom = 80.dp)
                     .alpha(if (isEnabled) 1f else 0.6f)
             ) {
                 Icon(
@@ -250,12 +251,12 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding1: PaddingValues
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ) { padding ->
+    ) { _ ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 16.dp),
-            contentPadding =  padding
+                .padding(padding),
+            contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             item {
                 Column(

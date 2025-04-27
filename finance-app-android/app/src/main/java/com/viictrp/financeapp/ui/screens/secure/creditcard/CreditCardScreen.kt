@@ -97,12 +97,12 @@ fun CreditCardScreen(
         },
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp),
+            .padding(padding),
         content = {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
-                contentPadding = padding
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 item {
                     Row(
