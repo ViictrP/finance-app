@@ -2,7 +2,6 @@
 
 package com.viictrp.financeapp.ui.components
 
-import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -36,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
-import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.components.animation.boundsTransform
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import com.viictrp.financeapp.ui.screens.main.transaction.transactionBoundsTransform
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -55,9 +54,6 @@ fun TransactionCard(
     tagColor: Color? = null,
     onClick: ((id: Long) -> Unit)? = null
 ) {
-    val transactionScreenBoundsTransform = BoundsTransform { _, _ ->
-        spatialExpressiveSpring()
-    }
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No sharedTransitionScope found")
@@ -87,7 +83,7 @@ fun TransactionCard(
                             key = transaction.id.toString()
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = transactionScreenBoundsTransform,
+                        boundsTransform = boundsTransform,
                         clipInOverlayDuringTransition = OverlayClip(
                             RoundedCornerShape(
                                 roundedCornerAnimation
@@ -157,7 +153,7 @@ fun TransactionCard(
                                         animatedVisibilityScope = animatedVisibilityScope,
                                         enter = fadeIn(nonSpatialExpressiveSpring()),
                                         exit = fadeOut(nonSpatialExpressiveSpring()),
-                                        boundsTransform = transactionBoundsTransform,
+                                        boundsTransform = boundsTransform,
                                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                     )
                             )

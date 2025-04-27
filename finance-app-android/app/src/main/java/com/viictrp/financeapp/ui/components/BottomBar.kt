@@ -6,52 +6,65 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.core.os.ConfigurationCompat
-import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.theme.Accent
-import com.viictrp.financeapp.ui.theme.Secondary
 import java.util.Locale
 
 @Composable
-fun BottomBarIcon(icon: String, tint: Color, contentDescription: String) {
+fun BottomBarIcon(icon: String, tint: Color, contentDescription: String, selected: Boolean = false) {
     val icon = when (icon) {
-        "House" -> CustomIcons.Outline.House
-        "CreditCard" -> CustomIcons.Outline.CreditCard
-        else -> CustomIcons.Outline.House // fallback
+        "House" -> if (selected) CustomIcons.Filled.House else CustomIcons.Outline.House
+        "CreditCard" -> if (selected) CustomIcons.Filled.CreditCard else CustomIcons.Outline.CreditCard
+        "Add" -> if (selected) CustomIcons.Filled.Add else CustomIcons.Outline.Add
+        else -> if (selected) CustomIcons.Filled.House else  CustomIcons.Outline.House
     }
 
     Icon(
@@ -64,10 +77,20 @@ fun BottomBarIcon(icon: String, tint: Color, contentDescription: String) {
 enum class BottomBarItem(
     val title: String,
     val icon: String,
-    val route: String
+    val route: String? = null,
 ) {
     HOME("Início", "House", SecureDestinations.HOME_ROUTE),
-    CREDIT_CARD("Cartão de Crédito", "CreditCard", SecureDestinations.CREDIT_CARD_ROUTE)
+    MENU("Menu", "Add", null),
+    CREDIT_CARD("Cartões", "CreditCard", SecureDestinations.CREDIT_CARD_ROUTE)
+}
+
+enum class BottomSheetItem(
+    val title: String,
+    val icon: String,
+    val route: String? = null
+) {
+    NEW_CARD("Novo Cartão", "CreditCard", SecureDestinations.CREDIT_CARD_FORM_ROUTE),
+    NEW_TRANSACTION("Nova Transação", "ShoppingBag", SecureDestinations.TRANSACTION_FORM_ROUTE)
 }
 
 private val TextIconSpacing = 2.dp
@@ -86,6 +109,7 @@ fun <T> nonSpatialExpressiveSpring() = spring<T>(
     stiffness = 1600f
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FinanceAppBottomBar(
     tabs: Array<BottomBarItem>,
@@ -98,6 +122,57 @@ fun FinanceAppBottomBar(
     val routes = remember { tabs.map { it.route } }
     val currentSection = tabs.first { it.route == currentRoute }
     val springSpec = spatialExpressiveSpring<Float>()
+    val bottomSheetState = rememberModalBottomSheetState()
+    var bottomSheetVisible by remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
+
+    if (bottomSheetVisible) {
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val padding = 30.dp
+
+        val sheetMaxWidth = screenWidth - padding
+
+        ModalBottomSheet(
+            onDismissRequest = { bottomSheetVisible = false },
+            sheetState = bottomSheetState,
+            sheetMaxWidth = sheetMaxWidth,
+            containerColor = MaterialTheme.colorScheme.primary,
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(horizontal = 24.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Column {
+                        BottomSheetItem.entries.toTypedArray()
+                            .forEach { item ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    BottomBarIcon(
+                                        item.icon,
+                                        MaterialTheme.colorScheme.tertiary,
+                                        item.title,
+                                        false
+                                    )
+                                    Spacer(modifier = Modifier.size(24.dp))
+                                    Text(
+                                        item.title,
+                                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        modifier = Modifier.clickable {
+                                            navigateToRoute(item.route!!)
+                                            bottomSheetVisible = false
+                                        }
+                                    )
+                                }
+                                Spacer(modifier = Modifier.size(24.dp))
+                            }
+                    }
+                }
+            }
+        )
+    }
 
     FinanceAppSurface(
         modifier = modifier,
@@ -115,22 +190,22 @@ fun FinanceAppBottomBar(
             val currentLocale: Locale =
                 ConfigurationCompat.getLocales(configuration).get(0) ?: Locale.getDefault()
 
-            tabs.forEach { section ->
-                val selected = section == currentSection
+            tabs.forEach { tab ->
+                val selected = tab == currentSection
                 val tint by animateColorAsState(
                     if (selected) {
-                        Accent
+                        MaterialTheme.colorScheme.primary
                     } else {
-                        Secondary
+                        MaterialTheme.colorScheme.secondary
                     },
                     label = "tint"
                 )
 
-                val text = section.title.uppercase(currentLocale)
+                val text = tab.title.uppercase(currentLocale)
 
                 FinanceAppBottomNavigationItem(
                     icon = {
-                        BottomBarIcon(section.icon, tint, text)
+                        BottomBarIcon(tab.icon, tint, text, selected)
                     },
                     text = {
                         Text(
@@ -141,7 +216,14 @@ fun FinanceAppBottomBar(
                         )
                     },
                     selected = selected,
-                    onSelected = { navigateToRoute(section.route) },
+                    onSelected = {
+                        if (tab.route != null) {
+                            navigateToRoute(tab.route)
+                        } else {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            bottomSheetVisible = true
+                        }
+                    },
                     animSpec = springSpec,
                     modifier = BottomNavigationItemPadding
                         .clip(BottomNavIndicatorShape)
@@ -153,7 +235,6 @@ fun FinanceAppBottomBar(
 
 @Composable
 private fun FinanceAppBottomNavIndicator(
-    strokeWidth: Dp = 2.dp,
     color: Color = MaterialTheme.colorScheme.tertiary,
     shape: Shape = BottomNavIndicatorShape
 ) {
@@ -161,7 +242,7 @@ private fun FinanceAppBottomNavIndicator(
         modifier = Modifier
             .fillMaxSize()
             .then(BottomNavigationItemPadding)
-            .border(strokeWidth, color, shape)
+            .background(color, shape)
     )
 }
 
@@ -204,8 +285,8 @@ private fun FinanceAppBottomNavLayout(
         check(itemCount == (measurables.size - 1)) // account for indicator
 
         // Divide the width into n+1 slots and give the selected item 2 slots
-        val unselectedWidth = constraints.maxWidth / (itemCount + 1)
-        val selectedWidth = 2 * unselectedWidth
+        val unselectedWidth = constraints.maxWidth / 3 /*/ (itemCount + 1) */
+        val selectedWidth = (1 * unselectedWidth).toInt()
         val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
 
         val itemPlaceables = measurables

@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
-import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.theme.Blue
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple

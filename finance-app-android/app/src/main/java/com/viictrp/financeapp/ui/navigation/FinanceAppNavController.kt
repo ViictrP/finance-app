@@ -23,7 +23,6 @@ object SecureDestinations {
 }
 
 object PublicDestinations {
-    const val PUBLIC_ROUTE = "public"
     const val LOGIN_ROUTE = "login"
     const val SPLASH_ROUTE = "splash"
 }

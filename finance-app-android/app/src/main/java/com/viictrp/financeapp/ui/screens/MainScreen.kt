@@ -4,7 +4,6 @@
 
 package com.viictrp.financeapp.ui.screens
 
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -24,10 +23,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,37 +33,21 @@ import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.components.BottomBarItem
 import com.viictrp.financeapp.ui.components.FinanceAppBottomBar
 import com.viictrp.financeapp.ui.components.FinanceAppSnackBar
-import com.viictrp.financeapp.ui.components.custom.FinanceAppScaffold
-import com.viictrp.financeapp.ui.components.custom.rememberFinanceAppScaffoldState
+import com.viictrp.financeapp.ui.components.FinanceAppScaffold
+import com.viictrp.financeapp.ui.components.rememberFinanceAppScaffoldState
+import com.viictrp.financeapp.ui.components.extension.composableWithCompositionLocal
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.components.spatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.PublicDestinations
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.navigation.rememberFinanceAppController
-import com.viictrp.financeapp.ui.screens.main.HomeScreen
-import com.viictrp.financeapp.ui.screens.main.creditcard.CreditCardScreen
-import com.viictrp.financeapp.ui.screens.main.transaction.TransactionScreen
-import com.viictrp.financeapp.ui.screens.main.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.other.LoginScreen
+import com.viictrp.financeapp.ui.screens.other.SplashScreen
+import com.viictrp.financeapp.ui.screens.secure.HomeScreen
+import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardScreen
+import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
+import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import java.time.YearMonth
-
-fun NavGraphBuilder.composableWithCompositionLocal(
-    route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
-) {
-    composable(
-        route,
-        arguments,
-        deepLinks
-    ) {
-        CompositionLocalProvider(
-            LocalNavAnimatedVisibilityScope provides this@composable
-        ) {
-            content(it)
-        }
-    }
-}
 
 @Composable
 fun MainScreen() {
@@ -174,7 +154,7 @@ fun SecureContainer(
                 with(sharedTransitionScope) {
                     FinanceAppBottomBar(
                         tabs = BottomBarItem.entries.toTypedArray(),
-                        currentRoute = currentDestination ?: BottomBarItem.HOME.route,
+                        currentRoute = currentDestination ?: BottomBarItem.HOME.route!!,
                         navigateToRoute = nestedNavController::navigateToBottomBarRoute,
                         modifier = Modifier
                             .renderInSharedTransitionScopeOverlay(
