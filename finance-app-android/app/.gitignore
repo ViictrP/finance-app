@@ -2,4 +2,5 @@
 /app/build
 
 *.html
+*.log
 duplicatesCheck

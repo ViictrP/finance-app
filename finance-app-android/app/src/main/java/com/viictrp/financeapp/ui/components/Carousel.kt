@@ -2,10 +2,7 @@
 
 package com.viictrp.financeapp.ui.components
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +33,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
-import com.viictrp.financeapp.ui.components.icon.CustomIcons
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.theme.Blue
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
@@ -59,21 +56,18 @@ val colorMap = mapOf(
 )
 
 @Composable
-fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
+fun <T : CarouselItem> CardCarousel(
     items: List<T>,
     onPageChanged: (T) -> Unit,
     modifier: Modifier = Modifier,
     pageSpacing: Dp = 16.dp,
     contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 64.dp),
-    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size }),
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    sharedTransitionScope: SharedTransitionScope
+    pagerState: PagerState = rememberPagerState(initialPage = 0, pageCount = { items.size })
 ) {
     val haptics = LocalHapticFeedback.current
     val onPageChangedState by rememberUpdatedState(onPageChanged)
 
     val shape = MaterialTheme.shapes.medium
-    val animationDuration = 200
 
     LaunchedEffect(pagerState.settledPage) {
         if (items.isNotEmpty()) {
@@ -94,30 +88,21 @@ fun <T : CarouselItem> SharedTransitionScope.CardCarousel(
     ) { page ->
         val item = items[page]
 
-        with(sharedTransitionScope) {
-            Box(
-                modifier = Modifier
-                    .sharedElement(
-                        state = rememberSharedContentState(key = item.getKey().toString()),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = {_,_ ->
-                            tween(durationMillis = animationDuration)
-                        }
-                    )
-                    .sharedCardStyle(
-                        color = colorMap[item.getColor()] ?: Secondary,
-                        shape = shape,
-                        height = 180.dp
-                    )
-            ) {
-                CarouselCardContent(item)
-            }
+        Box(
+            modifier = Modifier
+                .sharedCardStyle(
+                    color = colorMap[item.getColor()] ?: Secondary,
+                    shape = shape,
+                    height = 180.dp
+                )
+        ) {
+            CarouselCardContent(item)
         }
     }
 }
 
 @Composable
-fun SharedTransitionScope.CarouselCardContent(
+fun CarouselCardContent(
     item: CarouselItem,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
