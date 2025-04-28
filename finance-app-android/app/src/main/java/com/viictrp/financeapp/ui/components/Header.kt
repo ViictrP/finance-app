@@ -75,7 +75,7 @@ fun Header(user: UserDTO?, modifier: Modifier, navController: NavController) {
             title = {
                 user?.fullName?.takeIf { it.isNotBlank() }?.let { fullName ->
                     Text(
-                        fullName,
+                        fullName.split(" ")[0],
                         modifier = Modifier.padding(start = 8.dp),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,

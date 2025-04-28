@@ -51,10 +51,10 @@ import java.util.Locale
 data class TransactionCardSharedElementKey(
     val transactionId: Long,
     val origin: String,
-    val type: FinanceAppSharedElementType
+    val type: TransactionCardSharedElementType
 )
 
-enum class FinanceAppSharedElementType {
+enum class TransactionCardSharedElementType {
     Bounds,
     Image,
     Title,
@@ -99,7 +99,7 @@ fun TransactionCard(
                             key = TransactionCardSharedElementKey(
                                 transactionId = transaction.id!!,
                                 origin = origin,
-                                type = FinanceAppSharedElementType.Bounds
+                                type = TransactionCardSharedElementType.Bounds
                             )
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -171,7 +171,7 @@ fun TransactionCard(
                                             key = TransactionCardSharedElementKey(
                                                 transactionId = transaction.id,
                                                 origin = origin,
-                                                type = FinanceAppSharedElementType.Title
+                                                type = TransactionCardSharedElementType.Title
                                             )
                                         ),
                                         animatedVisibilityScope = animatedVisibilityScope,
