@@ -55,7 +55,7 @@ import java.util.Locale
 
 data class TransactionWithTag(
     val transaction: TransactionDTO,
-    val tag: String
+    val tag: String?
 ) {}
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,17 +68,14 @@ fun HomeScreen(
     val balance by viewModel.currentBalance.collectAsState()
     val space = Modifier.height(48.dp)
 
-    val transactions: List<TransactionWithTag> = remember(balance) {
-        balance?.creditCards
-            ?.flatMap { creditCard ->
-                creditCard.invoices
-                    .flatMap { it.transactions }
-                    .map { transaction -> TransactionWithTag(transaction, creditCard.title) }
-            }
-            ?.sortedByDescending { it.transaction.date }
-            ?.take(5)
-            ?: emptyList()
-    }
+    val transactions = balance?.lastAddedTransactions
+        ?.map { transaction ->
+            val creditCard =
+                balance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
+
+            TransactionWithTag(transaction, creditCard?.title)
+        } ?: emptyList()
+
     val coroutineScope = rememberCoroutineScope()
     val loading by viewModel.loading.collectAsState()
 
@@ -89,7 +86,9 @@ fun HomeScreen(
                 viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
             }
         },
-        modifier = Modifier.fillMaxSize().padding(padding),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
         content = {
             FinanceAppSurface(modifier = Modifier
                 .fillMaxSize()) {

@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.secure.transaction
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -57,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
     val spacing = 48.dp

@@ -6,6 +6,7 @@ import java.math.BigDecimal
 @Immutable
 data class BalanceDTO(
     val transactions: List<TransactionDTO> = emptyList(),
+    val lastAddedTransactions: List<TransactionDTO> = emptyList(),
     val recurringExpenses: List<TransactionDTO> = emptyList(),
     val creditCards: List<CreditCardDTO> = emptyList(),
     val monthClosures: List<MonthClosureDTO> = emptyList(),

@@ -34,7 +34,7 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
         SELECT *
         FROM finance_app.transaction
         WHERE user_id = :userId
-        ORDER BY transaction.created_at
+        ORDER BY transaction.created_at DESC
         LIMIT 5
     """)
     Flux<TransactionEntity> findLastFiveAdded(Long userId);
