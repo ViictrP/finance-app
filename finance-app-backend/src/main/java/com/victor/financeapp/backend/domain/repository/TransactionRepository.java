@@ -9,6 +9,7 @@ import java.time.YearMonth;
 public interface TransactionRepository {
     Flux<Transaction> findUserTransactionsOn(Long id, YearMonth yearMonth);
     Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId);
+    Flux<Transaction> findLastFiveAdded(Long userId);
 
     Mono<Transaction> save(Transaction transactions);
 }

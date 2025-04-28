@@ -11,6 +11,7 @@ public record UserBalanceDTO(
         List<TransactionDTO> transactions,
         List<CreditCardDTO> creditCards,
         List<MonthClosureDTO> monthClosures,
+        List<TransactionDTO> lastAddedTransactions,
         BigDecimal salary,
         BigDecimal expenses,
         BigDecimal available,

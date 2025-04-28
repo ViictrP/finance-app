@@ -29,4 +29,13 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
 
     Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(Long invoiceId);
+
+    @Query("""
+        SELECT *
+        FROM finance_app.transaction
+        WHERE user_id = :userId
+        ORDER BY transaction.created_at
+        LIMIT 5
+    """)
+    Flux<TransactionEntity> findLastFiveAdded(Long userId);
 }
