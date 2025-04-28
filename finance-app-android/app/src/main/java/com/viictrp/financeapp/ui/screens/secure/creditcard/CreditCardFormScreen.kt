@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.secure.creditcard
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
 

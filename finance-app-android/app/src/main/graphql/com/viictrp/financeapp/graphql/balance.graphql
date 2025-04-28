@@ -13,6 +13,19 @@ query GetBalance($yearMonth: YearMonth!) {
             installmentNumber
             creditCardId
         }
+        lastAddedTransactions {
+            id
+            description
+            amount
+            type
+            date
+            category
+            isInstallment
+            installmentAmount
+            installmentId
+            installmentNumber
+            creditCardId
+        }
         creditCards {
             id
             invoices {

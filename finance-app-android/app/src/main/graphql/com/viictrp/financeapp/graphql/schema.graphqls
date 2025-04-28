@@ -76,6 +76,7 @@ type InvoiceDTO {
 
 type BalanceDTO {
     transactions: [TransactionDTO]!
+    lastAddedTransactions: [TransactionDTO]!
     creditCards: [CreditCardDTO]!
     monthClosures: [MonthClosureDTO]
     salary: BigDecimal!
