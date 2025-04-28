@@ -48,7 +48,7 @@ import com.viictrp.financeapp.ui.screens.secure.HomeScreen
 import com.viictrp.financeapp.ui.screens.secure.balance.BalanceScreen
 import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardFormScreen
 import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardScreen
-import com.viictrp.financeapp.ui.screens.secure.creditcard.invoice.InvoiceScreen
+import com.viictrp.financeapp.ui.screens.secure.creditcard.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionFormScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
@@ -76,8 +76,14 @@ fun MainScreen() {
 
                 composableWithCompositionLocal(
                     route = PublicDestinations.LOGIN_ROUTE
-                ) {
-                    LoginScreen(financeAppNavController.navController, authViewModel)
+                ) { from ->
+                    LoginScreen(authViewModel, onNavigation = { destination ->
+                        financeAppNavController.navigateTo(
+                            destination,
+                            PublicDestinations.LOGIN_ROUTE,
+                            from
+                        )
+                    })
                 }
 
                 composableWithCompositionLocal(
@@ -150,7 +156,9 @@ fun MainScreen() {
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val creditCardId = arguments.getLong(SecureDestinations.CREDIT_CARD_KEY)
 
-                    InvoiceScreen(creditCardId, balanceViewModel)
+                    InvoiceScreen(creditCardId, balanceViewModel) {
+                        financeAppNavController.pressUp()
+                    }
                 }
             }
         }

@@ -52,11 +52,11 @@ fun SplashScreen(
         if (isAuthenticated == true && user != null) {
             delay(1000)
             navController.navigate(SecureDestinations.SECURE_ROUTE) {
-                popUpTo("splash") { inclusive = true }
+                popUpTo(PublicDestinations.SPLASH_ROUTE) { inclusive = true }
             }
         } else if (isAuthenticated == false) {
             navController.navigate(PublicDestinations.LOGIN_ROUTE) {
-                popUpTo("splash") { inclusive = true }
+                popUpTo(SecureDestinations.SECURE_ROUTE) { inclusive = true }
             }
         }
     }

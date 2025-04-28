@@ -41,7 +41,7 @@ class FinanceAppNavController(
     val navController: NavHostController
 ) {
 
-    fun upPress() {
+    fun pressUp() {
         navController.navigateUp()
     }
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.ui.components.FinanceAppSharedElementType
+import com.viictrp.financeapp.ui.components.TransactionCardSharedElementType
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementKey
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
@@ -76,7 +76,7 @@ fun TransactionScreen(
                             key = TransactionCardSharedElementKey(
                                 transactionId = transactionId,
                                 origin = origin,
-                                type = FinanceAppSharedElementType.Bounds
+                                type = TransactionCardSharedElementType.Bounds
                             )
                         ),
                         animatedVisibilityScope,
@@ -100,7 +100,7 @@ fun TransactionScreen(
                                 key = TransactionCardSharedElementKey(
                                     transactionId = transactionId,
                                     origin = origin,
-                                    type = FinanceAppSharedElementType.Title
+                                    type = TransactionCardSharedElementType.Title
                                 )
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,

@@ -16,6 +16,7 @@ public class Balance {
     private List<Transaction> transactions;
     private List<CreditCard> creditCards;
     private List<MonthClosure> monthClosures;
+    private List<Transaction> lastAddedTransactions;
     private BigDecimal salary;
     private BigDecimal expenses;
     private BigDecimal available;
