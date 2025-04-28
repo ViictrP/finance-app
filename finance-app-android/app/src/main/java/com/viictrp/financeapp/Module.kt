@@ -2,7 +2,7 @@ package com.viictrp.financeapp
 
 import android.content.Context
 import com.viictrp.financeapp.application.service.ApiService
-import com.viictrp.financeapp.ui.auth.AuthManager
+import com.viictrp.financeapp.auth.AuthManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
