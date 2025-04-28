@@ -50,6 +50,21 @@ class UserAPIService(private val apolloClient: ApolloClient) {
                             category = transaction.category.toString()
                         )
                     },
+                    lastAddedTransactions = mapTransactionDTO(data.getBalance?.lastAddedTransactions ?: emptyList()) { transaction ->
+                        TransactionDTO(
+                            id = transaction.id?.toLong(),
+                            description = transaction.description,
+                            amount = transaction.amount,
+                            type = TransactionType.valueOf(transaction.type.toString()),
+                            date = LocalDateTime.parse(transaction.date),
+                            isInstallment = transaction.isInstallment,
+                            installmentAmount = transaction.installmentAmount ?: 1,
+                            installmentId = transaction.installmentId,
+                            installmentNumber = transaction.installmentNumber ?: 0,
+                            creditCardId = transaction.creditCardId?.toLong(),
+                            category = transaction.category.toString()
+                        )
+                    },
                     creditCards = mapCreditCardDTO(data.getBalance?.creditCards ?: emptyList()),
                     monthClosures = mapMonthClosureDTO(
                         data.getBalance?.monthClosures ?: emptyList()
