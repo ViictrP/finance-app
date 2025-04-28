@@ -1,6 +1,7 @@
 package com.victor.financeapp.backend.infrastructure.persistence.transaction;
 
 import com.victor.financeapp.backend.domain.model.common.Transaction;
+import com.victor.financeapp.backend.domain.repository.InvoiceRepository;
 import com.victor.financeapp.backend.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,8 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
     private final TransactionEntityRepository repository;
     private final TransactionEntityMapper mapper;
+
+    private final InvoiceRepository invoiceRepository;
 
     @Override
     public Flux<Transaction> findUserTransactionsOn(Long id, YearMonth yearMonth) {
@@ -33,7 +36,20 @@ class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public Flux<Transaction> findLastFiveAdded(Long userId) {
         return repository.findLastFiveAdded(userId)
-                .map(mapper::toDomain);
+                .flatMap(saved -> {
+                    var domain = mapper.toDomain(saved);
+
+                    if (saved.getInvoiceId() == null) {
+                        return Mono.just(domain);
+                    }
+
+                    return invoiceRepository.findById(saved.getInvoiceId())
+                            .map(invoice -> {
+                                domain.setInvoice(invoice);
+                                return domain;
+                            })
+                            .defaultIfEmpty(domain);
+                });
     }
 
     @Override

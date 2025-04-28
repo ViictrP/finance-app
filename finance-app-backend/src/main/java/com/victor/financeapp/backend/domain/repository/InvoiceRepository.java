@@ -10,4 +10,5 @@ public interface InvoiceRepository {
     Mono<Invoice> findCreditCardsInvoiceOn(Long creditCardId, YearMonth yearMonth);
     Flux<Invoice> findCreditCardInvoices(Long creditCardId);
     Mono<Invoice> save(Invoice invoice);
+    Mono<Invoice> findById(Long invoiceId);
 }

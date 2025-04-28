@@ -41,11 +41,7 @@ fun TransactionScreen(
     val balance = balanceViewModel.balance.collectAsState()
 
     val transaction = remember(balance) {
-        balance.value?.creditCards
-            ?.flatMap { creditCard ->
-                creditCard.invoices
-                    .flatMap { it.transactions }
-            }
+        balance.value?.lastAddedTransactions
             ?.find { it.id == transactionId }
     }
 
