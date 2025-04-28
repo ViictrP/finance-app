@@ -34,4 +34,10 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
         return repository.save(mapper.toEntity(invoice))
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<Invoice> findById(Long invoiceId) {
+        return repository.findById(invoiceId)
+                .map(mapper::toDomain);
+    }
 }
