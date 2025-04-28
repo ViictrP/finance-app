@@ -8,6 +8,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -39,10 +41,9 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,17 +92,14 @@ fun InvoiceScreen(
     onPressUp: (() -> Unit)? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val balance = balanceViewModel.balance.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
 
     val spacing = 48.dp
+    val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
     val invoice by balanceViewModel.selectedInvoice.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
-    val transactions = invoice?.transactions ?: emptyList()
 
-    val creditCard = remember(balance) {
-        balance.value?.creditCards?.find { it.id == creditCardId }
-    }
+    val transactions = invoice?.transactions ?: emptyList()
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No sharedTransitionScope found")
@@ -127,8 +125,10 @@ fun InvoiceScreen(
     val density = LocalDensity.current
     val animatedFontSizeSp = with(density) { animatedFontSize.toSp() }
 
-    LaunchedEffect(creditCard) {
-        balanceViewModel.setInvoice(creditCard)
+    DisposableEffect(Unit) {
+        onDispose {
+            balanceViewModel.clear()
+        }
     }
 
     with(sharedTransitionScope) {
@@ -136,285 +136,289 @@ fun InvoiceScreen(
             isRefreshing = loading,
             onRefresh = {
                 coroutineScope.launch {
-                    balanceViewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+                    balanceViewModel.updateYearMonth(YearMonth.now())
+                    balanceViewModel.getInvoice(creditCardId, YearMonth.now())
                 }
             },
             modifier = Modifier
                 .fillMaxSize(),
             content = {
-                FinanceAppSurface(modifier = Modifier.fillMaxSize()) {
-                    Box(
-                        modifier = Modifier
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(
-                                    key = CreditCardSharedKey(
-                                        creditCardId = creditCard!!.id!!,
-                                        type = CreditCardSharedKeyElementType.Bounds
-                                    )
-                                ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = boundsTransform,
-                                clipInOverlayDuringTransition = OverlayClip(
-                                    RoundedCornerShape(
-                                        roundedCornerAnimation
-                                    )
+                FinanceAppSurface(
+                    color = colorMap[creditCard.value?.color] ?: Secondary,
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = CreditCardSharedKey(
+                                    creditCardId = creditCard.value!!.id!!,
+                                    type = CreditCardSharedKeyElementType.Bounds
                                 )
-                            )
-                            .fillMaxSize()
-                            .background(color = colorMap[creditCard.color] ?: Secondary)
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = boundsTransform,
+                            clipInOverlayDuringTransition = OverlayClip(
+                                RoundedCornerShape(
+                                    roundedCornerAnimation
+                                )
+                            ),
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        )
+                        .fillMaxSize()
+                ) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(top = 16.dp),
+                        modifier = Modifier.skipToLookaheadSize()
                     ) {
-                        LazyColumn(
-                            contentPadding = PaddingValues(top = 16.dp)
-                        ) {
-                            item {
-                                BackButton {
-                                    onPressUp?.invoke()
-                                }
+                        item {
+                            BackButton {
+                                onPressUp?.invoke()
                             }
+                        }
 
-                            item {
-                                Spacer(modifier = Modifier.height(24.dp))
-                            }
+                        item {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
 
-                            item {
-                                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = creditCard.title,
-                                            color = SecondaryDark,
-                                            style = MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = animatedFontSizeSp
-                                            ),
-                                            modifier = Modifier
-                                                .sharedBounds(
-                                                    rememberSharedContentState(
-                                                        key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.id,
-                                                            type = CreditCardSharedKeyElementType.Title
-                                                        )
-                                                    ),
-                                                    animatedVisibilityScope = animatedVisibilityScope,
-                                                    boundsTransform = boundsTransform
-                                                )
-                                                .wrapContentWidth()
-                                        )
-                                        IconButton(onClick = {}) {
-                                            Icon(
-                                                CustomIcons.Filled.Settings,
-                                                modifier = Modifier
-                                                    .sharedBounds(
-                                                        rememberSharedContentState(
-                                                            key = CreditCardSharedKey(
-                                                                creditCardId = creditCard.id,
-                                                                type = CreditCardSharedKeyElementType.Actions
-                                                            )
-                                                        ),
-                                                        animatedVisibilityScope = animatedVisibilityScope,
-                                                        boundsTransform = boundsTransform
-                                                    )
-                                                    .wrapContentWidth()
-                                                    .size(24.dp),
-                                                contentDescription = "Select Month",
-                                                tint = Color.White,
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.size(8.dp))
-
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(
-                                                CustomIcons.Filled.Calendar,
-                                                modifier = Modifier
-                                                    .sharedBounds(
-                                                        rememberSharedContentState(
-                                                            key = CreditCardSharedKey(
-                                                                creditCardId = creditCard.id,
-                                                                type = CreditCardSharedKeyElementType.Icon
-                                                            )
-                                                        ),
-                                                        animatedVisibilityScope = animatedVisibilityScope,
-                                                        boundsTransform = boundsTransform
-                                                    )
-                                                    .wrapContentWidth()
-                                                    .size(24.dp),
-                                                contentDescription = "Select Month",
-                                                tint = SecondaryDark,
-                                            )
-                                            Text(
-                                                text = " ${creditCard.invoiceClosingDay}",
-                                                color = SecondaryDark,
-                                                style = MaterialTheme.typography.titleLarge.copy(
-                                                    fontSize = 24.sp
-                                                ),
-                                                modifier = Modifier
-                                                    .sharedBounds(
-                                                        rememberSharedContentState(
-                                                            key = CreditCardSharedKey(
-                                                                creditCardId = creditCard.id,
-                                                                type = CreditCardSharedKeyElementType.InvoiceClosingDay
-                                                            )
-                                                        ),
-                                                        animatedVisibilityScope = animatedVisibilityScope,
-                                                        boundsTransform = boundsTransform
-                                                    )
-                                                    .wrapContentWidth()
-                                            )
-                                        }
-                                        Text(
-                                            text = creditCard.number.toString(),
-                                            color = SecondaryDark,
-                                            style = MaterialTheme.typography.titleLarge.copy(
-                                                fontSize = 28.sp,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            modifier = Modifier
-                                                .sharedBounds(
-                                                    rememberSharedContentState(
-                                                        key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.id,
-                                                            type = CreditCardSharedKeyElementType.Number
-                                                        )
-                                                    ),
-                                                    animatedVisibilityScope = animatedVisibilityScope,
-                                                    boundsTransform = boundsTransform
-                                                )
-                                                .wrapContentWidth()
-                                        )
-                                    }
-                                }
-                            }
-
-                            item {
-                                Spacer(modifier = Modifier.height(spacing))
-                            }
-
-                            stickyHeader {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(colorMap[creditCard.color] ?: Background)
-                                        .padding(horizontal = 16.dp)
-                                        .skipToLookaheadSize()
-                                ) {
-                                    MonthPicker(selectedYearMonth, loading) { yearMonth ->
-                                        balanceViewModel.updateYearMonth(yearMonth)
-                                        coroutineScope.launch {
-                                            balanceViewModel.getInvoice(
-                                                creditCard.id,
-                                                selectedYearMonth
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            item {
-                                Spacer(modifier = Modifier.height(spacing / 2))
-                            }
-
-                            item {
+                        item {
+                            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
-                                        .padding(bottom = 24.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.Start,
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
+                                    Text(
+                                        text = creditCard.value?.title!!,
+                                        color = SecondaryDark,
+                                        style = MaterialTheme.typography.titleLarge.copy(
+                                            fontSize = animatedFontSizeSp
+                                        ),
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(
+                                                    key = CreditCardSharedKey(
+                                                        creditCardId = creditCard.value?.id!!,
+                                                        type = CreditCardSharedKeyElementType.Title
+                                                    )
+                                                ),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                                boundsTransform = boundsTransform
+                                            )
+                                            .wrapContentWidth()
+                                    )
+                                    IconButton(onClick = {}) {
+                                        Icon(
+                                            CustomIcons.Filled.Settings,
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    rememberSharedContentState(
+                                                        key = CreditCardSharedKey(
+                                                            creditCardId = creditCard.value?.id!!,
+                                                            type = CreditCardSharedKeyElementType.Actions
+                                                        )
+                                                    ),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                    boundsTransform = boundsTransform
+                                                )
+                                                .wrapContentWidth()
+                                                .size(24.dp),
+                                            contentDescription = "Select Month",
+                                            tint = Color.White,
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.size(8.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            CustomIcons.Filled.Calendar,
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    rememberSharedContentState(
+                                                        key = CreditCardSharedKey(
+                                                            creditCardId = creditCard.value?.id!!,
+                                                            type = CreditCardSharedKeyElementType.Icon
+                                                        )
+                                                    ),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                    boundsTransform = boundsTransform
+                                                )
+                                                .wrapContentWidth()
+                                                .size(24.dp),
+                                            contentDescription = "Select Month",
+                                            tint = SecondaryDark,
+                                        )
                                         Text(
-                                            text = creditCard.title,
-                                            fontWeight = FontWeight.Bold,
+                                            text = " ${creditCard.value?.invoiceClosingDay}",
+                                            color = SecondaryDark,
+                                            style = MaterialTheme.typography.titleLarge.copy(
+                                                fontSize = 24.sp
+                                            ),
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    rememberSharedContentState(
+                                                        key = CreditCardSharedKey(
+                                                            creditCardId = creditCard.value?.id!!,
+                                                            type = CreditCardSharedKeyElementType.InvoiceClosingDay
+                                                        )
+                                                    ),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                    boundsTransform = boundsTransform
+                                                )
+                                                .wrapContentWidth()
+                                        )
+                                    }
+                                    Text(
+                                        text = creditCard.value?.number!!,
+                                        color = SecondaryDark,
+                                        style = MaterialTheme.typography.titleLarge.copy(
+                                            fontSize = 28.sp,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(
+                                                    key = CreditCardSharedKey(
+                                                        creditCardId = creditCard.value?.id!!,
+                                                        type = CreditCardSharedKeyElementType.Number
+                                                    )
+                                                ),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                                boundsTransform = boundsTransform
+                                            )
+                                            .wrapContentWidth()
+                                    )
+                                }
+                            }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(spacing))
+                        }
+
+                        stickyHeader {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        colorMap[creditCard.value?.color!!] ?: Background
+                                    )
+                                    .padding(horizontal = 16.dp)
+                                    .skipToLookaheadSize()
+                            ) {
+                                MonthPicker(selectedYearMonth, loading) { yearMonth ->
+                                    balanceViewModel.updateYearMonth(yearMonth)
+                                    coroutineScope.launch {
+                                        balanceViewModel.getInvoice(
+                                            creditCard.value?.id!!,
+                                            selectedYearMonth
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(spacing / 2))
+                        }
+
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .padding(bottom = 24.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = creditCard.value?.title!!,
+                                        fontWeight = FontWeight.Bold,
+                                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                    )
+                                    Text(
+                                        "Lançamentos da fatura de ${
+                                            selectedYearMonth.toLong()
+                                                .toFormattedYearMonth("MMMM")
+                                        }",
+                                        fontWeight = FontWeight.Normal,
+                                    )
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.End,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                ) {
+                                    invoice?.let {
+                                        Text(
+                                            text = NumberFormat.getCurrencyInstance(
+                                                Locale(
+                                                    "pt",
+                                                    "BR"
+                                                )
+                                            )
+                                                .format(
+                                                    transactions
+                                                        .map { it.amount }
+                                                        .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
+                                            fontWeight = FontWeight.Normal,
                                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
                                         )
-                                        Text(
-                                            "Lançamentos da fatura de ${
-                                                selectedYearMonth.toLong()
-                                                    .toFormattedYearMonth("MMMM")
-                                            }",
-                                            fontWeight = FontWeight.Normal,
-                                        )
-                                    }
-                                    Column(
-                                        horizontalAlignment = Alignment.End,
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                    ) {
-                                        invoice?.let {
-                                            Text(
-                                                text = NumberFormat.getCurrencyInstance(
-                                                    Locale(
-                                                        "pt",
-                                                        "BR"
-                                                    )
-                                                )
-                                                    .format(
-                                                        transactions
-                                                            .map { it.amount }
-                                                            .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
-                                                fontWeight = FontWeight.Normal,
-                                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                            )
-                                        }
                                     }
                                 }
                             }
+                        }
 
-                            if (!loading) {
-                                if (transactions.isNotEmpty()) {
-                                    itemsIndexed(
-                                        transactions,
-                                        key = { _, item -> item.id!! }) { index, transaction ->
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                        ) {
-                                            TransactionCard(
-                                                transaction,
-                                                tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
-                                                tagColor = MaterialTheme.colorScheme.secondary.copy(
-                                                    alpha = .7f
-                                                ),
-                                                origin = SecureDestinations.CREDIT_CARD_ROUTE
-                                            )
-                                        }
+                        if (!loading) {
+                            if (transactions.isNotEmpty()) {
+                                itemsIndexed(
+                                    transactions,
+                                    key = { _, item -> item.id!! }) { index, transaction ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                                    ) {
+                                        TransactionCard(
+                                            transaction,
+                                            tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                                            tagColor = MaterialTheme.colorScheme.secondary.copy(
+                                                alpha = .7f
+                                            ),
+                                            origin = SecureDestinations.CREDIT_CARD_ROUTE
+                                        )
                                     }
-                                } else {
-                                    item {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center,
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            val composition by rememberLottieComposition(
-                                                LottieCompositionSpec.Asset("empty-lottie.json")
-                                            )
-                                            val progress by animateLottieCompositionAsState(
-                                                composition,
-                                                iterations = LottieConstants.IterateForever,
-                                                restartOnPlay = true
-                                            )
+                                }
+                            } else {
+                                item {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        val composition by rememberLottieComposition(
+                                            LottieCompositionSpec.Asset("empty-lottie.json")
+                                        )
+                                        val progress by animateLottieCompositionAsState(
+                                            composition,
+                                            iterations = LottieConstants.IterateForever,
+                                            restartOnPlay = true
+                                        )
 
-                                            LottieAnimation(
-                                                composition = composition,
-                                                progress = { progress },
-                                                modifier = Modifier.size(230.dp)
-                                            )
-                                        }
+                                        LottieAnimation(
+                                            composition = composition,
+                                            progress = { progress },
+                                            modifier = Modifier.size(230.dp)
+                                        )
                                     }
                                 }
                             }

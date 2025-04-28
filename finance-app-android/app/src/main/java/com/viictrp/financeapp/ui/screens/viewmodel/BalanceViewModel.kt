@@ -17,11 +17,14 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     private val _balance = MutableStateFlow<BalanceDTO?>(null)
     val balance = _balance
 
-    private val _invoice = MutableStateFlow<InvoiceDTO?>(null)
-    val selectedInvoice = _invoice
+    private val _selectedInvoice = MutableStateFlow<InvoiceDTO?>(null)
+    val selectedInvoice = _selectedInvoice
 
-    private val _selectedCreditCard = MutableStateFlow<CreditCardDTO?>(balance.value?.creditCards?.get(0))
+    private val _selectedCreditCard = MutableStateFlow<CreditCardDTO?>(null)
     val selectedCreditCard = _selectedCreditCard
+
+    private val _selectedTransaction = MutableStateFlow<TransactionDTO?>(null)
+    val selectedTransaction = _selectedTransaction
 
     private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
     val currentBalance = _currentBalance
@@ -48,7 +51,7 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
     suspend fun getInvoice(creditCardId: Long, yearMonth: YearMonth) {
         try {
             _loading.value = true
-            _invoice.value = apiService.getInvoice(creditCardId, yearMonth)
+            _selectedInvoice.value = apiService.getInvoice(creditCardId, yearMonth)
         } finally {
             _loading.value = false
         }
@@ -85,21 +88,24 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
         _currentBalance.value = balance
     }
 
-    fun setInvoice(creditCard: CreditCardDTO?) {
-        selectedInvoice.value = creditCard?.invoices?.getOrNull(0)
-    }
-
     fun updateYearMonth(yearMonth: YearMonth) {
         _selectedYearMonth.value = yearMonth
     }
 
-    fun selectCreditCard(creditCardId: Long) {
-        _selectedCreditCard.value = _balance.value?.creditCards?.find { it.id == creditCardId }
+    fun selectCreditCard(creditCard: CreditCardDTO) {
+        _selectedCreditCard.value = creditCard
+        _selectedInvoice.value = creditCard.invoices.getOrNull(0)
+    }
+
+    fun selectTransaction(transaction: TransactionDTO, creditCard: CreditCardDTO?) {
+        _selectedTransaction.value = transaction
+        _selectedCreditCard.value = creditCard
     }
 
     fun clear() {
-        _invoice.value = null
+        _selectedInvoice.value = null
         _selectedYearMonth.value = YearMonth.now()
-        _selectedCreditCard.value = _balance.value?.creditCards?.get(0)
+        _selectedCreditCard.value = null
+        _selectedTransaction.value = null
     }
 }
