@@ -56,7 +56,7 @@ import java.util.Locale
 data class TransactionWithTag(
     val transaction: TransactionDTO,
     val tag: String?
-) {}
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
