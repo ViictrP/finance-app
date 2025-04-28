@@ -49,7 +49,7 @@ public class Transaction {
                     null,
                     this.amount.divide(BigDecimal.valueOf(this.installmentAmount), 2, RoundingMode.HALF_UP),
                     this.category,
-                    this.date.plusMonths(number),
+                    this.date,
                     this.description,
                     this.installmentAmount,
                     this.type);
