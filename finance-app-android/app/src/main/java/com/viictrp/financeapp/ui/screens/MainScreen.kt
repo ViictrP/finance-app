@@ -86,14 +86,14 @@ fun MainScreen() {
                     SecureContainer(
                         viewModel = balanceViewModel,
                         authViewModel = authViewModel,
-                        onNavigation = { id, route, from ->
+                        onNavigation = { id, destination, origin, from ->
 
                             if (id != null) {
-                                when(route) {
+                                when (destination) {
                                     SecureDestinations.TRANSACTION_ROUTE -> {
                                         financeAppNavController.navigateToTransaction(
                                             id,
-                                            route,
+                                            origin,
                                             from
                                         )
                                     }
@@ -101,15 +101,15 @@ fun MainScreen() {
                                     SecureDestinations.INVOICE_ROUTE -> {
                                         financeAppNavController.navigateToInvoice(
                                             id,
-                                            route,
+                                            origin,
                                             from
                                         )
                                     }
                                 }
                             } else {
                                 financeAppNavController.navigateTo(
-                                    route,
-                                    SecureDestinations.HOME_ROUTE,
+                                    destination,
+                                    origin,
                                     from
                                 )
                             }
@@ -119,7 +119,8 @@ fun MainScreen() {
 
                 composableWithCompositionLocal(
                     route = "${SecureDestinations.TRANSACTION_ROUTE}/" +
-                            "{${SecureDestinations.TRANSACTION_KEY}}",
+                            "{${SecureDestinations.TRANSACTION_KEY}}" +
+                            "?origin={${SecureDestinations.ORIGIN}}",
                     arguments = listOf(
                         navArgument(SecureDestinations.TRANSACTION_KEY) {
                             type = NavType.LongType
@@ -128,10 +129,12 @@ fun MainScreen() {
                 ) { backStackEntry ->
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val transactionId = arguments.getLong(SecureDestinations.TRANSACTION_KEY)
+                    val origin = arguments.getString(SecureDestinations.ORIGIN)
 
                     TransactionScreen(
-                        transactionId.toString(),
-                        balanceViewModel
+                        transactionId,
+                        origin!!,
+                        balanceViewModel,
                     )
                 }
 
@@ -162,7 +165,7 @@ fun SecureContainer(
     modifier: Modifier = Modifier,
     viewModel: BalanceViewModel,
     authViewModel: AuthViewModel,
-    onNavigation: (Long?, String, NavBackStackEntry) -> Unit
+    onNavigation: (Long?, String, String, NavBackStackEntry) -> Unit
 ) {
     val nestedNavController = rememberFinanceAppController()
 
@@ -256,14 +259,19 @@ fun SecureContainer(
                 HomeScreen(
                     viewModel = viewModel,
                     padding,
-                    onNavigation = { id, route ->
-                        when (route) {
+                    onNavigation = { id, destination ->
+                        when (destination) {
                             SecureDestinations.BALANCE_ROUTE -> nestedNavController.navigateTo(
                                 SecureDestinations.BALANCE_ROUTE,
                                 SecureDestinations.HOME_ROUTE,
                                 from
                             )
-                            else -> onNavigation(id, route, from)
+                            else -> onNavigation(
+                                id,
+                                destination,
+                                SecureDestinations.HOME_ROUTE,
+                                from
+                            )
                         }
                     }
                 )
@@ -273,7 +281,14 @@ fun SecureContainer(
                 CreditCardScreen(
                     viewModel,
                     padding,
-                    onNavigation = { id, route -> onNavigation(id, route, from) }
+                    onNavigation = { id, route ->
+                        onNavigation(
+                            id,
+                            route,
+                            SecureDestinations.CREDIT_CARD_ROUTE,
+                            from
+                        )
+                    }
                 )
             }
 

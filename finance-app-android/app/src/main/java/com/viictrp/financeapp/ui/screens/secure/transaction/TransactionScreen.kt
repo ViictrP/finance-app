@@ -23,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.ui.components.FinanceAppSharedElementType
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
+import com.viictrp.financeapp.ui.components.TransactionCardSharedElementKey
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
@@ -32,7 +34,8 @@ import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 
 @Composable
 fun TransactionScreen(
-    transactionId: String,
+    transactionId: Long,
+    origin: String,
     balanceViewModel: BalanceViewModel
 ) {
     val balance = balanceViewModel.balance.collectAsState()
@@ -43,7 +46,7 @@ fun TransactionScreen(
                 creditCard.invoices
                     .flatMap { it.transactions }
             }
-            ?.find { it.id.toString() == transactionId }
+            ?.find { it.id == transactionId }
     }
 
     val creditCard = remember(transaction) {
@@ -70,7 +73,11 @@ fun TransactionScreen(
                 modifier = Modifier
                     .sharedBounds(
                         rememberSharedContentState(
-                            key = transaction?.id.toString()
+                            key = TransactionCardSharedElementKey(
+                                transactionId = transactionId,
+                                origin = origin,
+                                type = FinanceAppSharedElementType.Bounds
+                            )
                         ),
                         animatedVisibilityScope,
                         clipInOverlayDuringTransition =
@@ -90,7 +97,11 @@ fun TransactionScreen(
                     modifier = Modifier
                         .sharedBounds(
                             rememberSharedContentState(
-                                key = "title_${transactionId}"
+                                key = TransactionCardSharedElementKey(
+                                    transactionId = transactionId,
+                                    origin = origin,
+                                    type = FinanceAppSharedElementType.Title
+                                )
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = boundsTransform

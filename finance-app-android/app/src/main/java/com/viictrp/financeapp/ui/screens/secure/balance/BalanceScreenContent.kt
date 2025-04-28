@@ -32,6 +32,7 @@ import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.PrimaryDark
 import kotlinx.coroutines.launch
@@ -182,7 +183,10 @@ fun BalanceScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
-                    TransactionCard(recurringExpenses[index])
+                    TransactionCard(
+                        recurringExpenses[index],
+                        origin = SecureDestinations.BALANCE_ROUTE,
+                    )
                 }
             }
 
@@ -211,7 +215,7 @@ fun BalanceScreenContent(
                         .padding(horizontal = 16.dp, vertical = 4.dp)
                         .animateItem()
                 ) {
-                    TransactionCard(transactions[index])
+                    TransactionCard(transactions[index], origin = SecureDestinations.BALANCE_ROUTE)
                 }
             }
         }

@@ -226,7 +226,8 @@ fun HomeScreen(
                                 TransactionCard(
                                     transaction,
                                     tag,
-                                    MaterialTheme.colorScheme.tertiary
+                                    MaterialTheme.colorScheme.tertiary,
+                                    origin = SecureDestinations.HOME_ROUTE
                                 ) { id ->
                                     onNavigation(
                                         id,

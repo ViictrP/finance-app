@@ -21,6 +21,7 @@ object SecureDestinations {
     const val TRANSACTION_ROUTE = "transaction"
     const val TRANSACTION_KEY = "transactionId"
     const val CREDIT_CARD_KEY = "creditCardId"
+    const val ORIGIN = "origin"
 }
 
 object PublicDestinations {
@@ -56,21 +57,29 @@ class FinanceAppNavController(
         }
     }
 
-    fun navigateToInvoice(creditCardId: Long, origin: String, from: NavBackStackEntry) {
+    fun navigateToInvoice(
+        creditCardId: Long,
+        origin: String,
+        from: NavBackStackEntry
+    ) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${SecureDestinations.INVOICE_ROUTE}/$creditCardId?origin=$origin")
         }
     }
 
-    fun navigateToTransaction(transactionId: Long, origin: String, from: NavBackStackEntry) {
+    fun navigateToTransaction(
+        transactionId: Long,
+        origin: String,
+        from: NavBackStackEntry
+    ) {
         if (from.lifecycleIsResumed()) {
             navController.navigate("${SecureDestinations.TRANSACTION_ROUTE}/$transactionId?origin=$origin")
         }
     }
 
-    fun navigateTo(route: String, origin: String, from: NavBackStackEntry) {
+    fun navigateTo(destination: String, origin: String, from: NavBackStackEntry) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("$route?origin=$origin")
+            navController.navigate("$destination?origin=$origin")
         }
     }
 }

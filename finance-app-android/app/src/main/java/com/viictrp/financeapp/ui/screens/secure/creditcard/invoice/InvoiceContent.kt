@@ -47,6 +47,7 @@ import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.extension.sharedCardStyle
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
+import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.launch
@@ -72,7 +73,6 @@ internal fun InvoiceContent(
     val coroutineScope = rememberCoroutineScope()
 
     val transactions = invoice?.transactions ?: emptyList()
-    val animationDuration = 200
 
     LaunchedEffect(creditCard) {
         balanceViewModel.setInvoice(creditCard)
@@ -198,7 +198,8 @@ internal fun InvoiceContent(
                         TransactionCard(
                             transaction,
                             tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
-                            tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                            tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f),
+                            origin = SecureDestinations.CREDIT_CARD_ROUTE
                         )
                     }
                 }

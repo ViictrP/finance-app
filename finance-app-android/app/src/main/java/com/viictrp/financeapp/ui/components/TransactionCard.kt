@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
-import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.helper.categoryHelper
+import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
@@ -47,11 +47,27 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+
+data class TransactionCardSharedElementKey(
+    val transactionId: Long,
+    val origin: String,
+    val type: FinanceAppSharedElementType
+)
+
+enum class FinanceAppSharedElementType {
+    Bounds,
+    Image,
+    Title,
+    Tagline,
+    Background
+}
+
 @Composable
 fun TransactionCard(
     transaction: TransactionDTO,
     tag: String? = null,
     tagColor: Color? = null,
+    origin: String,
     onClick: ((id: Long) -> Unit)? = null
 ) {
 
@@ -80,7 +96,11 @@ fun TransactionCard(
                 modifier = Modifier
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(
-                            key = transaction.id.toString()
+                            key = TransactionCardSharedElementKey(
+                                transactionId = transaction.id!!,
+                                origin = origin,
+                                type = FinanceAppSharedElementType.Bounds
+                            )
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = boundsTransform,
@@ -96,7 +116,7 @@ fun TransactionCard(
                     .background(MaterialTheme.colorScheme.primary)
                     .clickable {
                         if (onClick != null) {
-                            onClick(transaction.id!!)
+                            onClick(transaction.id)
                         }
                     },
             ) {
@@ -148,7 +168,11 @@ fun TransactionCard(
                                 modifier = Modifier
                                     .sharedBounds(
                                         rememberSharedContentState(
-                                            key = "title_${transaction.id}"
+                                            key = TransactionCardSharedElementKey(
+                                                transactionId = transaction.id,
+                                                origin = origin,
+                                                type = FinanceAppSharedElementType.Title
+                                            )
                                         ),
                                         animatedVisibilityScope = animatedVisibilityScope,
                                         enter = fadeIn(nonSpatialExpressiveSpring()),
@@ -191,7 +215,7 @@ fun TransactionCard(
 fun TransactionCardPreview() {
     FinanceAppTheme {
         TransactionCard(
-            TransactionDTO(
+            transaction = TransactionDTO(
                 id = 1,
                 description = "Description",
                 amount = BigDecimal.valueOf(100.0),
@@ -204,7 +228,7 @@ fun TransactionCardPreview() {
                 creditCardId = null,
                 installmentNumber = 1
             ),
-             null
+            origin = SecureDestinations.HOME_ROUTE
         )
     }
 }

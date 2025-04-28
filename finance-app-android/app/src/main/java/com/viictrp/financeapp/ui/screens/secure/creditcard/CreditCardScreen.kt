@@ -219,7 +219,8 @@ fun CreditCardScreen(
                             TransactionCard(
                                 transaction,
                                 tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
-                                tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f)
+                                tagColor = MaterialTheme.colorScheme.secondary.copy(alpha = .7f),
+                                origin = SecureDestinations.CREDIT_CARD_ROUTE
                             )
                         }
                     }
