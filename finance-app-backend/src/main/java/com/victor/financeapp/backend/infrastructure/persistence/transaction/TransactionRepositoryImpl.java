@@ -31,6 +31,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
+    public Flux<Transaction> findLastFiveAdded(Long userId) {
+        return repository.findLastFiveAdded(userId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Mono<Transaction> save(Transaction transaction) {
         return repository.save(mapper.toEntity(transaction))
                 .map(saved -> {

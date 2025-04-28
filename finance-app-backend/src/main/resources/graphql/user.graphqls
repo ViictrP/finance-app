@@ -9,6 +9,7 @@ extend type Mutation {
 type UserBalanceDTO {
     transactions: [TransactionDTO]
     creditCards: [CreditCardDTO]
+    lastAddedTransactions: [TransactionDTO]!
     salary: BigDecimal
     expenses: BigDecimal
     available: BigDecimal
