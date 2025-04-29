@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,6 +24,12 @@ fun BalanceScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
     val coroutineScope = rememberCoroutineScope()
 
     val loading by viewModel.loading.collectAsState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clear()
+        }
+    }
 
     PullToRefreshContainer(
         isRefreshing = loading,

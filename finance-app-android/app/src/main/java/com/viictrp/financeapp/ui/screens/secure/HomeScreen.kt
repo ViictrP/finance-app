@@ -3,7 +3,6 @@
 package com.viictrp.financeapp.ui.screens.secure
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.application.dto.CreditCardDTO
 import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
@@ -53,9 +52,9 @@ import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
 
-data class TransactionWithTag(
+data class TransactionWithCreditCard(
     val transaction: TransactionDTO,
-    val tag: String?
+    val creditCard: CreditCardDTO?
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +72,7 @@ fun HomeScreen(
             val creditCard =
                 balance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
 
-            TransactionWithTag(transaction, creditCard?.title)
+            TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
 
     val coroutineScope = rememberCoroutineScope()
@@ -92,147 +91,146 @@ fun HomeScreen(
         content = {
             FinanceAppSurface(modifier = Modifier
                 .fillMaxSize()) {
-                SharedTransitionLayout {
-                    LazyColumn(
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        item {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                                border = BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                LazyColumn(
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                            ),
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(
+                                    horizontal = 24.dp,
+                                    vertical = 16.dp
                                 ),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(
-                                        horizontal = 24.dp,
-                                        vertical = 16.dp
-                                    ),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    Column {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text(
-                                                "gastos do mês",
-                                                style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                                color = MaterialTheme.colorScheme.secondary.copy(
-                                                    alpha = 0.5F
-                                                )
-                                            )
-                                            Row(
-                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                                modifier = Modifier.clickable {
-                                                    onNavigation(
-                                                        null,
-                                                        SecureDestinations.BALANCE_ROUTE
-                                                    )
-                                                }) {
-                                                Text(
-                                                    SimpleDateFormat(
-                                                        "MMMM",
-                                                        Locale.getDefault()
-                                                    ).format(Calendar.getInstance().time),
-                                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                                    color = MaterialTheme.colorScheme.tertiary,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                                Icon(
-                                                    CustomIcons.Filled.Calendar,
-                                                    modifier = Modifier.size(24.dp),
-                                                    contentDescription = "Select Month",
-                                                    tint = MaterialTheme.colorScheme.tertiary,
-                                                )
-                                            }
-                                        }
-                                        Spacer(modifier = Modifier.size(10.dp))
-                                        Text(
-                                            if (balance != null && !loading) {
-                                                NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                    .format(balance?.expenses)
-                                            } else {
-                                                "Carregando..."
-                                            },
-                                            style = LocalTextStyle.current.copy(fontSize = 28.sp),
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                    }
+                                Column {
                                     Row(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        balance?.let {
-                                            val value =
-                                                it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
-
-                                            Text(
-                                                NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                    .format(value),
-                                                style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                                color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                        Text(
+                                            "gastos do mês",
+                                            style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                            color = MaterialTheme.colorScheme.secondary.copy(
+                                                alpha = 0.5F
                                             )
-                                            if (value > BigDecimal.ZERO) {
-                                                StatusChip(
-                                                    "diminuiu!",
-                                                    textColor = MaterialTheme.colorScheme.primary,
-                                                    backgroundColor = MaterialTheme.colorScheme.onTertiary
+                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            modifier = Modifier.clickable {
+                                                onNavigation(
+                                                    null,
+                                                    SecureDestinations.BALANCE_ROUTE
                                                 )
-                                            } else {
-                                                StatusChip(
-                                                    "aumentou!",
-                                                    textColor = MaterialTheme.colorScheme.primary,
-                                                    backgroundColor = MaterialTheme.colorScheme.error
-                                                )
-                                            }
+                                            }) {
+                                            Text(
+                                                SimpleDateFormat(
+                                                    "MMMM",
+                                                    Locale.getDefault()
+                                                ).format(Calendar.getInstance().time),
+                                                style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                                color = MaterialTheme.colorScheme.tertiary,
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                            Icon(
+                                                CustomIcons.Filled.Calendar,
+                                                modifier = Modifier.size(24.dp),
+                                                contentDescription = "Select Month",
+                                                tint = MaterialTheme.colorScheme.tertiary,
+                                            )
                                         }
-
                                     }
+                                    Spacer(modifier = Modifier.size(10.dp))
+                                    Text(
+                                        if (balance != null && !loading) {
+                                            NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                                .format(balance?.expenses)
+                                        } else {
+                                            "Carregando..."
+                                        },
+                                        style = LocalTextStyle.current.copy(fontSize = 28.sp),
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    balance?.let {
+                                        val value =
+                                            it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
+
+                                        Text(
+                                            NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                                .format(value),
+                                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                            color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                        )
+                                        if (value > BigDecimal.ZERO) {
+                                            StatusChip(
+                                                "diminuiu!",
+                                                textColor = MaterialTheme.colorScheme.primary,
+                                                backgroundColor = MaterialTheme.colorScheme.onTertiary
+                                            )
+                                        } else {
+                                            StatusChip(
+                                                "aumentou!",
+                                                textColor = MaterialTheme.colorScheme.primary,
+                                                backgroundColor = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
+
                                 }
                             }
                         }
+                    }
 
-                        item {
-                            Spacer(modifier = space)
-                        }
-                        item {
-                            Text(
-                                "Últimas Compras",
-                                style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp)
-                                    .padding(bottom = 24.dp)
-                            )
-                        }
+                    item {
+                        Spacer(modifier = space)
+                    }
+                    item {
+                        Text(
+                            "Últimas Compras",
+                            style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 24.dp)
+                        )
+                    }
 
-                        items(transactions.size) { index ->
-                            val transaction = transactions[index].transaction
-                            val tag = transactions[index].tag
+                    items(transactions.size) { index ->
+                        val transaction = transactions[index].transaction
+                        val creditCard = transactions[index].creditCard
 
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                            ) {
-                                TransactionCard(
-                                    transaction,
-                                    tag,
-                                    MaterialTheme.colorScheme.tertiary,
-                                    origin = SecureDestinations.HOME_ROUTE
-                                ) { id ->
-                                    onNavigation(
-                                        id,
-                                        SecureDestinations.TRANSACTION_ROUTE
-                                    )
-                                }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                        ) {
+                            TransactionCard(
+                                transaction,
+                                creditCard?.title,
+                                MaterialTheme.colorScheme.tertiary,
+                                origin = SecureDestinations.HOME_ROUTE
+                            ) { id ->
+                                viewModel.selectTransaction(transaction, creditCard)
+                                onNavigation(
+                                    id,
+                                    SecureDestinations.TRANSACTION_ROUTE
+                                )
                             }
                         }
                     }

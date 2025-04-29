@@ -54,6 +54,7 @@ public class SaveCreditCardTransactionUseCaseImpl implements SaveCreditCardTrans
                         .flatMap(tr -> {
                             creditCard.addTransaction(tr);
                             user.addTransaction(tr);
+                            tr.setDate(transaction.getDate());
                             return saveTransaction(tr)
                                     .doOnNext(saved -> log.info("Saved transaction {} for user {} and card {}", saved.getId(), user.getId(), creditCard.getId()));
                         }))

@@ -3,7 +3,6 @@
 package com.viictrp.financeapp.ui.screens.secure.creditcard
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -56,26 +55,25 @@ fun CreditCardScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                SharedTransitionLayout {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentPadding = PaddingValues(vertical = 16.dp)
-                    ) {
-                        items(creditCards.size) { index ->
-                            val creditCard = creditCards[index]
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(creditCards.size) { index ->
+                        val creditCard = creditCards[index]
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                                    .padding(bottom = 24.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                CreditCardBox(creditCard) {
-                                    onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
-                                }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(bottom = 24.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            CreditCardBox(creditCard) {
+                                balanceViewModel.selectCreditCard(creditCard)
+                                onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
                             }
                         }
                     }

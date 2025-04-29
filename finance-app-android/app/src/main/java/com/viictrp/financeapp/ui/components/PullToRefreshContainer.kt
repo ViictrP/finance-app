@@ -16,8 +16,8 @@ fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier,
-    content: @Composable () -> Unit,
     state: PullToRefreshState = rememberPullToRefreshState(),
+    content: @Composable () -> Unit
 ) {
     PullToRefreshBox(
         isRefreshing = isRefreshing,

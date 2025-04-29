@@ -7,14 +7,11 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -91,7 +88,25 @@ fun CreditCardBox(
             }
 
         FinanceAppSurface(
+            color = colorMap[creditCard.color] ?: Secondary,
             modifier = modifier
+                .sharedBounds(
+                    sharedContentState = rememberSharedContentState(
+                        key = CreditCardSharedKey(
+                            creditCardId = creditCard.id!!,
+                            type = CreditCardSharedKeyElementType.Bounds
+                        )
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = boundsTransform,
+                    clipInOverlayDuringTransition = OverlayClip(
+                        RoundedCornerShape(
+                            roundedCornerAnimation
+                        )
+                    ),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                )
                 .height(180.dp)
                 .clickable {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -101,36 +116,79 @@ fun CreditCardBox(
                 roundedCornerAnimation
             ),
         ) {
-            Box(
-                modifier = Modifier
-                    .sharedBounds(
-                        sharedContentState = rememberSharedContentState(
-                            key = CreditCardSharedKey(
-                                creditCardId = creditCard.id!!,
-                                type = CreditCardSharedKeyElementType.Bounds
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = creditCard.title,
+                        color = SecondaryDark,
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(
+                                    key = CreditCardSharedKey(
+                                        creditCardId = creditCard.id,
+                                        type = CreditCardSharedKeyElementType.Title
+                                    )
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = boundsTransform
                             )
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = boundsTransform,
-                        clipInOverlayDuringTransition = OverlayClip(
-                            RoundedCornerShape(
-                                roundedCornerAnimation
-                            )
-                        ),
-                        enter = fadeIn(),
-                        exit = fadeOut()
+                            .wrapContentWidth()
                     )
-                    .fillMaxHeight()
-                    .background(colorMap[creditCard.color] ?: Secondary)
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            CustomIcons.Filled.Settings,
+                            modifier = Modifier
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        key = CreditCardSharedKey(
+                                            creditCardId = creditCard.id,
+                                            type = CreditCardSharedKeyElementType.Actions
+                                        )
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = boundsTransform
+                                )
+                                .wrapContentWidth()
+                                .size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = Color.White,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            CustomIcons.Filled.Calendar,
+                            modifier = Modifier
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        key = CreditCardSharedKey(
+                                            creditCardId = creditCard.id,
+                                            type = CreditCardSharedKeyElementType.Icon
+                                        )
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = boundsTransform
+                                )
+                                .wrapContentWidth()
+                                .size(24.dp),
+                            contentDescription = "Select Month",
+                            tint = SecondaryDark,
+                        )
                         Text(
-                            text = creditCard.title,
+                            text = " ${creditCard.invoiceClosingDay}",
                             color = SecondaryDark,
                             style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
                             modifier = Modifier
@@ -138,93 +196,7 @@ fun CreditCardBox(
                                     rememberSharedContentState(
                                         key = CreditCardSharedKey(
                                             creditCardId = creditCard.id,
-                                            type = CreditCardSharedKeyElementType.Title
-                                        )
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = boundsTransform
-                                )
-                                .wrapContentWidth()
-                        )
-                        IconButton(onClick = {}) {
-                            Icon(
-                                CustomIcons.Filled.Settings,
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            key = CreditCardSharedKey(
-                                                creditCardId = creditCard.id,
-                                                type = CreditCardSharedKeyElementType.Actions
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = boundsTransform
-                                    )
-                                    .wrapContentWidth()
-                                    .size(24.dp),
-                                contentDescription = "Select Month",
-                                tint = Color.White,
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.size(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                CustomIcons.Filled.Calendar,
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            key = CreditCardSharedKey(
-                                                creditCardId = creditCard.id,
-                                                type = CreditCardSharedKeyElementType.Icon
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = boundsTransform
-                                    )
-                                    .wrapContentWidth()
-                                    .size(24.dp),
-                                contentDescription = "Select Month",
-                                tint = SecondaryDark,
-                            )
-                            Text(
-                                text = " ${creditCard.invoiceClosingDay}",
-                                color = SecondaryDark,
-                                style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            key = CreditCardSharedKey(
-                                                creditCardId = creditCard.id,
-                                                type = CreditCardSharedKeyElementType.InvoiceClosingDay
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = boundsTransform
-                                    )
-                                    .wrapContentWidth()
-                            )
-                        }
-                        Text(
-                            text = creditCard.number,
-                            color = SecondaryDark,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
-                                .sharedBounds(
-                                    rememberSharedContentState(
-                                        key = CreditCardSharedKey(
-                                            creditCardId = creditCard.id,
-                                            type = CreditCardSharedKeyElementType.Number
+                                            type = CreditCardSharedKeyElementType.InvoiceClosingDay
                                         )
                                     ),
                                     animatedVisibilityScope = animatedVisibilityScope,
@@ -233,8 +205,28 @@ fun CreditCardBox(
                                 .wrapContentWidth()
                         )
                     }
+                    Text(
+                        text = creditCard.number,
+                        color = SecondaryDark,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(
+                                    key = CreditCardSharedKey(
+                                        creditCardId = creditCard.id,
+                                        type = CreditCardSharedKeyElementType.Number
+                                    )
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = boundsTransform
+                            )
+                            .wrapContentWidth()
+                    )
                 }
-            }
+        }
         }
     }
 }

@@ -18,14 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.ui.components.TransactionCardSharedElementType
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementKey
+import com.viictrp.financeapp.ui.components.TransactionCardSharedElementType
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
@@ -38,17 +37,8 @@ fun TransactionScreen(
     origin: String,
     balanceViewModel: BalanceViewModel
 ) {
-    val balance = balanceViewModel.balance.collectAsState()
-
-    val transaction = remember(balance) {
-        balance.value?.lastAddedTransactions
-            ?.find { it.id == transactionId }
-    }
-
-    val creditCard = remember(transaction) {
-        balance.value?.creditCards
-            ?.find { it.id == transaction?.creditCardId }
-    }
+    val transaction = balanceViewModel.selectedTransaction.collectAsState()
+    val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
@@ -87,7 +77,7 @@ fun TransactionScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    transaction?.description ?: "",
+                    transaction.value?.description!!,
                     style = LocalTextStyle.current.copy(fontSize = 28.sp),
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
