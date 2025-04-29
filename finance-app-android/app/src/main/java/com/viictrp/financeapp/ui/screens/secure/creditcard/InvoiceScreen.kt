@@ -48,7 +48,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,17 +112,6 @@ fun InvoiceScreen(
                 EnterExitState.PostExit -> 16.dp
             }
         }
-
-    val animatedFontSize by animatedVisibilityScope.transition.animateDp(label = "Title Font Size") { state ->
-        when (state) {
-            EnterExitState.PreEnter -> 24.dp
-            EnterExitState.Visible -> 48.dp
-            EnterExitState.PostExit -> 24.dp
-        }
-    }
-
-    val density = LocalDensity.current
-    val animatedFontSizeSp = with(density) { animatedFontSize.toSp() }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -190,7 +178,7 @@ fun InvoiceScreen(
                                         text = creditCard.value?.title!!,
                                         color = SecondaryDark,
                                         style = MaterialTheme.typography.titleLarge.copy(
-                                            fontSize = animatedFontSizeSp
+                                            fontSize = 48.sp
                                         ),
                                         modifier = Modifier
                                             .sharedBounds(
