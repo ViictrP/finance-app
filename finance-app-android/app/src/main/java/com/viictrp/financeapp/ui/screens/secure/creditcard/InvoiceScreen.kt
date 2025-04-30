@@ -68,6 +68,7 @@ import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
+import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
@@ -160,8 +161,8 @@ fun InvoiceScreen(
                                     roundedCornerAnimation
                                 )
                             ),
-                            enter = fadeIn(),
-                            exit = fadeOut()
+                            enter = fadeIn(nonSpatialExpressiveSpring()),
+                            exit = fadeOut(nonSpatialExpressiveSpring())
                         )
                         .fillMaxSize()
                 ) {
@@ -443,7 +444,7 @@ private fun SharedTransitionScope.BackButton(upPress: () -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .size(36.dp)
                 .animateEnterExit(
-                    enter = scaleIn(tween(300, delayMillis = 300)),
+                    enter = scaleIn(tween(300, delayMillis = 200)),
                     exit = scaleOut(tween(20))
                 )
                 .background(

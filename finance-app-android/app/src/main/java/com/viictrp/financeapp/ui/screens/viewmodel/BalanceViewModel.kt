@@ -84,6 +84,10 @@ class BalanceViewModel @Inject constructor(private val apiService: ApiService) :
         }
     }
 
+    suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
+        return apiService.loadInstallments(installmentId)
+    }
+
     fun setCurrentBalance(balance: BalanceDTO?) {
         _currentBalance.value = balance
     }

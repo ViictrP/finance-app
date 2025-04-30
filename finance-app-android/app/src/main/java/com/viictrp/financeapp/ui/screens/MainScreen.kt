@@ -141,7 +141,9 @@ fun MainScreen() {
                         transactionId,
                         origin!!,
                         balanceViewModel,
-                    )
+                    ) {
+                        financeAppNavController.pressUp()
+                    }
                 }
 
                 composableWithCompositionLocal(

@@ -48,3 +48,20 @@ mutation SaveCreditCard($request: NewCreditCardDTO!) {
         number
     }
 }
+
+query GetInstallments($installmentId: String!) {
+    getInstallments(installmentId: $installmentId) {
+        id
+        description
+        amount
+        type
+        date
+        category
+        isInstallment
+        installmentAmount
+        installmentId
+        installmentNumber
+        creditCardId
+    }
+}
+

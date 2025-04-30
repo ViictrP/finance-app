@@ -1,5 +1,6 @@
 extend type Query {
     findInvoice(creditCardId: Int, yearMonth: YearMonth): InvoiceDTO
+    getInstallments(installmentId: String!): [TransactionDTO]
 }
 
 extend type Mutation {

@@ -10,6 +10,7 @@ public interface TransactionRepository {
     Flux<Transaction> findUserTransactionsOn(Long id, YearMonth yearMonth);
     Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId);
     Flux<Transaction> findLastFiveAdded(Long userId);
+    Flux<Transaction> findInstallments(String installmentId);
 
     Mono<Transaction> save(Transaction transactions);
 }

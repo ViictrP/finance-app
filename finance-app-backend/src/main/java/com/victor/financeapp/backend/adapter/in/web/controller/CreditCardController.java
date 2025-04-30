@@ -3,6 +3,7 @@ package com.victor.financeapp.backend.adapter.in.web.controller;
 import com.victor.financeapp.backend.application.dto.CreditCardDTO;
 import com.victor.financeapp.backend.application.dto.InvoiceDTO;
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
+import com.victor.financeapp.backend.application.usercase.GetInstallmentsUseCase;
 import com.victor.financeapp.backend.application.usercase.GetInvoice;
 import com.victor.financeapp.backend.application.usercase.SaveCreditCardTransactionUseCase;
 import com.victor.financeapp.backend.application.usercase.SaveCreditCardUseCase;
@@ -12,6 +13,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.YearMonth;
@@ -24,6 +26,7 @@ public class CreditCardController {
     private final GetInvoice useCase;
     private final SaveCreditCardUseCase saveCreditCardUseCase;
     private final SaveCreditCardTransactionUseCase saveCreditCardTransactionUseCase;
+    private final GetInstallmentsUseCase getInstallmentsUseCase;
 
     @QueryMapping
     public Mono<InvoiceDTO> findInvoice(@Argument Long creditCardId, @Argument YearMonth yearMonth) {
@@ -38,5 +41,10 @@ public class CreditCardController {
     @MutationMapping
     public Mono<TransactionDTO> saveCreditCardTransaction(@Argument TransactionDTO newTransaction) {
         return saveCreditCardTransactionUseCase.execute(newTransaction);
+    }
+
+    @QueryMapping
+    public Flux<TransactionDTO> getInstallments(@Argument String installmentId) {
+        return getInstallmentsUseCase.execute(installmentId);
     }
 }

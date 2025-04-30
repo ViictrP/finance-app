@@ -53,6 +53,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
+    public Flux<Transaction> findInstallments(String installmentId) {
+        return repository.findAllByInstallmentId(installmentId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Mono<Transaction> save(Transaction transaction) {
         return repository.save(mapper.toEntity(transaction))
                 .map(saved -> {
