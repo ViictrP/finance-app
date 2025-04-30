@@ -38,4 +38,6 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
         LIMIT 5
     """)
     Flux<TransactionEntity> findLastFiveAdded(Long userId);
+
+    Flux<TransactionEntity> findAllByInstallmentId(String installmentId);
 }
