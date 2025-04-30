@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,6 +114,17 @@ fun InvoiceScreen(
             }
         }
 
+    val animatedFontSize by animatedVisibilityScope.transition.animateDp(label = "Title Font Size") { state ->
+        when (state) {
+            EnterExitState.PreEnter -> 24.dp
+            EnterExitState.Visible -> 48.dp
+            EnterExitState.PostExit -> 24.dp
+        }
+    }
+
+    val density = LocalDensity.current
+    val animatedFontSizeSp = with(density) { animatedFontSize.toSp() }
+
     DisposableEffect(Unit) {
         onDispose {
             balanceViewModel.clear()
@@ -148,8 +160,8 @@ fun InvoiceScreen(
                                     roundedCornerAnimation
                                 )
                             ),
-                            enter = fadeIn(),
-                            exit = fadeOut()
+                            enter = fadeIn(tween(150)),
+                            exit = fadeOut(tween(150))
                         )
                         .fillMaxSize()
                 ) {
@@ -178,7 +190,7 @@ fun InvoiceScreen(
                                         text = creditCard.value?.title!!,
                                         color = SecondaryDark,
                                         style = MaterialTheme.typography.titleLarge.copy(
-                                            fontSize = 48.sp
+                                            fontSize = animatedFontSizeSp
                                         ),
                                         modifier = Modifier
                                             .sharedBounds(
@@ -431,7 +443,7 @@ private fun SharedTransitionScope.BackButton(upPress: () -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .size(36.dp)
                 .animateEnterExit(
-                    enter = scaleIn(tween(300, delayMillis = 300)),
+                    enter = scaleIn(tween(300, delayMillis = 200)),
                     exit = scaleOut(tween(20))
                 )
                 .background(
