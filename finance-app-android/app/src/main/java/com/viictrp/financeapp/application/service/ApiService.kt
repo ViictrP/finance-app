@@ -61,4 +61,8 @@ class ApiService {
         )
         return creditCardApiService.saveCreditCard(newCreditCard)
     }
+
+    suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
+        return creditCardApiService.loadInstallments(installmentId)
+    }
 }

@@ -9,6 +9,7 @@ import com.viictrp.financeapp.application.dto.TransactionDTO
 import com.viictrp.financeapp.application.enums.TransactionType
 import com.viictrp.financeapp.application.service.mapper.mapTransactionDTO
 import com.viictrp.financeapp.graphql.FindInvoiceQuery
+import com.viictrp.financeapp.graphql.GetInstallmentsQuery
 import com.viictrp.financeapp.graphql.SaveCreditCardMutation
 import com.viictrp.financeapp.graphql.SaveCreditCardTransactionMutation
 import com.viictrp.financeapp.graphql.type.NewCreditCardDTO
@@ -108,6 +109,39 @@ class CreditCardAPIService(private val apolloClient: ApolloClient) {
             Log.d("ApiService", "Error saving new credit card: ${e.message}")
             if (e is CancellationException) throw e
             null
+        }
+    }
+
+    suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
+        return try {
+            val response: ApolloResponse<GetInstallmentsQuery.Data> =
+                apolloClient
+                    .query(GetInstallmentsQuery(installmentId))
+                    .execute()
+
+            response.data?.getInstallments.let { data ->
+                data!!.map { transaction ->
+                    if (transaction != null) {
+                        TransactionDTO(
+                            id = transaction.id!!.toLong(),
+                            description = transaction.description,
+                            amount = transaction.amount,
+                            type = TransactionType.valueOf(transaction.type.toString()),
+                            date = LocalDateTime.parse(transaction.date),
+                            isInstallment = transaction.isInstallment,
+                            installmentAmount = transaction.installmentAmount,
+                            installmentId = transaction.installmentId,
+                            installmentNumber = transaction.installmentNumber,
+                            creditCardId = transaction.creditCardId?.toLong(),
+                            category = transaction.category.toString()
+                        )
+                    } else null
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("ApiService", "Error saving new credit card: ${e.message}")
+            if (e is CancellationException) throw e
+            emptyList()
         }
     }
 }

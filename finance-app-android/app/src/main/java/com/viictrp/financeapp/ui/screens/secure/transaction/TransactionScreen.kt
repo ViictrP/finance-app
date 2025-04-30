@@ -2,43 +2,88 @@
 
 package com.viictrp.financeapp.ui.screens.secure.transaction
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.viictrp.financeapp.application.dto.TransactionDTO
+import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
+import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementKey
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementType
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
+import com.viictrp.financeapp.ui.components.colorMap
+import com.viictrp.financeapp.ui.components.extension.toFormatted
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
+import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.theme.Secondary
+import kotlinx.coroutines.delay
 
 @Composable
 fun TransactionScreen(
     transactionId: Long,
     origin: String,
-    balanceViewModel: BalanceViewModel
+    balanceViewModel: BalanceViewModel,
+    onPressUp: (() -> Unit)? = null
 ) {
     val transaction = balanceViewModel.selectedTransaction.collectAsState()
     val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
+
+    var installments by remember { mutableStateOf<List<TransactionDTO?>>(emptyList()) }
+    var loading by remember { mutableStateOf(false) }
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
@@ -53,48 +98,252 @@ fun TransactionScreen(
             }
         }
 
+    LaunchedEffect(transaction) {
+        loading = true
+        if (transaction.value!!.isInstallment == true) {
+            delay(500)
+            installments = balanceViewModel.loadInstallments(transaction.value!!.installmentId!!)
+        }
+        loading = false
+    }
+
     with(sharedTransitionScope) {
-        FinanceAppSurface(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .sharedBounds(
-                        rememberSharedContentState(
-                            key = TransactionCardSharedElementKey(
-                                transactionId = transactionId,
-                                origin = origin,
-                                type = TransactionCardSharedElementType.Bounds
-                            )
-                        ),
-                        animatedVisibilityScope,
-                        clipInOverlayDuringTransition =
-                            OverlayClip(RoundedCornerShape(roundedCornerAnim)),
-                        boundsTransform = boundsTransform,
-                        exit = fadeOut(nonSpatialExpressiveSpring()),
-                        enter = fadeIn(nonSpatialExpressiveSpring()),
-                    )
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    transaction.value?.description!!,
-                    style = LocalTextStyle.current.copy(fontSize = 28.sp),
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .sharedBounds(
-                            rememberSharedContentState(
-                                key = TransactionCardSharedElementKey(
-                                    transactionId = transactionId,
-                                    origin = origin,
-                                    type = TransactionCardSharedElementType.Title
-                                )
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = boundsTransform
+        FinanceAppSurface(
+            modifier = Modifier
+                .sharedBounds(
+                    rememberSharedContentState(
+                        key = TransactionCardSharedElementKey(
+                            transactionId = transactionId,
+                            origin = origin,
+                            type = TransactionCardSharedElementType.Bounds
                         )
-                        .wrapContentWidth()
+                    ),
+                    animatedVisibilityScope,
+                    clipInOverlayDuringTransition =
+                        OverlayClip(RoundedCornerShape(roundedCornerAnim)),
+                    boundsTransform = boundsTransform,
+                    exit = fadeOut(nonSpatialExpressiveSpring()),
+                    enter = fadeIn(nonSpatialExpressiveSpring()),
                 )
+                .fillMaxSize(),
+            color = colorMap[creditCard.value?.color] ?: MaterialTheme.colorScheme.primary
+        ) {
+            LazyColumn {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .background(colorMap[creditCard.value?.color] ?: Secondary)
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.BottomStart,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            BackButton {
+                                onPressUp?.invoke()
+                            }
+
+                            with(animatedVisibilityScope) {
+                                Text(
+                                    creditCard.value?.title!!,
+                                    style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
+
+                item {
+                    Column(
+                        modifier = Modifier.padding(
+                            horizontal = 16.dp
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                "${transaction.value?.date?.toFormatted()}",
+                                style = LocalTextStyle.current.copy(fontSize = 16.sp),
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+
+                        ) {
+                            Text(
+                                transaction.value?.description!!,
+                                style = LocalTextStyle.current.copy(fontSize = 48.sp),
+                                color = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            key = TransactionCardSharedElementKey(
+                                                transactionId = transactionId,
+                                                origin = origin,
+                                                type = TransactionCardSharedElementType.Title
+                                            )
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        boundsTransform = boundsTransform
+                                    )
+                                    .wrapContentWidth()
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = { /* Sync or refresh */ }) {
+                                    Icon(
+                                        CustomIcons.Filled.Edit,
+                                        contentDescription = "Sync",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { /* Sync or refresh */ }) {
+                                    Icon(
+                                        CustomIcons.Filled.TrashCan,
+                                        contentDescription = "Sync",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                }
+                            }
+                        }
+                        with(animatedVisibilityScope) {
+                            val installmentAmount = transaction.value?.installmentAmount?.takeIf {
+                                it > 1
+                            }
+                            if (installmentAmount != null) {
+                                Text(
+                                    "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
+                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                    modifier = Modifier.animateEnterExit(
+                                        enter = fadeIn(
+                                            animationSpec = tween(
+                                                durationMillis = 200,
+                                                delayMillis = 200
+                                            )
+                                        ) +
+                                                slideInVertically(
+                                                    animationSpec = tween(
+                                                        durationMillis = 300,
+                                                        delayMillis = 200
+                                                    )
+                                                ) { -it },
+                                        exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                                                slideOutVertically(
+                                                    animationSpec = tween(durationMillis = 150)
+                                                ) { -it }
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
+
+                itemsIndexed(
+                    installments,
+                    key = { _, item -> item!!.id!! }) { index, transaction ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .animateItem()
+                    ) {
+                        TransactionCard(
+                            transaction!!,
+                            tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                            tagColor = MaterialTheme.colorScheme.secondary.copy(
+                                alpha = .7f
+                            ),
+                            origin = SecureDestinations.CREDIT_CARD_ROUTE
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
+
+                @SuppressLint("UnusedCrossfadeTargetStateParameter")
+                item {
+                    if (loading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Crossfade(targetState = loading, label = "lottieFade") { _ ->
+                                val composition by rememberLottieComposition(
+                                    LottieCompositionSpec.Asset("loading-lottie.json")
+                                )
+                                val progress by animateLottieCompositionAsState(
+                                    composition,
+                                    iterations = LottieConstants.IterateForever,
+                                    restartOnPlay = true
+                                )
+
+                                LottieAnimation(
+                                    composition = composition,
+                                    progress = { progress },
+                                    modifier = Modifier.size(200.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun SharedTransitionScope.BackButton(upPress: () -> Unit) {
+    val animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current
+        ?: throw IllegalArgumentException("No Scope found")
+    with(animatedVisibilityScope) {
+        IconButton(
+            onClick = upPress,
+            modifier = Modifier
+                .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 3f)
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .size(36.dp)
+                .animateEnterExit(
+                    enter = scaleIn(tween(300, delayMillis = 200)),
+                    exit = scaleOut(tween(20))
+                )
+                .background(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                tint = MaterialTheme.colorScheme.tertiary,
+                contentDescription = "test"
+            )
         }
     }
 }

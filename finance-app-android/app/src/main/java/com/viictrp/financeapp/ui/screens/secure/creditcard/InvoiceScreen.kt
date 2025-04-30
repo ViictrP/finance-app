@@ -68,6 +68,7 @@ import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
+import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
@@ -160,8 +161,8 @@ fun InvoiceScreen(
                                     roundedCornerAnimation
                                 )
                             ),
-                            enter = fadeIn(tween(150)),
-                            exit = fadeOut(tween(150))
+                            enter = fadeIn(nonSpatialExpressiveSpring()),
+                            exit = fadeOut(nonSpatialExpressiveSpring())
                         )
                         .fillMaxSize()
                 ) {

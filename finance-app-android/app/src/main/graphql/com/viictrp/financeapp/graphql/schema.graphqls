@@ -9,6 +9,7 @@ schema {
 type Query {
     getBalance(yearMonth: YearMonth!): BalanceDTO
     findInvoice(creditCardId: Int!, yearMonth: YearMonth!): InvoiceDTO
+    getInstallments(installmentId: String!): [TransactionDTO]
 }
 
 type Mutation {

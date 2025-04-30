@@ -1,0 +1,61 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+    name: finance-app-backend-deployment
+    namespace: api
+    labels:
+        app: finance-app-backend
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: finance-app-backend
+    template:
+        metadata:
+            labels:
+                app: finance-app-backend
+        spec:
+            containers:
+                - name: finance-app-backend
+                  image: local/finance-app-backend
+                  ports:
+                      - name: http
+                        containerPort: 8080
+                  env:
+                      - name: PORT
+                        value: "8080"
+                      - name: JAVA_OPTS
+                        value: '-Xmx512m -Xms256m'
+                      - name: SPRING_PROFILES_ACTIVE
+                        value: 'prod,api-docs'
+                      - name: MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED
+                        value: 'true'
+                      - name: SPRING_R2DBC_URL
+                        value: 'r2dbc:postgresql://postgresql-service.db.svc.cluster.local:5432/biopro?schema=finance'
+                      - name: SPRING_R2DBC_USERNAME
+                        value: 'postgres'
+                      - name: DB_PASSWORD
+                        value: 'postgres'
+                      - name: ISSUER_URI
+                        value: https://securetoken.google.com/finance-app-382403
+                      - name: JWK_SET_URI
+                        value: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
+                  resources:
+                      requests:
+                          memory: "256Mi"
+                          cpu: "250m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+                  readinessProbe:
+                      httpGet:
+                          path: /management/health/readiness
+                          port: 8080
+                      initialDelaySeconds: 20
+                      periodSeconds: 15
+                      failureThreshold: 6
+                  livenessProbe:
+                      httpGet:
+                          path: /management/health/liveness
+                          port: 8080
+                      initialDelaySeconds: 120

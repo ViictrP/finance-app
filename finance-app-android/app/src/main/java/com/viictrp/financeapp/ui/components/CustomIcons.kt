@@ -101,6 +101,14 @@ object CustomIcons {
         val Barcode: Painter
             @Composable
             get() = painterResource(id = R.drawable.barcode_duotone)
+
+        val TrashCan: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.trash_simple_duotone)
+
+        val Edit: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.note_pencil_duotone)
     }
 
     object Filled {
@@ -211,6 +219,10 @@ object CustomIcons {
         val Barcode: Painter
             @Composable
             get() = painterResource(id = R.drawable.barcode_fill)
+
+        val TrashCan: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.trash_simple_fill)
     }
 
     object Outline {
@@ -309,6 +321,14 @@ object CustomIcons {
         val Barcode: Painter
             @Composable
             get() = painterResource(id = R.drawable.barcode)
+
+        val TrashCan: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.trash_simple)
+
+        val Edit: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.note_pencil)
     }
 
     object OutlineBold {
@@ -407,5 +427,13 @@ object CustomIcons {
         val Barcode: Painter
             @Composable
             get() = painterResource(id = R.drawable.barcode_bold)
+
+        val TrashCan: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.trash_simple_bold)
+
+        val Edit: Painter
+            @Composable
+            get() = painterResource(id = R.drawable.note_pencil_bold)
     }
 }
