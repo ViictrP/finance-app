@@ -14,12 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.auth.AuthManager
 import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun LoginScreen(
@@ -53,14 +50,5 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
         // Aqui pode entrar animação com Lottie ou logo animado, etc.
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    val authManager = AuthManager(LocalContext.current)
-    FinanceAppTheme {
-        LoginScreen(AuthViewModel(authManager), onNavigation = {})
     }
 }
