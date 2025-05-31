@@ -29,8 +29,8 @@ fun Long.toLocalDateTime(): LocalDateTime {
         .toLocalDateTime()
 }
 
-fun Long.toLocalDate(): LocalDate {
+fun Long.toUTCLocalDate(): LocalDate {
     return Instant.ofEpochMilli(this)
-        .atZone(ZoneId.systemDefault())
+        .atZone(ZoneId.of("UTC"))
         .toLocalDate()
 }
