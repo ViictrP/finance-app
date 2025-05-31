@@ -151,7 +151,7 @@ fun TransactionScreen(
                                 Text(
                                     creditCard.value?.title!!,
                                     style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
                                 )
                             }
                         }
@@ -175,7 +175,7 @@ fun TransactionScreen(
                             Text(
                                 "${transaction.value?.date?.toFormatted()}",
                                 style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -188,7 +188,7 @@ fun TransactionScreen(
                             Text(
                                 transaction.value?.description!!,
                                 style = LocalTextStyle.current.copy(fontSize = 48.sp),
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .sharedBounds(
                                         rememberSharedContentState(
@@ -211,6 +211,7 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.Edit,
                                         contentDescription = "Sync",
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
@@ -220,6 +221,7 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.TrashCan,
                                         contentDescription = "Sync",
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
