@@ -69,6 +69,7 @@ import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.theme.Primary
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.delay
 
@@ -126,7 +127,7 @@ fun TransactionScreen(
                     enter = fadeIn(nonSpatialExpressiveSpring()),
                 )
                 .fillMaxSize(),
-            color = colorMap[creditCard.value?.color] ?: MaterialTheme.colorScheme.primary
+            color = colorMap[creditCard.value?.color] ?: Primary
         ) {
             LazyColumn {
                 item {
@@ -151,7 +152,7 @@ fun TransactionScreen(
                                 Text(
                                     creditCard.value?.title!!,
                                     style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
+                                    color = Primary.copy(alpha = .8f),
                                 )
                             }
                         }
@@ -175,7 +176,7 @@ fun TransactionScreen(
                             Text(
                                 "${transaction.value?.date?.toFormatted()}",
                                 style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
+                                color = Primary.copy(alpha = .8f),
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -188,7 +189,7 @@ fun TransactionScreen(
                             Text(
                                 transaction.value?.description!!,
                                 style = LocalTextStyle.current.copy(fontSize = 48.sp),
-                                color = MaterialTheme.colorScheme.primary,
+                                color = Primary,
                                 modifier = Modifier
                                     .sharedBounds(
                                         rememberSharedContentState(
@@ -211,7 +212,7 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.Edit,
                                         contentDescription = "Sync",
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = Primary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
@@ -221,7 +222,7 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.TrashCan,
                                         contentDescription = "Sync",
-                                        tint = MaterialTheme.colorScheme.primary,
+                                        tint = Primary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
@@ -236,7 +237,7 @@ fun TransactionScreen(
                                 Text(
                                     "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
                                     style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                    color = Primary.copy(alpha = .8f),
                                     modifier = Modifier.animateEnterExit(
                                         enter = fadeIn(
                                             animationSpec = tween(
@@ -337,7 +338,7 @@ private fun SharedTransitionScope.BackButton(upPress: () -> Unit) {
                     exit = scaleOut(tween(20))
                 )
                 .background(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
+                    color = Primary.copy(alpha = .8f),
                     shape = CircleShape
                 )
         ) {
