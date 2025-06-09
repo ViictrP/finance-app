@@ -27,4 +27,4 @@ ENV SCHEMA=$SCHEMA
 
 EXPOSE 8080
 
-CMD ["app.jar"]
+ENTRYPOINT ["java", "-jar", "./app.jar"]
