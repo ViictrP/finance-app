@@ -37,9 +37,9 @@ spec:
                       - name: DB_PASSWORD
                         value: 'postgres'
                       - name: ISSUER_URI
-                        value:
+                        value: https://securetoken.google.com/finance-app-382403
                       - name: JWK_SET_URI
-                        value:
+                        value: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
                   resources:
                       requests:
                           memory: "256Mi"

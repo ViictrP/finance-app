@@ -144,8 +144,9 @@ fun InvoiceScreen(
             modifier = Modifier
                 .fillMaxSize(),
             content = {
+                val color = colorMap[creditCard.value?.color] ?: Secondary
                 FinanceAppSurface(
-                    color = colorMap[creditCard.value?.color] ?: Secondary,
+                    color = color,
                     modifier = Modifier
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(
@@ -345,6 +346,7 @@ fun InvoiceScreen(
                                         text = creditCard.value?.title!!,
                                         fontWeight = FontWeight.Bold,
                                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                        color = SecondaryDark
                                     )
                                     Text(
                                         "Lançamentos da fatura de ${
@@ -352,6 +354,7 @@ fun InvoiceScreen(
                                                 .toFormattedYearMonth("MMMM")
                                         }",
                                         fontWeight = FontWeight.Normal,
+                                        color = SecondaryDark
                                     )
                                 }
                                 Column(
@@ -373,6 +376,7 @@ fun InvoiceScreen(
                                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                                             fontWeight = FontWeight.Normal,
                                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                            color = SecondaryDark
                                         )
                                     }
                                 }
@@ -388,6 +392,7 @@ fun InvoiceScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = 16.dp, vertical = 4.dp)
+                                            .animateItem()
                                     ) {
                                         TransactionCard(
                                             transaction,

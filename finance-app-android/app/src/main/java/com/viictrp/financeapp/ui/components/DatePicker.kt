@@ -32,9 +32,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.ui.components.formutils.controller.FormController
-import com.viictrp.financeapp.ui.components.extension.toLocalDate
 import com.viictrp.financeapp.ui.components.extension.toLocalDateTime
+import com.viictrp.financeapp.ui.components.extension.toUTCLocalDate
+import com.viictrp.financeapp.ui.components.formutils.controller.FormController
 import com.viictrp.financeapp.ui.theme.Accent
 import com.viictrp.financeapp.ui.theme.Primary
 import java.time.LocalDate
@@ -154,17 +154,15 @@ fun FDatePickerField(
                     onDismissRequest = { showDialog = false },
                     confirmButton = {
                         IconButton(onClick = {
-                            val now = LocalTime.now()
                             datePickerState.selectedDateMillis?.let { millis ->
-                                val selected = millis.toLocalDate()
-                                form.update(
-                                    fieldName, "${
-                                        LocalDateTime.of(selected, now)
-                                            .atZone(ZoneId.systemDefault())
-                                            .toInstant()
-                                            .toEpochMilli()
-                                    }"
-                                )
+                                val selected = millis.toUTCLocalDate()
+                                val currentTime = LocalTime.now(ZoneId.systemDefault())
+                                val localDateTime = LocalDateTime.of(selected, currentTime)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant()
+                                    .toEpochMilli()
+
+                                form.update(fieldName, "$localDateTime")
                                 showDialog = false
                             }
                         }) {

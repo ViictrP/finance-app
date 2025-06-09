@@ -10,11 +10,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.viictrp.financeapp.application.service.ApiService
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 
@@ -46,12 +43,4 @@ fun BalanceScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
             BalanceScreenContent(viewModel)
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun BalanceScreenPreview() {
-    FinanceAppTheme {
-        BalanceScreen(BalanceViewModel(ApiService()), PaddingValues())
-    }
 }

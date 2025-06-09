@@ -34,7 +34,7 @@ server:
     port: ${PORT}
 logging:
     level:
-        root: INFO
+        root: WARN
 
 CURRENCY:
     url: https://economia.awesomeapi.com.br/json/last

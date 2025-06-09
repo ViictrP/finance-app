@@ -12,20 +12,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.viictrp.financeapp.auth.AuthManager
 import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.navigation.PublicDestinations
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -72,19 +67,6 @@ fun SplashScreen(
             composition = composition,
             progress = { progress },
             modifier = Modifier.size(300.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SplashScreenPreview() {
-    val authManager = AuthManager(LocalContext.current)
-    val navController = rememberNavController()
-    FinanceAppTheme {
-        SplashScreen(
-            navController,
-            AuthViewModel(authManager)
         )
     }
 }
