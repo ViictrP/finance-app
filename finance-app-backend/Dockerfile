@@ -12,7 +12,7 @@ RUN ./mvnw dependency:go-offline
 COPY src ./src
 RUN ./mvnw clean install -DskipTests
 
-FROM gcr.io/distroless/java21-debian11 AS runtime
+FROM gcr.io/distroless/java21-debian11:nonroot AS runtime
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
