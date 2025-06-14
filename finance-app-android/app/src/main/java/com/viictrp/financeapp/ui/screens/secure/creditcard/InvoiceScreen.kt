@@ -72,7 +72,7 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Background
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.theme.SecondaryDark

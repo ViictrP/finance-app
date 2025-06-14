@@ -29,13 +29,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.viictrp.financeapp.application.dto.TransactionDTO
-import com.viictrp.financeapp.application.enums.TransactionType
-import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FDatePickerField
 import com.viictrp.financeapp.ui.components.FSelectField
@@ -51,9 +48,7 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModelFactory
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -461,17 +456,5 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                 Spacer(modifier = Modifier.size(spacing / 2))
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CreditCardFormScreenPreview() {
-    val balanceViewModel: BalanceViewModel = viewModel(
-        factory = BalanceViewModelFactory(ApiService())
-    )
-
-    FinanceAppTheme {
-        TransactionFormScreen(balanceViewModel, PaddingValues())
     }
 }

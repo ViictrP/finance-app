@@ -33,8 +33,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.application.dto.TransactionDTO
-import com.viictrp.financeapp.application.enums.TransactionType
+import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.navigation.SecureDestinations

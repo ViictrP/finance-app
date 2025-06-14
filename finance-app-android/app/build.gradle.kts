@@ -48,8 +48,8 @@ android {
 apollo {
     service("service") {
         packageName.set("com.viictrp.financeapp.graphql")
-        mapScalar("BigDecimal", "java.math.BigDecimal", "com.viictrp.financeapp.application.graphql.adapter.BigDecimalAdapter")
-        mapScalar("YearMonth", "java.time.YearMonth", "com.viictrp.financeapp.application.graphql.adapter.YearMonthAdapter")
+        mapScalar("BigDecimal", "java.math.BigDecimal", "com.viictrp.financeapp.data.common.adapter.BigDecimalAdapter")
+        mapScalar("YearMonth", "java.time.YearMonth", "com.viictrp.financeapp.data.common.adapter.YearMonthAdapter")
     }
 }
 dependencies {
@@ -94,4 +94,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.androidx.animation)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 }

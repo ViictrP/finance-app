@@ -55,7 +55,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.viictrp.financeapp.application.dto.TransactionDTO
+import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.TransactionCard
@@ -68,7 +68,7 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Primary
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.delay

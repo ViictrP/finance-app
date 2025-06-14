@@ -12,7 +12,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.viictrp.financeapp.application.dto.UserDTO
+import com.viictrp.financeapp.data.remote.dto.UserDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
