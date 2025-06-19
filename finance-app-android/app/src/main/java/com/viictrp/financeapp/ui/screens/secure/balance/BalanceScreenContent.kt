@@ -26,14 +26,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.enums.TransactionType
+import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
+import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.PrimaryDark
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -47,7 +47,7 @@ fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
 ) {
     val spacing = Modifier.height(48.dp)
-
+    val lastUpdateTime by balanceViewModel.lastUpdateTime.collectAsState()
     val balance by balanceViewModel.balance.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()

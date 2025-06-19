@@ -51,7 +51,7 @@ import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardScreen
 import com.viictrp.financeapp.ui.screens.secure.creditcard.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionFormScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import java.time.YearMonth
 
 @Composable

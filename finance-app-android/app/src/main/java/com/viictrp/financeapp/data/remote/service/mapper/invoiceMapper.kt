@@ -1,0 +1,35 @@
+package com.viictrp.financeapp.data.remote.service.mapper
+
+import com.viictrp.financeapp.data.remote.dto.InvoiceDTO
+import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.domain.model.transaction.TransactionType
+import com.viictrp.financeapp.graphql.GetBalanceQuery
+import java.time.LocalDateTime
+import java.time.YearMonth
+
+internal fun mapInvoiceDTO(invoices: List<GetBalanceQuery.Invoice?>): List<InvoiceDTO> =
+    invoices
+        .filterNotNull()
+        .map { invoice ->
+            InvoiceDTO(
+                id = invoice.id.toLong(),
+                creditCardId = invoice.creditCardId.toLong(),
+                transactions = mapTransactionDTO(invoice.transactions) { transaction ->
+                    TransactionDTO(
+                        id = transaction.id?.toLong(),
+                        description = transaction.description,
+                        amount = transaction.amount,
+                        type = TransactionType.valueOf(transaction.type.toString()),
+                        date = LocalDateTime.parse(transaction.date),
+                        isInstallment = transaction.isInstallment,
+                        installmentAmount = transaction.installmentAmount ?: 1,
+                        installmentId = transaction.installmentId,
+                        installmentNumber = transaction.installmentNumber ?: 0,
+                        creditCardId = transaction.creditCardId?.toLong(),
+                        category = transaction.category.toString()
+                    )
+                },
+                isClosed = false,
+                yearMonth = YearMonth.now()
+            )
+        }

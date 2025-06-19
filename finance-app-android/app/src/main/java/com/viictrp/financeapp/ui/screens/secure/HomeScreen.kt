@@ -2,6 +2,7 @@
 
 package com.viictrp.financeapp.ui.screens.secure
 
+import android.text.format.DateUtils
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -36,21 +37,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.dto.TransactionDTO
+import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
+import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.text.format
 
 data class TransactionWithCreditCard(
     val transaction: TransactionDTO,
@@ -64,6 +69,9 @@ fun HomeScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
     val balance by viewModel.currentBalance.collectAsState()
     val space = Modifier.height(48.dp)
 
@@ -193,6 +201,30 @@ fun HomeScreen(
                                     }
 
                                 }
+                            }
+                        }
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            lastUpdateTime?.let {
+                                val formatted = DateUtils.getRelativeTimeSpanString(
+                                    it.toEpochMilli(),
+                                    System.currentTimeMillis(),
+                                    DateUtils.MINUTE_IN_MILLIS
+                                )
+
+                                Text(
+                                    "Última atualização $formatted",
+                                    style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                    fontWeight = FontWeight.Light,
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                                )
                             }
                         }
                     }

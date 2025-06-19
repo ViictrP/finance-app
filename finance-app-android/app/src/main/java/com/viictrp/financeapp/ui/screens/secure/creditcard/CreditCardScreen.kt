@@ -22,7 +22,7 @@ import com.viictrp.financeapp.ui.components.CreditCardBox
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 

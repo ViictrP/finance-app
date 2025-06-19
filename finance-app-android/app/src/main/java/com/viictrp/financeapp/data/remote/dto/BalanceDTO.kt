@@ -1,0 +1,21 @@
+package com.viictrp.financeapp.data.remote.dto
+
+import androidx.compose.runtime.Immutable
+import java.math.BigDecimal
+
+@Immutable
+data class BalanceDTO(
+    val transactions: List<TransactionDTO> = emptyList(),
+    val lastAddedTransactions: List<TransactionDTO> = emptyList(),
+    val recurringExpenses: List<TransactionDTO> = emptyList(),
+    val creditCards: List<CreditCardDTO> = emptyList(),
+    val monthClosures: List<MonthClosureDTO> = emptyList(),
+    val salary: BigDecimal = BigDecimal.ZERO,
+    val expenses: BigDecimal = BigDecimal.ZERO,
+    val available: BigDecimal = BigDecimal.ZERO,
+    val taxValue: BigDecimal = BigDecimal.ZERO,
+    val exchangeTaxValue: BigDecimal = BigDecimal.ZERO,
+    val nonConvertedSalary: BigDecimal = BigDecimal.ZERO,
+    val creditCardExpenses: Map<Long, BigDecimal> = emptyMap(),
+    val wasFetchedFromNetwork: Boolean = false
+)

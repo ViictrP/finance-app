@@ -38,3 +38,4 @@ logging:
 
 CURRENCY:
     url: https://economia.awesomeapi.com.br/json/last
+    token: ${AWESOME_API_TOKEN}

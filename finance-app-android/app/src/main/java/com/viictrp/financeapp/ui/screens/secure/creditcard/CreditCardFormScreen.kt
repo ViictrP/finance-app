@@ -32,12 +32,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.viictrp.financeapp.application.dto.CreditCardDTO
-import com.viictrp.financeapp.application.service.ApiService
+import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FSelectField
 import com.viictrp.financeapp.ui.components.FSelectItem
@@ -47,10 +44,8 @@ import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.viewmodel.BalanceViewModelFactory
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Accent
-import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
 import com.viictrp.financeapp.ui.theme.Secondary
@@ -386,17 +381,5 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues)
                 Spacer(modifier = Modifier.size(spacing / 2))
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CreditCardFormScreenPreview() {
-    val balanceViewModel: BalanceViewModel = viewModel(
-        factory = BalanceViewModelFactory(ApiService())
-    )
-
-    FinanceAppTheme {
-        CreditCardFormScreen(balanceViewModel, PaddingValues())
     }
 }
