@@ -19,6 +19,9 @@ public class CurrencyClientImpl implements CurrencyClient {
     @Value("${CURRENCY.url}")
     private String currencyUrl;
 
+    @Value("${CURRENCY.token}")
+    private String awesomeAPIToken;
+
     private final WebClient webClient;
 
     @Override
@@ -26,7 +29,7 @@ public class CurrencyClientImpl implements CurrencyClient {
     public Mono<Map<String, Object>> getCurrencyExchangeRates(String currencyType) {
         return webClient.
                 get()
-                .uri(currencyUrl + "/" + currencyType)
+                .uri(currencyUrl + "/" + currencyType + "?token=" + awesomeAPIToken)
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
