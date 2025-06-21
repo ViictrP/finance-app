@@ -4,7 +4,8 @@ import com.victor.financeapp.backend.domain.model.user.MonthClosure;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface MonthClosureEntityMapper {
+interface MonthClosureEntityMapper {
 
     MonthClosure toDomain(MonthClosureEntity entity);
+    MonthClosureEntity toEntity(MonthClosure domain);
 }

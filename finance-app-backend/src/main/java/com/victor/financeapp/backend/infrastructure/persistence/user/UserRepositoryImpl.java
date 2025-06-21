@@ -4,6 +4,7 @@ import com.victor.financeapp.backend.domain.model.user.User;
 import com.victor.financeapp.backend.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -20,6 +21,12 @@ class UserRepositoryImpl implements UserRepository {
         return repository.findByEmail(email)
                 .map(mapper::toDomain)
                 .flatMap(this::loadUserProperties);
+    }
+
+    @Override
+    public Flux<User> findUsersWithMonthClosureToday() {
+        return repository.findUsersWithMonthClosureToday()
+                .map(mapper::toDomain);
     }
 
     private Mono<User> loadUserProperties(User user) {
