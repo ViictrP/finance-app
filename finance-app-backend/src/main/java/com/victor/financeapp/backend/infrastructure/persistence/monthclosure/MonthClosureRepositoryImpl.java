@@ -5,10 +5,11 @@ import com.victor.financeapp.backend.domain.repository.MonthClosureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 @RequiredArgsConstructor
-public class MonthClosureRepositoryImpl implements MonthClosureRepository {
+class MonthClosureRepositoryImpl implements MonthClosureRepository {
 
     private final MonthClosureEntityRepository repository;
     private final MonthClosureEntityMapper mapper;
@@ -16,6 +17,12 @@ public class MonthClosureRepositoryImpl implements MonthClosureRepository {
     @Override
     public Flux<MonthClosure> findUsersLastFiveMonthClosures(Long userId) {
         return repository.findAll()
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<MonthClosure> save(MonthClosure monthClosure) {
+        return repository.save(mapper.toEntity(monthClosure))
                 .map(mapper::toDomain);
     }
 }

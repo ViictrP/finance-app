@@ -4,8 +4,10 @@ import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +26,16 @@ public class Balance {
     private BigDecimal exchangeTaxValue;
     private BigDecimal nonConvertedSalary;
     private Map<Long, BigDecimal> creditCardExpense;
+    private @Setter YearMonth yearMonth;
+    private @Setter User user;
+    private BigDecimal dollar;
 
     public void calculateBalance(BigDecimal userSalary, BigDecimal dollar, BigDecimal currencyConversionTax, BigDecimal salaryTax) {
         var grossSalary = userSalary.multiply(dollar);
         var salaryMinusConversionTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
         var salaryMinusTax = salaryMinusConversionTax.subtract(salaryMinusConversionTax.multiply(salaryTax));
 
+        this.dollar = dollar;
         this.nonConvertedSalary = grossSalary;
         this.exchangeTaxValue = currencyConversionTax;
         this.taxValue = salaryTax;
@@ -53,5 +59,18 @@ public class Balance {
 
     public void addCreditCard(CreditCard newCreditCard) {
         this.creditCards.add(newCreditCard);
+    }
+
+    public MonthClosure getMonthClosure() {
+        return MonthClosure.builder()
+                .month(yearMonth.getMonth().name().substring(0, 3))
+                .year(yearMonth.getYear())
+                .available(available)
+                .expenses(expenses)
+                .index(yearMonth.getMonthValue())
+                .total(salary)
+                .finalUsdToBRL(dollar)
+                .user(user)
+                .build();
     }
 }

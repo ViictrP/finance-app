@@ -37,6 +37,7 @@ public class BalanceServiceImpl implements BalanceService {
                         .transactions(tuple.getT2())
                         .lastAddedTransactions(tuple.getT3())
                         .monthClosures(tuple.getT4())
+                        .yearMonth(yearMonth)
                         .build());
     }
 

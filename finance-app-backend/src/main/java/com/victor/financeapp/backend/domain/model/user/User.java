@@ -3,7 +3,6 @@ package com.victor.financeapp.backend.domain.model.user;
 import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
@@ -19,7 +18,6 @@ public class User {
     private final String lastname;
     private final BigDecimal salary;
     private final boolean active;
-    @Setter
     private Balance balance;
     private final Map<String, String> properties;
 
@@ -34,6 +32,11 @@ public class User {
         this.salary = salary;
         this.active = active;
         this.properties = new HashMap<>();
+    }
+
+    public void setBalance(Balance balance) {
+        this.balance = balance;
+        this.balance.setUser(this);
     }
 
     public Optional<String> getProperty(String propertyName) {
