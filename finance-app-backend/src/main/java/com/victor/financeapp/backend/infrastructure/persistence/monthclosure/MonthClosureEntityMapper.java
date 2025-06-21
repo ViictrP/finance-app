@@ -5,7 +5,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 interface MonthClosureEntityMapper {
-
     MonthClosure toDomain(MonthClosureEntity entity);
     MonthClosureEntity toEntity(MonthClosure domain);
 }
