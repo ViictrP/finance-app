@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.YearMonth;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -23,7 +24,8 @@ public class SaveMonthClosureUseCaseImpl implements SaveMonthClosureUseCase {
     private final MonthClosureService monthClosureService;
 
     @Override
-    @Scheduled(cron = "0 0 2 * * *", zone = "America/Sao_Paulo")
+//    @Scheduled(cron = "0 0 2 * * *", zone = "America/Sao_Paulo")
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void execute() {
         var yearMonth = YearMonth.now();
 
