@@ -20,8 +20,8 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public Mono<BigDecimal> getDollarExchangeRates() {
         log.info("Retrieving dollar exchange rates");
-        return client.getCurrencyExchangeRates("USD-BRLPTAX")
-                .map(response -> (Map<String, String>) response.get("USDBRLPTAX"))
+        return client.getCurrencyExchangeRates("USD-BRL")
+                .map(response -> (Map<String, String>) response.get("USDBRL"))
                 .map(currency -> currency.get("ask"))
                 .map(BigDecimal::new)
                 .doOnSuccess(value -> log.info("Currency exchange rates {}", value));
