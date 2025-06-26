@@ -49,13 +49,9 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.YearMonth
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
-import kotlin.text.format
 
 data class TransactionWithCreditCard(
     val transaction: TransactionDTO,
@@ -69,11 +65,16 @@ fun HomeScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
+    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    val now = YearMonth.now()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
     val balance by viewModel.currentBalance.collectAsState()
     val space = Modifier.height(48.dp)
+
+    val monthClosure = balance?.monthClosures
+        ?.find {
+            it.year == now.year && it.month == now.month.name.substring(0, 3)
+        }
 
     val transactions = balance?.lastAddedTransactions
         ?.map { transaction ->
@@ -160,11 +161,11 @@ fun HomeScreen(
                                     }
                                     Spacer(modifier = Modifier.size(10.dp))
                                     Text(
-                                        if (balance != null && !loading) {
-                                            NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                .format(balance?.expenses)
-                                        } else {
-                                            "Carregando..."
+                                        when {
+                                            loading -> "Carregando..."
+                                            monthClosure != null -> numberFormatter.format(monthClosure.expenses)
+                                            balance != null -> numberFormatter.format(balance?.expenses)
+                                            else -> ""
                                         },
                                         style = LocalTextStyle.current.copy(fontSize = 28.sp),
                                         fontWeight = FontWeight.Bold,

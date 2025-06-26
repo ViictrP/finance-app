@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -46,13 +47,18 @@ import java.util.Locale
 fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
 ) {
+    val now = YearMonth.now()
     val spacing = Modifier.height(48.dp)
-    val lastUpdateTime by balanceViewModel.lastUpdateTime.collectAsState()
     val balance by balanceViewModel.balance.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
+
+    val monthClosure = balance?.monthClosures
+        ?.find {
+            it.year == now.year && it.month == now.month.name.substring(0, 3)
+        }
 
     val recurringExpenses = balance?.transactions
         ?.filter { transaction -> transaction.type == TransactionType.RECURRING } ?: emptyList()
@@ -114,8 +120,9 @@ fun BalanceScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    balance?.let {
-                        SummaryCard(it.salary, it.expenses, it.available)
+                    when {
+                        monthClosure != null -> SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
+                        balance != null -> SummaryCard(balance!!.salary, balance!!.expenses, balance!!.available)
                     }
                 }
             }
@@ -229,7 +236,7 @@ fun ExpensesCarousel(creditCards: List<CreditCardDTO>, salary: BigDecimal) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(creditCards.size) { index ->
-            var creditCard = creditCards[index]
+            val creditCard = creditCards[index]
             CreditCardImpactCard(
                 creditCard.title,
                 DecimalFormat("#,##0.00'%'").format((creditCard.totalInvoiceAmount * BigDecimal(100)) / salary),

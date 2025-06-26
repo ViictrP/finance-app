@@ -16,7 +16,7 @@ class MonthClosureRepositoryImpl implements MonthClosureRepository {
 
     @Override
     public Flux<MonthClosure> findUsersLastFiveMonthClosures(Long userId) {
-        return repository.findAll()
+        return repository.findLastFiveMonthClosures(userId)
                 .map(mapper::toDomain);
     }
 
