@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.apollographql.apollo3") version "3.8.5"
+    id("com.apollographql.apollo3") version "3.8.6"
     alias(libs.plugins.google.gms.google.services)
     alias (libs.plugins.hilt.application)
     kotlin("kapt")
