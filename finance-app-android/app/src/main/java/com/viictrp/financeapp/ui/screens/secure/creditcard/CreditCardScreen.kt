@@ -38,7 +38,7 @@ fun CreditCardScreen(
     val loading by balanceViewModel.loading.collectAsState()
     val balance by balanceViewModel.currentBalance.collectAsState()
 
-    var creditCards = balance?.creditCards ?: emptyList()
+    val creditCards = balance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
         isRefreshing = loading,
