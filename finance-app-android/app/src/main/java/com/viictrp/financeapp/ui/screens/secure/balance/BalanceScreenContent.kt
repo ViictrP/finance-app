@@ -47,7 +47,6 @@ import java.util.Locale
 fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
 ) {
-    val now = YearMonth.now()
     val spacing = Modifier.height(48.dp)
     val balance by balanceViewModel.balance.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
@@ -57,7 +56,7 @@ fun BalanceScreenContent(
 
     val monthClosure = balance?.monthClosures
         ?.find {
-            it.year == now.year && it.month == now.month.name.substring(0, 3)
+            it.year == selectedYearMonth.year && it.month == selectedYearMonth.month.name.substring(0, 3)
         }
 
     val recurringExpenses = balance?.transactions
