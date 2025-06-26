@@ -26,7 +26,8 @@ class UserRepositoryImpl implements UserRepository {
     @Override
     public Flux<User> findUsersWithMonthClosureToday() {
         return repository.findUsersWithMonthClosureToday()
-                .map(mapper::toDomain);
+                .map(mapper::toDomain)
+                .flatMap(this::loadUserProperties);
     }
 
     private Mono<User> loadUserProperties(User user) {
