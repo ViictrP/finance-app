@@ -120,12 +120,9 @@ fun BalanceScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    if (monthClosure != null) {
-                        SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
-                    } else {
-                        balance?.let {
-                            SummaryCard(it.salary, it.expenses, it.available)
-                        }
+                    when {
+                        monthClosure != null -> SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
+                        balance != null -> SummaryCard(balance!!.salary, balance!!.expenses, balance!!.available)
                     }
                 }
             }

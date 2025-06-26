@@ -65,6 +65,7 @@ fun HomeScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
+    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
     val balance by viewModel.currentBalance.collectAsState()
@@ -160,20 +161,11 @@ fun HomeScreen(
                                     }
                                     Spacer(modifier = Modifier.size(10.dp))
                                     Text(
-                                        if (!loading ) {
-                                            if (monthClosure != null) {
-                                                NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                    .format(monthClosure.expenses)
-                                            } else {
-                                                if (balance != null) {
-                                                    NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                        .format(balance?.expenses)
-                                                } else {
-                                                    ""
-                                                }
-                                            }
-                                        } else {
-                                            "Carregando..."
+                                        when {
+                                            loading -> "Carregando..."
+                                            monthClosure != null -> numberFormatter.format(monthClosure.expenses)
+                                            balance != null -> numberFormatter.format(balance?.expenses)
+                                            else -> ""
                                         },
                                         style = LocalTextStyle.current.copy(fontSize = 28.sp),
                                         fontWeight = FontWeight.Bold,
