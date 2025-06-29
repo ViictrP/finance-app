@@ -1,6 +1,7 @@
 package com.victor.financeapp.backend.domain.model.creditcard;
 
 import com.victor.financeapp.backend.domain.model.common.Transaction;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.util.Assert;
 
@@ -18,6 +19,7 @@ public class Invoice {
     private final Long creditCardId;
     private final List<Transaction> transactions;
 
+    @Builder
     public Invoice(Long id, Long creditCardId, YearMonth yearMonth) {
         Assert.notNull(yearMonth, "Invoice's month cannot be null");
         Assert.notNull(creditCardId, "Invoice's credit card ID cannot be null");

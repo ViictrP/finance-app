@@ -1,6 +1,8 @@
 package com.victor.financeapp.backend.domain.model.common;
 
 import com.victor.financeapp.backend.domain.model.creditcard.Invoice;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class Transaction {
     private final Long id;
     private @Setter String description;
@@ -26,16 +30,6 @@ public class Transaction {
     private @Setter Invoice invoice;
     private @Setter Long userId;
 
-    public Transaction(Long id, BigDecimal amount, String category, LocalDateTime date, String description, Integer installmentAmount, TransactionType type) {
-        this.id = id;
-        this.amount = amount;
-        this.category = category;
-        this.date = date;
-        this.description = description;
-        this.installmentAmount = installmentAmount;
-        this.type = type;
-    }
-
     public List<Transaction> getInstallmentTransactions() {
         if (this.installmentAmount == 1 || type.equals(TransactionType.RECURRING)) {
             this.isInstallment = false;
@@ -45,14 +39,14 @@ public class Transaction {
         var transactions = new ArrayList<Transaction>();
         var uuid = UUID.randomUUID().toString();
         for (int number = 0; number < this.installmentAmount; number++) {
-            var transaction = new Transaction(
-                    null,
-                    this.amount.divide(BigDecimal.valueOf(this.installmentAmount), 2, RoundingMode.HALF_UP),
-                    this.category,
-                    this.date.plusMonths(number),
-                    this.description,
-                    this.installmentAmount,
-                    this.type);
+            var transaction = Transaction.builder()
+                    .amount(this.amount.divide(BigDecimal.valueOf(this.installmentAmount), 2, RoundingMode.HALF_UP))
+                    .category(this.category)
+                    .date(this.date.plusMonths(number))
+                    .description(this.description)
+                    .installmentAmount(this.installmentAmount)
+                    .type(this.type)
+                    .build();
 
             transaction.installmentNumber = number + 1;
             transaction.isInstallment = true;

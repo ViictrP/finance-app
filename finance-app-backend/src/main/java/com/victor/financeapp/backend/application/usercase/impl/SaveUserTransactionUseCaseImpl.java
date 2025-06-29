@@ -26,20 +26,15 @@ public class SaveUserTransactionUseCaseImpl implements SaveUserTransactionUseCas
     @Transactional
     public Mono<TransactionDTO> execute(TransactionDTO dto) {
         log.info("Processing new transaction {}", dto.description());
+        var transaction = mapper.toDomain(dto);
+
         return userService.getLoggedInUser()
-                .flatMap(user -> saveNewTransaction(dto, user))
+                .flatMap(user -> {
+                    log.info("Saving user {} transaction {}", user.getName(), transaction.getDescription());
+                    return transactionRepository.save(user.addTransaction(transaction))
+                            .doOnNext(tr -> log.info("Transaction {} saved!", tr.getDescription()));
+                })
                 .map(mapper::toDTO)
                 .doOnNext(saved -> log.info("Processing transaction {} is completed", saved.description()));
-    }
-
-    private Mono<Transaction> saveNewTransaction(TransactionDTO dto, User user) {
-        log.info("Saving user {} transaction {}", user.getName(), dto.description());
-        return Mono.just(dto)
-                .map(mapper::toDomain)
-                .flatMap(transaction -> {
-                    user.addTransaction(transaction);
-                    return transactionRepository.save(transaction)
-                            .doOnNext(tr -> log.info("Transaction {} saved!", tr.getDescription()));
-                });
     }
 }

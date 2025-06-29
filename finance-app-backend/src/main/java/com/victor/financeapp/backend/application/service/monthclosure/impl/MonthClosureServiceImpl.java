@@ -15,7 +15,7 @@ public class MonthClosureServiceImpl implements MonthClosureService {
     private final MonthClosureRepository monthClosureRepository;
 
     @Override
-    public Mono<MonthClosure> execute(Balance balance) {
+    public Mono<MonthClosure> save(Balance balance) {
         return monthClosureRepository.save(balance.getMonthClosure());
     }
 }
