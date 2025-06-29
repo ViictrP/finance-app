@@ -71,7 +71,7 @@ public class User {
         return newCreditCard;
     }
 
-    public void addTransaction(Transaction transaction) {
+    public Transaction addTransaction(Transaction transaction) {
         if (Transaction.TransactionType.RECURRING.equals(transaction.getType())) {
             transaction.setIsInstallment(false);
             transaction.setInstallmentAmount(1);
@@ -79,5 +79,6 @@ public class User {
             transaction.setInstallmentNumber(1);
         }
         transaction.setUserId(this.id);
+        return transaction;
     }
 }

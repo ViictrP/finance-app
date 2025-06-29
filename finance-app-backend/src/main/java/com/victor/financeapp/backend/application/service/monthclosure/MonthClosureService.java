@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface MonthClosureService {
 
-    Mono<MonthClosure> execute(Balance balance);
+    Mono<MonthClosure> save(Balance balance);
 }
