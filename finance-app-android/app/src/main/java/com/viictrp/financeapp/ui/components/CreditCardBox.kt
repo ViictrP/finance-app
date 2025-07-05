@@ -41,6 +41,8 @@ import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.theme.SecondaryDark
+import java.text.NumberFormat
+import java.util.Locale
 
 data class CreditCardSharedKey(
     val creditCardId: Long,
@@ -54,7 +56,8 @@ enum class CreditCardSharedKeyElementType {
     InvoiceClosingDay,
     Number,
     Icon,
-    Actions
+    Actions,
+    InvoiceTotalAmount
 }
 
 val colorMap = mapOf(
@@ -70,6 +73,7 @@ fun CreditCardBox(
     modifier: Modifier = Modifier,
     onClick: ((creditCard: CreditCardDTO) -> Unit)? = {},
 ) {
+    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val haptics = LocalHapticFeedback.current
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
@@ -125,7 +129,7 @@ fun CreditCardBox(
                     Text(
                         text = creditCard.title,
                         color = SecondaryDark,
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                         modifier = Modifier
                             .sharedBounds(
                                 rememberSharedContentState(
@@ -183,14 +187,14 @@ fun CreditCardBox(
                                     boundsTransform = boundsTransform
                                 )
                                 .wrapContentWidth()
-                                .size(24.dp),
+                                .size(20.dp),
                             contentDescription = "Select Month",
                             tint = SecondaryDark,
                         )
                         Text(
                             text = " ${creditCard.invoiceClosingDay}",
                             color = SecondaryDark,
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                             modifier = Modifier
                                 .sharedBounds(
                                     rememberSharedContentState(
@@ -209,7 +213,7 @@ fun CreditCardBox(
                         text = creditCard.number,
                         color = SecondaryDark,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 28.sp,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier
@@ -226,7 +230,36 @@ fun CreditCardBox(
                             .wrapContentWidth()
                     )
                 }
-        }
+
+                Spacer(modifier = Modifier.size(40.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "${numberFormatter.format(creditCard.totalInvoiceAmount)}",
+                        color = SecondaryDark,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        modifier = Modifier
+                            .sharedBounds(
+                                rememberSharedContentState(
+                                    key = CreditCardSharedKey(
+                                        creditCardId = creditCard.id,
+                                        type = CreditCardSharedKeyElementType.InvoiceTotalAmount
+                                    )
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = boundsTransform
+                            )
+                            .wrapContentWidth()
+                    )
+                }
+            }
         }
     }
 }

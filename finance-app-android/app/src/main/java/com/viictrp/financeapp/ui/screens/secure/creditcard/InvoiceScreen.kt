@@ -376,7 +376,19 @@ fun InvoiceScreen(
                                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                                             fontWeight = FontWeight.Normal,
                                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                            color = SecondaryDark
+                                            color = SecondaryDark,
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    rememberSharedContentState(
+                                                        key = CreditCardSharedKey(
+                                                            creditCardId = creditCard.value?.id!!,
+                                                            type = CreditCardSharedKeyElementType.InvoiceTotalAmount
+                                                        )
+                                                    ),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                    boundsTransform = boundsTransform
+                                                )
+                                                .wrapContentWidth()
                                         )
                                     }
                                 }
