@@ -1,10 +1,10 @@
-package com.victor.financeapp.backend.application.usercase.impl;
+package com.victor.financeapp.backend.application.usecase.impl;
 
 import com.victor.financeapp.backend.application.service.currency.CurrencyService;
 import com.victor.financeapp.backend.application.service.monthclosure.MonthClosureService;
 import com.victor.financeapp.backend.application.service.user.BalanceService;
 import com.victor.financeapp.backend.application.service.user.UserService;
-import com.victor.financeapp.backend.application.usercase.SaveMonthClosureUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveMonthClosureUseCase;
 import com.victor.financeapp.backend.domain.model.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

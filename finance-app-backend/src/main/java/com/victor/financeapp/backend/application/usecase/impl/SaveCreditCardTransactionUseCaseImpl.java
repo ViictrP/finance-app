@@ -1,10 +1,10 @@
-package com.victor.financeapp.backend.application.usercase.impl;
+package com.victor.financeapp.backend.application.usecase.impl;
 
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
 import com.victor.financeapp.backend.application.mapper.TransactionMapper;
 import com.victor.financeapp.backend.application.service.creditcard.CreditCardService;
 import com.victor.financeapp.backend.application.service.user.UserService;
-import com.victor.financeapp.backend.application.usercase.SaveCreditCardTransactionUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveCreditCardTransactionUseCase;
 import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import com.victor.financeapp.backend.domain.model.user.User;
@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Slf4j
 @Service

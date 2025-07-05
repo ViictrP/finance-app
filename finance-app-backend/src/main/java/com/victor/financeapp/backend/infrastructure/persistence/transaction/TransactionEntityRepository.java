@@ -5,6 +5,8 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+
 @Repository
 interface TransactionEntityRepository extends ReactiveCrudRepository<TransactionEntity, Long> {
 
@@ -27,6 +29,8 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
                 ORDER BY date DESC;
             """)
     Flux<TransactionEntity> findByUserIdAndInvoiceIdIsNull(Long userId, int month, int year);
+
+    Flux<TransactionEntity> findAllByUserIdAndDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     Flux<TransactionEntity> findByInvoiceIdAndDeletedIsFalseOrderByDateDesc(Long invoiceId);
 

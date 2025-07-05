@@ -1,0 +1,49 @@
+type Budget {
+    id: ID!
+    month: YearMonth!
+    totalAmount: BigDecimal!
+    categories: [BudgetCategory!]!
+}
+
+type BudgetCategory {
+    id: ID!
+    name: String!
+    budgetedAmount: BigDecimal!
+}
+
+input BudgetInput {
+    id: ID
+    month: YearMonth!
+    totalAmount: BigDecimal!
+    categories: [BudgetCategoryInput!]!
+}
+
+input BudgetCategoryInput {
+    id: ID
+    name: String!
+    budgetedAmount: BigDecimal!
+}
+
+type BudgetPerformance {
+    month: YearMonth!
+    totalBudgeted: BigDecimal!
+    totalSpent: BigDecimal!
+    totalRemaining: BigDecimal!
+    categories: [BudgetPerformanceCategory!]!
+}
+
+type BudgetPerformanceCategory {
+    categoryName: String!
+    budgetedAmount: BigDecimal!
+    spentAmount: BigDecimal!
+    remainingAmount: BigDecimal!
+}
+
+extend type Query {
+    getBudgetByMonth(month: YearMonth!): Budget
+    getBudgetPerformance(month: YearMonth!): BudgetPerformance
+}
+
+extend type Mutation {
+    saveBudget(budget: BudgetInput!): Budget
+}

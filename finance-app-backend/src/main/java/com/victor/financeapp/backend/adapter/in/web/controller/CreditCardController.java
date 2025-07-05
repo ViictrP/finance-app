@@ -3,10 +3,10 @@ package com.victor.financeapp.backend.adapter.in.web.controller;
 import com.victor.financeapp.backend.application.dto.CreditCardDTO;
 import com.victor.financeapp.backend.application.dto.InvoiceDTO;
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
-import com.victor.financeapp.backend.application.usercase.GetInstallmentsUseCase;
-import com.victor.financeapp.backend.application.usercase.GetInvoice;
-import com.victor.financeapp.backend.application.usercase.SaveCreditCardTransactionUseCase;
-import com.victor.financeapp.backend.application.usercase.SaveCreditCardUseCase;
+import com.victor.financeapp.backend.application.usecase.GetInstallmentsUseCase;
+import com.victor.financeapp.backend.application.usecase.GetInvoiceUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveCreditCardTransactionUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveCreditCardUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -23,7 +23,7 @@ import java.time.YearMonth;
 @RequiredArgsConstructor
 public class CreditCardController {
 
-    private final GetInvoice useCase;
+    private final GetInvoiceUseCase useCase;
     private final SaveCreditCardUseCase saveCreditCardUseCase;
     private final SaveCreditCardTransactionUseCase saveCreditCardTransactionUseCase;
     private final GetInstallmentsUseCase getInstallmentsUseCase;

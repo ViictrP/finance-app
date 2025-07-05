@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 
 @Repository
@@ -24,6 +25,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
         var month = yearMonth.getMonthValue();
         var year = yearMonth.getYear();
         return repository.findByUserIdAndInvoiceIdIsNull(id, month, year)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Flux<Transaction> findByUserIdAndDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        return repository.findAllByUserIdAndDateBetween(userId, startDate, endDate)
                 .map(mapper::toDomain);
     }
 

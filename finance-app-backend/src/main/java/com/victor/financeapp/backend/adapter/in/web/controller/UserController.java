@@ -2,8 +2,8 @@ package com.victor.financeapp.backend.adapter.in.web.controller;
 
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
 import com.victor.financeapp.backend.application.dto.UserBalanceDTO;
-import com.victor.financeapp.backend.application.usercase.GetBalanceUseCase;
-import com.victor.financeapp.backend.application.usercase.SaveUserTransactionUseCase;
+import com.victor.financeapp.backend.application.usecase.GetBalanceUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveUserTransactionUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;

@@ -1,4 +1,4 @@
-package com.victor.financeapp.backend.application.usercase;
+package com.victor.financeapp.backend.application.usecase;
 
 import com.victor.financeapp.backend.application.dto.UserBalanceDTO;
 import reactor.core.publisher.Mono;

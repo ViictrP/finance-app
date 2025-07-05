@@ -1,9 +1,9 @@
-package com.victor.financeapp.backend.application.usercase.impl;
+package com.victor.financeapp.backend.application.usecase.impl;
 
 import com.victor.financeapp.backend.application.dto.CreditCardDTO;
 import com.victor.financeapp.backend.application.mapper.CreditCardMapper;
 import com.victor.financeapp.backend.application.service.user.UserService;
-import com.victor.financeapp.backend.application.usercase.SaveCreditCardUseCase;
+import com.victor.financeapp.backend.application.usecase.SaveCreditCardUseCase;
 import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

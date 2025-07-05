@@ -1,5 +1,7 @@
 package com.victor.financeapp.backend.domain.model.user;
 
+import com.victor.financeapp.backend.domain.model.budget.Budget;
+import com.victor.financeapp.backend.domain.model.budget.BudgetTemplate;
 import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.model.creditcard.CreditCard;
 import lombok.Getter;
@@ -80,5 +82,13 @@ public class User {
         }
         transaction.setUserId(this.id);
         return transaction;
+    }
+
+    public void addBudget(Budget budget) {
+        budget.setUserId(this.getId());
+    }
+
+    public void addBudgetTemplate(BudgetTemplate template) {
+        template.setId(this.getId());
     }
 }

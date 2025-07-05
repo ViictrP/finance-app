@@ -1,9 +1,9 @@
-package com.victor.financeapp.backend.application.usercase.impl;
+package com.victor.financeapp.backend.application.usecase.impl;
 
 import com.victor.financeapp.backend.application.dto.InvoiceDTO;
 import com.victor.financeapp.backend.application.mapper.InvoiceMapper;
 import com.victor.financeapp.backend.application.service.user.InvoiceDomainService;
-import com.victor.financeapp.backend.application.usercase.GetInvoice;
+import com.victor.financeapp.backend.application.usecase.GetInvoiceUseCase;
 import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.time.YearMonth;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GetInvoiceImpl implements GetInvoice {
+public class GetInvoiceUseCaseImplUseCase implements GetInvoiceUseCase {
 
     private final CreditCardRepository creditCardRepository;
     private final InvoiceDomainService service;

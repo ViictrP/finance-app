@@ -1,11 +1,9 @@
-package com.victor.financeapp.backend.application.usercase.impl;
+package com.victor.financeapp.backend.application.usecase.impl;
 
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
 import com.victor.financeapp.backend.application.mapper.TransactionMapper;
 import com.victor.financeapp.backend.application.service.user.UserService;
-import com.victor.financeapp.backend.application.usercase.SaveUserTransactionUseCase;
-import com.victor.financeapp.backend.domain.model.common.Transaction;
-import com.victor.financeapp.backend.domain.model.user.User;
+import com.victor.financeapp.backend.application.usecase.SaveUserTransactionUseCase;
 import com.victor.financeapp.backend.domain.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
