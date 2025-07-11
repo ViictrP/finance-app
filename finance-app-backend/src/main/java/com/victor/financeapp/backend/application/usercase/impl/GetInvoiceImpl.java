@@ -21,6 +21,7 @@ public class GetInvoiceImpl implements GetInvoice {
     private final InvoiceDomainService service;
     private final InvoiceMapper mapper;
 
+    //TODO: load only the invoice
     @Override
     public Mono<InvoiceDTO> execute(Long creditCardId, YearMonth yearMonth) {
         return creditCardRepository.findCreditCard(creditCardId)
