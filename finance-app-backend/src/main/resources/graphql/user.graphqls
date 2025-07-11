@@ -25,7 +25,7 @@ type TransactionDTO {
     amount: BigDecimal!
     type: String!
     date: LocalDateTime!
-    category: String
+    category: Category
     isInstallment: Boolean!
     installmentAmount: BigDecimal
     installmentId: String

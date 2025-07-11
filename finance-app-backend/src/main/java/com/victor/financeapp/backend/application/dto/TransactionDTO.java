@@ -3,21 +3,23 @@ package com.victor.financeapp.backend.application.dto;
 import com.victor.financeapp.backend.domain.model.common.Transaction.TransactionType;
 import lombok.Builder;
 
+import com.victor.financeapp.backend.domain.model.common.Category;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
 public record TransactionDTO(
         Long id,
         String description,
         BigDecimal amount,
-        String category,
-        TransactionType type,
+        String type,
         LocalDateTime date,
-        Boolean isInstallment,
-        Integer installmentAmount,
+        Category category,
+        boolean isInstallment,
+        BigDecimal installmentAmount,
         String installmentId,
-        Integer installmentNumber,
+        int installmentNumber,
         Long creditCardId
 ) {
 }
+

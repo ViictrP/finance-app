@@ -5,6 +5,7 @@ import com.victor.financeapp.backend.application.dto.BudgetPerformanceDTO;
 import com.victor.financeapp.backend.application.service.user.UserService;
 import com.victor.financeapp.backend.application.usecase.GetBudgetPerformanceUseCase;
 import com.victor.financeapp.backend.domain.model.budget.Budget;
+import com.victor.financeapp.backend.domain.model.common.Category;
 import com.victor.financeapp.backend.domain.model.common.Transaction;
 import com.victor.financeapp.backend.domain.repository.BudgetRepository;
 import com.victor.financeapp.backend.domain.repository.TransactionRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class GetBudgetPerformanceUseCaseImpl implements GetBudgetPerformanceUseC
     }
 
     private BudgetPerformanceDTO buildPerformanceDto(YearMonth month, Budget budget, List<Transaction> transactions) {
-        Map<String, BigDecimal> spentByCategory = transactions.stream()
+        Map<Category, BigDecimal> spentByCategory = transactions.stream()
                 .filter(t -> t.getCategory() != null && t.getAmount().compareTo(BigDecimal.ZERO) > 0) // Consider only expenses
                 .collect(Collectors.groupingBy(
                         Transaction::getCategory,
@@ -61,7 +63,7 @@ public class GetBudgetPerformanceUseCaseImpl implements GetBudgetPerformanceUseC
                             spent,
                             budgetCategory.getBudgetedAmount().subtract(spent)
                     );
-                }).toList();
+                }).collect(Collectors.toList());
 
         return new BudgetPerformanceDTO(
                 month,

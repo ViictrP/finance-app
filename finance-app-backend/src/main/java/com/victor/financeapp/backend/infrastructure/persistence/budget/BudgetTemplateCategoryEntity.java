@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 @Setter
 class BudgetTemplateCategoryEntity extends Entity<Long> {
     private Long templateId;
-    private String name;
+    private String category;
     private BigDecimal budgetedAmount;
 }

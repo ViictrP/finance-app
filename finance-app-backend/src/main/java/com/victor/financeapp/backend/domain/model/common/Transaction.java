@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Transaction {
     private final Long id;
     private @Setter String description;
-    private @Setter String category;
+    private Category category;
     private @Setter BigDecimal amount;
     private @Setter Boolean isInstallment = false;
     private @Setter Integer installmentNumber;

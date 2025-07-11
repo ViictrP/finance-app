@@ -16,6 +16,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
     private final BudgetEntityRepository budgetEntityRepository;
     private final BudgetCategoryEntityRepository budgetCategoryEntityRepository;
     private final BudgetEntityMapper mapper;
+    private final BudgetCategoryEntityMapper categoryMapper;
 
     @Override
     @Transactional
@@ -32,7 +33,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
         return savedBudgetEntityMono.flatMap(savedBudgetEntity -> {
             var categoryEntities = budget.getCategories().stream()
                     .map(category -> {
-                        var categoryEntity = mapper.toEntity(category);
+                        var categoryEntity = categoryMapper.toEntity(category);
                         categoryEntity.setBudgetId(savedBudgetEntity.getId());
                         return categoryEntity;
                     })
@@ -44,7 +45,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
                         var savedBudget = mapper.toDomain(savedBudgetEntity);
                         savedBudget.setCategories(
                                 savedCategoryEntities.stream()
-                                        .map(mapper::toDomain)
+                                        .map(categoryMapper::toDomain)
                                         .toList());
                         return savedBudget;
                     });
@@ -56,7 +57,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
         return budgetEntityRepository.findByUserIdAndMonth(userId, mapper.fromYearMonth(month))
                 .flatMap(budgetEntity ->
                         budgetCategoryEntityRepository.findByBudgetId(budgetEntity.getId())
-                                .map(mapper::toDomain)
+                                .map(categoryMapper::toDomain)
                                 .collectList()
                                 .map(categories -> {
                                     var budget = mapper.toDomain(budgetEntity);

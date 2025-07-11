@@ -1,3 +1,11 @@
+enum Category {
+    HOME
+    FOOD
+    OTHER
+    CREDIT_CARD
+    SHOP
+}
+
 type Budget {
     id: ID!
     month: YearMonth!
@@ -7,7 +15,7 @@ type Budget {
 
 type BudgetCategory {
     id: ID!
-    name: String!
+    name: Category!
     budgetedAmount: BigDecimal!
 }
 
@@ -20,7 +28,7 @@ input BudgetInput {
 
 input BudgetCategoryInput {
     id: ID
-    name: String!
+    name: Category!
     budgetedAmount: BigDecimal!
 }
 
@@ -33,17 +41,43 @@ type BudgetPerformance {
 }
 
 type BudgetPerformanceCategory {
-    categoryName: String!
+    categoryName: Category!
     budgetedAmount: BigDecimal!
     spentAmount: BigDecimal!
     remainingAmount: BigDecimal!
 }
 
+type BudgetTemplate {
+    id: ID!
+    totalAmount: BigDecimal!
+    categories: [BudgetTemplateCategory!]!
+}
+
+type BudgetTemplateCategory {
+    id: ID!
+    name: Category!
+    budgetedAmount: BigDecimal!
+}
+
+input BudgetTemplateInput {
+    id: ID
+    totalAmount: BigDecimal!
+    categories: [BudgetTemplateCategoryInput!]!
+}
+
+input BudgetTemplateCategoryInput {
+    id: ID
+    name: Category!
+    budgetedAmount: BigDecimal!
+}
+
 extend type Query {
     getBudgetByMonth(month: YearMonth!): Budget
     getBudgetPerformance(month: YearMonth!): BudgetPerformance
+    getBudgetTemplate: BudgetTemplate
 }
 
 extend type Mutation {
     saveBudget(budget: BudgetInput!): Budget
+    saveBudgetTemplate(template: BudgetTemplateInput!): BudgetTemplate
 }

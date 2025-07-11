@@ -14,6 +14,7 @@ class BudgetTemplateRepositoryImpl implements BudgetTemplateRepository {
     private final BudgetTemplateEntityRepository templateRepository;
     private final BudgetTemplateCategoryEntityRepository categoryRepository;
     private final BudgetTemplateEntityMapper mapper;
+    private final BudgetTemplateCategoryEntityMapper categoryMapper;
 
     @Override
     @Transactional
@@ -30,7 +31,7 @@ class BudgetTemplateRepositoryImpl implements BudgetTemplateRepository {
         return savedTemplateEntityMono.flatMap(savedTemplateEntity -> {
             var categoryEntities = template.getCategories().stream()
                     .map(category -> {
-                        var categoryEntity = mapper.toEntity(category);
+                        var categoryEntity = categoryMapper.toEntity(category);
                         categoryEntity.setTemplateId(savedTemplateEntity.getId());
                         return categoryEntity;
                     })
@@ -42,7 +43,7 @@ class BudgetTemplateRepositoryImpl implements BudgetTemplateRepository {
                         var savedTemplate = mapper.toDomain(savedTemplateEntity);
                         savedTemplate.setCategories(
                                 savedCategoryEntities.stream()
-                                        .map(mapper::toDomain)
+                                        .map(categoryMapper::toDomain)
                                         .toList());
                         return savedTemplate;
                     });
@@ -54,7 +55,7 @@ class BudgetTemplateRepositoryImpl implements BudgetTemplateRepository {
         return templateRepository.findByUserId(userId)
                 .flatMap(templateEntity ->
                         categoryRepository.findByTemplateId(templateEntity.getId())
-                                .map(mapper::toDomain)
+                                .map(categoryMapper::toDomain)
                                 .collectList()
                                 .map(categories -> {
                                     var template = mapper.toDomain(templateEntity);

@@ -1,10 +1,12 @@
 package com.victor.financeapp.backend.application.dto;
 
+import com.victor.financeapp.backend.domain.model.common.Category;
+
 import java.math.BigDecimal;
 
 public record BudgetTemplateCategoryDTO(
         Long id,
-        String name,
+        Category name,
         BigDecimal budgetedAmount
 ) {
 }

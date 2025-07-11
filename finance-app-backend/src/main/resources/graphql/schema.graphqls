@@ -15,7 +15,7 @@ input NewTransactionDTO {
     amount: BigDecimal!
     type: String!
     date: LocalDateTime!
-    category: String
+    category: Category
     installmentAmount: Int!
     creditCardId: Int
 }
