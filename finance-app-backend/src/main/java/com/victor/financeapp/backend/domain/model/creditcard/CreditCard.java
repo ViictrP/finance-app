@@ -67,6 +67,7 @@ public class CreditCard {
 
         var invoice = getOrCreateInvoice(transactionDate);
         invoice.addTransaction(transaction);
+        transaction.setUserId(this.userId);
     }
 
     public List<Transaction> createInstallmentTransactions(Transaction originalTransaction) {
