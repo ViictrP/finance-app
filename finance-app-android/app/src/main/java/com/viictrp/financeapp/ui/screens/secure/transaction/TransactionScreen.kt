@@ -274,7 +274,7 @@ fun TransactionScreen(
                                 )
                             }
                         }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
                             Text(
                                 numberFormatter.format(transaction.value?.amount ?: 0),
                                 style = LocalTextStyle.current.copy(fontSize = 24.sp),
