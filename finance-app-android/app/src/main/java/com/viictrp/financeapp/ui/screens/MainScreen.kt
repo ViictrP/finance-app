@@ -191,7 +191,7 @@ fun SecureContainer(
         ?: throw IllegalStateException("No SharedElementScope found")
 
     LaunchedEffect(currentDestination) {
-        if (currentDestination == SecureDestinations.HOME_ROUTE && balance == null) {
+        if (balance == null) {
             viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         }
     }
