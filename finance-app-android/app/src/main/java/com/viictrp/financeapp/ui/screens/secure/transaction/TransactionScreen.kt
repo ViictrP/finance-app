@@ -56,6 +56,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.ui.components.CreditCardSharedKey
+import com.viictrp.financeapp.ui.components.CreditCardSharedKeyElementType
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.TransactionCard
@@ -151,13 +153,23 @@ fun TransactionScreen(
                                 onPressUp?.invoke()
                             }
 
-                            with(animatedVisibilityScope) {
-                                Text(
-                                    creditCard.value?.title!!,
-                                    style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                    color = Primary.copy(alpha = .8f),
-                                )
-                            }
+                            Text(
+                                creditCard.value?.title!!,
+                                style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                                color = Primary.copy(alpha = .8f),
+                                modifier = Modifier
+                                    .sharedBounds(
+                                        rememberSharedContentState(
+                                            key = CreditCardSharedKey(
+                                                creditCardId = creditCard.value?.id!!,
+                                                type = CreditCardSharedKeyElementType.Title
+                                            )
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        boundsTransform = boundsTransform
+                                    )
+                                    .wrapContentWidth()
+                            )
                         }
                     }
                 }
