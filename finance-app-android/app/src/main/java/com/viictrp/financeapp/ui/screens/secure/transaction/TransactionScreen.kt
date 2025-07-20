@@ -72,6 +72,8 @@ import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Primary
 import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.delay
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun TransactionScreen(
@@ -80,6 +82,7 @@ fun TransactionScreen(
     balanceViewModel: BalanceViewModel,
     onPressUp: (() -> Unit)? = null
 ) {
+    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val transaction = balanceViewModel.selectedTransaction.collectAsState()
     val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
 
@@ -188,7 +191,7 @@ fun TransactionScreen(
                         ) {
                             Text(
                                 transaction.value?.description!!,
-                                style = LocalTextStyle.current.copy(fontSize = 48.sp),
+                                style = LocalTextStyle.current.copy(fontSize = 30.sp),
                                 color = Primary,
                                 modifier = Modifier
                                     .sharedBounds(
@@ -258,6 +261,13 @@ fun TransactionScreen(
                                     )
                                 )
                             }
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                numberFormatter.format(transaction.value?.amount ?: 0),
+                                style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                color = Primary
+                            )
                         }
                     }
                 }
