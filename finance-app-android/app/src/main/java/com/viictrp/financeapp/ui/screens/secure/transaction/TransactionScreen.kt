@@ -64,15 +64,12 @@ import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementKey
 import com.viictrp.financeapp.ui.components.TransactionCardSharedElementType
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
-import com.viictrp.financeapp.ui.components.colorMap
 import com.viictrp.financeapp.ui.components.extension.toFormatted
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.theme.Primary
-import com.viictrp.financeapp.ui.theme.Secondary
 import kotlinx.coroutines.delay
 import java.text.NumberFormat
 import java.util.Locale
@@ -132,7 +129,7 @@ fun TransactionScreen(
                     enter = fadeIn(nonSpatialExpressiveSpring()),
                 )
                 .fillMaxSize(),
-            color = colorMap[creditCard.value?.color] ?: Primary
+            color = MaterialTheme.colorScheme.primary
         ) {
             LazyColumn {
                 item {
@@ -140,7 +137,6 @@ fun TransactionScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                            .background(colorMap[creditCard.value?.color] ?: Secondary)
                             .padding(vertical = 16.dp),
                         contentAlignment = Alignment.BottomStart,
                     ) {
@@ -156,7 +152,7 @@ fun TransactionScreen(
                             Text(
                                 creditCard.value?.title!!,
                                 style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                color = Primary.copy(alpha = .8f),
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                 modifier = Modifier
                                     .sharedBounds(
                                         rememberSharedContentState(
@@ -184,17 +180,17 @@ fun TransactionScreen(
                             horizontal = 16.dp
                         )
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.CenterStart
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 "${transaction.value?.date?.toFormatted()}",
                                 style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                                color = Primary.copy(alpha = .8f),
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
@@ -204,7 +200,7 @@ fun TransactionScreen(
                             Text(
                                 transaction.value?.description!!,
                                 style = LocalTextStyle.current.copy(fontSize = 30.sp),
-                                color = Primary,
+                                color = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier
                                     .sharedBounds(
                                         rememberSharedContentState(
@@ -227,7 +223,7 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.Edit,
                                         contentDescription = "Sync",
-                                        tint = Primary,
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
@@ -237,48 +233,52 @@ fun TransactionScreen(
                                     Icon(
                                         CustomIcons.Filled.TrashCan,
                                         contentDescription = "Sync",
-                                        tint = Primary,
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
                                 }
                             }
                         }
-                        with(animatedVisibilityScope) {
-                            val installmentAmount = transaction.value?.installmentAmount?.takeIf {
-                                it > 1
-                            }
-                            if (installmentAmount != null) {
-                                Text(
-                                    "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
-                                    style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                    color = Primary.copy(alpha = .8f),
-                                    modifier = Modifier.animateEnterExit(
-                                        enter = fadeIn(
-                                            animationSpec = tween(
-                                                durationMillis = 200,
-                                                delayMillis = 200
-                                            )
-                                        ) +
-                                                slideInVertically(
-                                                    animationSpec = tween(
-                                                        durationMillis = 300,
-                                                        delayMillis = 200
-                                                    )
-                                                ) { -it },
-                                        exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
-                                                slideOutVertically(
-                                                    animationSpec = tween(durationMillis = 150)
-                                                ) { -it }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            with(animatedVisibilityScope) {
+                                val installmentAmount = transaction.value?.installmentAmount?.takeIf {
+                                    it > 1
+                                }
+                                if (installmentAmount != null) {
+                                    Text(
+                                        "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
+                                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                        color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                        modifier = Modifier.animateEnterExit(
+                                            enter = fadeIn(
+                                                animationSpec = tween(
+                                                    durationMillis = 200,
+                                                    delayMillis = 200
+                                                )
+                                            ) +
+                                                    slideInVertically(
+                                                        animationSpec = tween(
+                                                            durationMillis = 300,
+                                                            delayMillis = 200
+                                                        )
+                                                    ) { -it },
+                                            exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                                                    slideOutVertically(
+                                                        animationSpec = tween(durationMillis = 150)
+                                                    ) { -it }
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 numberFormatter.format(transaction.value?.amount ?: 0),
                                 style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                                color = Primary
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                     }
@@ -360,7 +360,7 @@ private fun SharedTransitionScope.BackButton(upPress: () -> Unit) {
                     exit = scaleOut(tween(20))
                 )
                 .background(
-                    color = Primary.copy(alpha = .8f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = .8f),
                     shape = CircleShape
                 )
         ) {
