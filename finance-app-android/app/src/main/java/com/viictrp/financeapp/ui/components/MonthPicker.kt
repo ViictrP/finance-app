@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
 import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.components.extension.toYearMonth
-import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import java.time.YearMonth
 
