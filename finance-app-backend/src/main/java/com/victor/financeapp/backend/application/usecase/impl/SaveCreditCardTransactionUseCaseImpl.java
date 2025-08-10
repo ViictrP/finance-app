@@ -50,9 +50,8 @@ public class SaveCreditCardTransactionUseCaseImpl implements SaveCreditCardTrans
 
                     return Flux.fromIterable(installments)
                             .flatMap(installment -> {
-                                installment.setDate(originalTransaction.getDate());
                                 creditCard.addTransaction(installment);
-                                user.addTransaction(installment);
+                                installment.setDate(originalTransaction.getDate());
                                 return saveTransaction(installment, user, creditCard);
                             })
                             .then(Mono.just(originalTransaction));
