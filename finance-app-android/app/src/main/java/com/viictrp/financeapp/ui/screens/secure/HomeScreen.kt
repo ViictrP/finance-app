@@ -88,6 +88,7 @@ fun HomeScreen(
     val loading by viewModel.loading.collectAsState()
 
     PullToRefreshContainer(
+        viewModel = viewModel,
         isRefreshing = loading,
         onRefresh = {
             coroutineScope.launch {
@@ -98,8 +99,11 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(padding),
         content = {
-            FinanceAppSurface(modifier = Modifier
-                .fillMaxSize()) {
+            FinanceAppSurface(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+
                 LazyColumn(
                     contentPadding = PaddingValues(vertical = 16.dp),
                     modifier = Modifier.fillMaxSize()
@@ -163,7 +167,10 @@ fun HomeScreen(
                                     Text(
                                         when {
                                             loading -> "Carregando..."
-                                            monthClosure != null -> numberFormatter.format(monthClosure.expenses)
+                                            monthClosure != null -> numberFormatter.format(
+                                                monthClosure.expenses
+                                            )
+
                                             balance != null -> numberFormatter.format(balance?.expenses)
                                             else -> ""
                                         },

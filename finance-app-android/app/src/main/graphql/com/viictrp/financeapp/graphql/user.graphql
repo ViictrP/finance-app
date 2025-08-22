@@ -8,3 +8,7 @@ mutation SaveUserTransaction($request: NewTransactionDTO!) {
         category
     }
 }
+
+mutation DeleteTransaction($id: Int!, $all: Boolean) {
+    deleteTransaction(id: $id, all: $all)
+}

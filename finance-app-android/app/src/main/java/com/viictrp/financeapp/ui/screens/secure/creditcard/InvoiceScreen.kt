@@ -133,6 +133,7 @@ fun InvoiceScreen(
 
     with(sharedTransitionScope) {
         PullToRefreshContainer(
+            viewModel = viewModel,
             isRefreshing = loading,
             onRefresh = {
                 coroutineScope.launch {

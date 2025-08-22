@@ -29,6 +29,7 @@ fun BalanceScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
     }
 
     PullToRefreshContainer(
+        viewModel,
         isRefreshing = loading,
         onRefresh = {
             coroutineScope.launch {
