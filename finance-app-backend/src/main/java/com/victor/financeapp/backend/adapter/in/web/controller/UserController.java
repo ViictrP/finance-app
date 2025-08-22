@@ -2,6 +2,7 @@ package com.victor.financeapp.backend.adapter.in.web.controller;
 
 import com.victor.financeapp.backend.application.dto.TransactionDTO;
 import com.victor.financeapp.backend.application.dto.UserBalanceDTO;
+import com.victor.financeapp.backend.application.usercase.DeleteTransactionUseCase;
 import com.victor.financeapp.backend.application.usercase.GetBalanceUseCase;
 import com.victor.financeapp.backend.application.usercase.SaveUserTransactionUseCase;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class UserController {
 
     private final GetBalanceUseCase getBalanceUseCase;
     private final SaveUserTransactionUseCase saveUserTransactionUseCase;
+    private final DeleteTransactionUseCase deleteTransactionUseCase;
 
     @QueryMapping
     public Mono<UserBalanceDTO> getBalance(@Argument YearMonth yearMonth) {
@@ -30,5 +32,10 @@ public class UserController {
     @MutationMapping
     public Mono<TransactionDTO> saveTransaction(@Argument TransactionDTO newTransaction) {
         return saveUserTransactionUseCase.execute(newTransaction);
+    }
+
+    @MutationMapping
+    public Mono<Boolean> deleteTransaction(@Argument Long id, @Argument Boolean all) {
+        return deleteTransactionUseCase.execute(id, all);
     }
 }
