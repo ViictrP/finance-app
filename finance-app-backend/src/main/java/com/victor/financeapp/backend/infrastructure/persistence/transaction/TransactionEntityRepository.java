@@ -4,6 +4,7 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 interface TransactionEntityRepository extends ReactiveCrudRepository<TransactionEntity, Long> {
@@ -40,4 +41,8 @@ interface TransactionEntityRepository extends ReactiveCrudRepository<Transaction
     Flux<TransactionEntity> findLastFiveAdded(Long userId);
 
     Flux<TransactionEntity> findAllByInstallmentId(String installmentId);
+
+    Mono<Void> deleteByIdAndUserId(Long id, Long userId);
+
+    Mono<Void> deleteByInstallmentIdAndUserId(String installmentId, Long userId);
 }

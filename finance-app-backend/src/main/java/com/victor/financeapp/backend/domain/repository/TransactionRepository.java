@@ -11,6 +11,10 @@ public interface TransactionRepository {
     Flux<Transaction> findInvoiceTransactionsOn(Long invoiceId);
     Flux<Transaction> findLastFiveAdded(Long userId);
     Flux<Transaction> findInstallments(String installmentId);
+    Mono<Transaction> findById(Long id);
 
     Mono<Transaction> save(Transaction transactions);
+
+    Mono<Boolean> deleteByIdAndUserId(Long id, Long userId);
+    Mono<Boolean> deleteByInstallmentIdAndUserId(String installmentId, Long userId);
 }

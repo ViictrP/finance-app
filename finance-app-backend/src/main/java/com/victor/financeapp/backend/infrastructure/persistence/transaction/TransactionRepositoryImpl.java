@@ -67,4 +67,20 @@ class TransactionRepositoryImpl implements TransactionRepository {
                     return domain;
                 });
     }
+
+    @Override
+    public Mono<Transaction> findById(Long id) {
+        return repository.findById(id)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<Boolean> deleteByIdAndUserId(Long id, Long userId) {
+        return repository.deleteByIdAndUserId(id, userId).thenReturn(true);
+    }
+
+    @Override
+    public Mono<Boolean> deleteByInstallmentIdAndUserId(String installmentId, Long userId) {
+        return repository.deleteByInstallmentIdAndUserId(installmentId, userId).thenReturn(true);
+    }
 }
