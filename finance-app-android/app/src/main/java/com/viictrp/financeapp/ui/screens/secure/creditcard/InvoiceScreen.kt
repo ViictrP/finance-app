@@ -41,7 +41,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -89,16 +89,17 @@ import java.util.Locale
 @Composable
 fun InvoiceScreen(
     creditCardId: Long,
-    balanceViewModel: BalanceViewModel,
-    onPressUp: (() -> Unit)? = null
+    viewModel: BalanceViewModel,
+    onPressUp: (() -> Unit)? = null,
+    onNavigation: ((id: Long, destination: String) -> Unit)? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val loading by balanceViewModel.loading.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     val spacing = 48.dp
-    val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
-    val invoice by balanceViewModel.selectedInvoice.collectAsState()
-    val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
+    val creditCard = viewModel.selectedCreditCard.collectAsState()
+    val invoice by viewModel.selectedInvoice.collectAsState()
+    val selectedYearMonth by viewModel.selectedYearMonth.collectAsState()
 
     val transactions = invoice?.transactions ?: emptyList()
 
@@ -126,10 +127,8 @@ fun InvoiceScreen(
     val density = LocalDensity.current
     val animatedFontSizeSp = with(density) { animatedFontSize.toSp() }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            balanceViewModel.clear()
-        }
+    LaunchedEffect(creditCardId) {
+        viewModel.updateYearMonth(YearMonth.now())
     }
 
     with(sharedTransitionScope) {
@@ -137,8 +136,8 @@ fun InvoiceScreen(
             isRefreshing = loading,
             onRefresh = {
                 coroutineScope.launch {
-                    balanceViewModel.updateYearMonth(YearMonth.now())
-                    balanceViewModel.getInvoice(creditCardId, YearMonth.now())
+                    viewModel.updateYearMonth(YearMonth.now())
+                    viewModel.getInvoice(creditCardId, YearMonth.now())
                 }
             },
             modifier = Modifier
@@ -314,9 +313,9 @@ fun InvoiceScreen(
                                     .skipToLookaheadSize()
                             ) {
                                 MonthPicker(selectedYearMonth, loading) { yearMonth ->
-                                    balanceViewModel.updateYearMonth(yearMonth)
+                                    viewModel.updateYearMonth(yearMonth)
                                     coroutineScope.launch {
-                                        balanceViewModel.getInvoice(
+                                        viewModel.getInvoice(
                                             creditCard.value?.id!!,
                                             selectedYearMonth
                                         )
@@ -376,7 +375,19 @@ fun InvoiceScreen(
                                                         .fold(BigDecimal.ZERO) { acc, value -> acc + value }),
                                             fontWeight = FontWeight.Normal,
                                             style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                            color = SecondaryDark
+                                            color = SecondaryDark,
+                                            modifier = Modifier
+                                                .sharedBounds(
+                                                    rememberSharedContentState(
+                                                        key = CreditCardSharedKey(
+                                                            creditCardId = creditCard.value?.id!!,
+                                                            type = CreditCardSharedKeyElementType.InvoiceTotalAmount
+                                                        )
+                                                    ),
+                                                    animatedVisibilityScope = animatedVisibilityScope,
+                                                    boundsTransform = boundsTransform
+                                                )
+                                                .wrapContentWidth()
                                         )
                                     }
                                 }
@@ -400,8 +411,14 @@ fun InvoiceScreen(
                                             tagColor = MaterialTheme.colorScheme.secondary.copy(
                                                 alpha = .7f
                                             ),
-                                            origin = SecureDestinations.CREDIT_CARD_ROUTE
-                                        )
+                                            origin = SecureDestinations.INVOICE_ROUTE
+                                        ) { id ->
+                                            viewModel.selectTransaction(transaction, creditCard.value)
+                                            onNavigation?.invoke(
+                                                id,
+                                                SecureDestinations.INVOICE_ROUTE
+                                            )
+                                        }
                                     }
                                 }
                             } else {

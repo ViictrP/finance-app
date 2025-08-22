@@ -158,9 +158,17 @@ fun MainScreen() {
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val creditCardId = arguments.getLong(SecureDestinations.CREDIT_CARD_KEY)
 
-                    InvoiceScreen(creditCardId, balanceViewModel) {
-                        financeAppNavController.pressUp()
-                    }
+                    InvoiceScreen(
+                        creditCardId, balanceViewModel,
+                        onPressUp = { financeAppNavController.pressUp() },
+                        onNavigation = { id, destination ->
+                            financeAppNavController.navigateToTransaction(
+                                id,
+                                SecureDestinations.INVOICE_ROUTE,
+                                backStackEntry
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -191,7 +199,7 @@ fun SecureContainer(
         ?: throw IllegalStateException("No SharedElementScope found")
 
     LaunchedEffect(currentDestination) {
-        if (currentDestination == SecureDestinations.HOME_ROUTE && balance == null) {
+        if (balance == null) {
             viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         }
     }
