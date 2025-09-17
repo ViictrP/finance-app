@@ -10,9 +10,14 @@ import com.viictrp.financeapp.data.repository.BalanceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import java.time.Instant
 import java.time.YearMonth
 import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class BalanceViewModel @Inject constructor(
@@ -43,6 +48,9 @@ class BalanceViewModel @Inject constructor(
 
     private val _loading = MutableStateFlow(false)
     internal val loading = _loading
+
+    private val _deleteTransactionSuccess = MutableSharedFlow<Unit>()
+    val deleteTransactionSuccess: SharedFlow<Unit> = _deleteTransactionSuccess.asSharedFlow()
 
     suspend fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
         try {
@@ -101,6 +109,22 @@ class BalanceViewModel @Inject constructor(
 
     suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
         return apiService.loadInstallments(installmentId)
+    }
+
+    fun deleteTransaction(id: Long, all: Boolean) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val success = apiService.deleteTransaction(id, all)
+                if (success) {
+                    repository.clearCache()
+                    loadBalance(_selectedYearMonth.value, defineCurrent = true)
+                    _deleteTransactionSuccess.emit(Unit)
+                }
+            } finally {
+                _loading.value = false
+            }
+        }
     }
 
     fun setCurrentBalance(balance: BalanceDTO?) {

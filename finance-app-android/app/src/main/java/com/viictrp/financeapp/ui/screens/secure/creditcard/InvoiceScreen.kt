@@ -66,8 +66,6 @@ import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.components.animation.boundsTransform
 import com.viictrp.financeapp.ui.components.colorMap
-import com.viictrp.financeapp.ui.components.extension.toFormattedYearMonth
-import com.viictrp.financeapp.ui.components.extension.toLong
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
@@ -133,6 +131,7 @@ fun InvoiceScreen(
 
     with(sharedTransitionScope) {
         PullToRefreshContainer(
+            viewModel = viewModel,
             isRefreshing = loading,
             onRefresh = {
                 coroutineScope.launch {
@@ -348,10 +347,7 @@ fun InvoiceScreen(
                                         color = SecondaryDark
                                     )
                                     Text(
-                                        "Lançamentos da fatura de ${
-                                            selectedYearMonth.toLong()
-                                                .toFormattedYearMonth("MMMM")
-                                        }",
+                                        "Lançamentos da fatura",
                                         fontWeight = FontWeight.Normal,
                                         color = SecondaryDark
                                     )

@@ -41,6 +41,7 @@ fun CreditCardScreen(
     val creditCards = balance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
+        balanceViewModel,
         isRefreshing = loading,
         onRefresh = {
             coroutineScope.launch {

@@ -131,209 +131,206 @@ fun TransactionScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.primary
         ) {
-            LazyColumn {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.BottomStart,
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.Bottom,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxSize()
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.BottomStart,
                         ) {
-                            BackButton {
-                                onPressUp?.invoke()
-                            }
+                            Row(
+                                verticalAlignment = Alignment.Bottom,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                BackButton {
+                                    onPressUp?.invoke()
+                                }
 
-                            Text(
-                                creditCard.value?.title!!,
-                                style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            key = CreditCardSharedKey(
-                                                creditCardId = creditCard.value?.id!!,
-                                                type = CreditCardSharedKeyElementType.Title
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = boundsTransform
-                                    )
-                                    .wrapContentWidth()
-                            )
+                                Text(
+                                    creditCard.value?.title!!,
+                                    style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            rememberSharedContentState(
+                                                key = CreditCardSharedKey(
+                                                    creditCardId = creditCard.value?.id!!,
+                                                    type = CreditCardSharedKeyElementType.Title
+                                                )
+                                            ),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            boundsTransform = boundsTransform
+                                        )
+                                        .wrapContentWidth()
+                                )
+                            }
                         }
                     }
-                }
 
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
+                    item {
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
 
-                item {
-                    Column(
-                        modifier = Modifier.padding(
-                            horizontal = 16.dp
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "${transaction.value?.date?.toFormatted()}",
-                                style = LocalTextStyle.current.copy(fontSize = 16.sp),
-                                color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                    item {
+                        Column(
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp
                             )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-
                         ) {
-                            Text(
-                                transaction.value?.description!!,
-                                style = LocalTextStyle.current.copy(fontSize = 30.sp),
-                                color = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier
-                                    .sharedBounds(
-                                        rememberSharedContentState(
-                                            key = TransactionCardSharedElementKey(
-                                                transactionId = transactionId,
-                                                origin = origin,
-                                                type = TransactionCardSharedElementType.Title
-                                            )
-                                        ),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = boundsTransform
-                                    )
-                                    .wrapContentWidth()
-                            )
                             Row(
+                                modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                IconButton(
-                                    onClick = { /* Sync or refresh */ }) {
-                                    Icon(
-                                        CustomIcons.Filled.Edit,
-                                        contentDescription = "Sync",
-                                        tint = MaterialTheme.colorScheme.tertiary,
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = { /* Sync or refresh */ }) {
-                                    Icon(
-                                        CustomIcons.Filled.TrashCan,
-                                        contentDescription = "Sync",
-                                        tint = MaterialTheme.colorScheme.tertiary,
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                }
+                                Text(
+                                    "${transaction.value?.date?.toFormatted()}",
+                                    style = LocalTextStyle.current.copy(fontSize = 16.sp),
+                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                )
                             }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            with(animatedVisibilityScope) {
-                                val installmentAmount = transaction.value?.installmentAmount?.takeIf {
-                                    it > 1
-                                }
-                                if (installmentAmount != null) {
-                                    Text(
-                                        "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
-                                        style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                        color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
-                                        modifier = Modifier.animateEnterExit(
-                                            enter = fadeIn(
-                                                animationSpec = tween(
-                                                    durationMillis = 200,
-                                                    delayMillis = 200
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+
+                            ) {
+                                Text(
+                                    transaction.value?.description!!,
+                                    style = LocalTextStyle.current.copy(fontSize = 30.sp),
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier
+                                        .sharedBounds(
+                                            rememberSharedContentState(
+                                                key = TransactionCardSharedElementKey(
+                                                    transactionId = transactionId,
+                                                    origin = origin,
+                                                    type = TransactionCardSharedElementType.Title
                                                 )
-                                            ) +
-                                                    slideInVertically(
-                                                        animationSpec = tween(
-                                                            durationMillis = 300,
-                                                            delayMillis = 200
-                                                        )
-                                                    ) { -it },
-                                            exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
-                                                    slideOutVertically(
-                                                        animationSpec = tween(durationMillis = 150)
-                                                    ) { -it }
+                                            ),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            boundsTransform = boundsTransform
                                         )
-                                    )
+                                        .wrapContentWidth()
+                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            transaction.value?.id?.let { transactionId ->
+                                                balanceViewModel.deleteTransaction(transactionId, transaction.value!!.isInstallment!!)
+                                                onPressUp?.invoke()
+                                            }
+                                        }) {
+                                        Icon(
+                                            CustomIcons.Filled.TrashCan,
+                                            contentDescription = "Delete Transaction",
+                                            tint = MaterialTheme.colorScheme.tertiary,
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                        )
+                                    }
                                 }
                             }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                with(animatedVisibilityScope) {
+                                    val installmentAmount = transaction.value?.installmentAmount?.takeIf {
+                                        it > 1
+                                    }
+                                    if (installmentAmount != null) {
+                                        Text(
+                                            "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
+                                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                            color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                            modifier = Modifier.animateEnterExit(
+                                                enter = fadeIn(
+                                                    animationSpec = tween(
+                                                        durationMillis = 200,
+                                                        delayMillis = 200
+                                                    )
+                                                ) +
+                                                        slideInVertically(
+                                                            animationSpec = tween(
+                                                                durationMillis = 300,
+                                                                delayMillis = 200
+                                                            )
+                                                        ) { -it },
+                                                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                                                        slideOutVertically(
+                                                            animationSpec = tween(durationMillis = 150)
+                                                        ) { -it }
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    numberFormatter.format(transaction.value?.amount ?: 0),
+                                    style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                numberFormatter.format(transaction.value?.amount ?: 0),
-                                style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                                color = MaterialTheme.colorScheme.secondary
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+
+                    itemsIndexed(
+                        installments,
+                        key = { _, item -> item!!.id!! }) { index, transaction ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .animateItem()
+                        ) {
+                            TransactionCard(
+                                transaction!!,
+                                tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                                tagColor = MaterialTheme.colorScheme.secondary.copy(
+                                    alpha = .7f
+                                ),
+                                origin = SecureDestinations.CREDIT_CARD_ROUTE
                             )
                         }
                     }
-                }
 
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
-
-                itemsIndexed(
-                    installments,
-                    key = { _, item -> item!!.id!! }) { index, transaction ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                            .animateItem()
-                    ) {
-                        TransactionCard(
-                            transaction!!,
-                            tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
-                            tagColor = MaterialTheme.colorScheme.secondary.copy(
-                                alpha = .7f
-                            ),
-                            origin = SecureDestinations.CREDIT_CARD_ROUTE
-                        )
+                    item {
+                        Spacer(modifier = Modifier.height(48.dp))
                     }
-                }
 
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
+                    @SuppressLint("UnusedCrossfadeTargetStateParameter")
+                    item {
+                        if (loading) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Crossfade(targetState = loading, label = "lottieFade") { _ ->
+                                    val composition by rememberLottieComposition(
+                                        LottieCompositionSpec.Asset("loading-lottie.json")
+                                    )
+                                    val progress by animateLottieCompositionAsState(
+                                        composition,
+                                        iterations = LottieConstants.IterateForever,
+                                        restartOnPlay = true
+                                    )
 
-                @SuppressLint("UnusedCrossfadeTargetStateParameter")
-                item {
-                    if (loading) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Crossfade(targetState = loading, label = "lottieFade") { _ ->
-                                val composition by rememberLottieComposition(
-                                    LottieCompositionSpec.Asset("loading-lottie.json")
-                                )
-                                val progress by animateLottieCompositionAsState(
-                                    composition,
-                                    iterations = LottieConstants.IterateForever,
-                                    restartOnPlay = true
-                                )
-
-                                LottieAnimation(
-                                    composition = composition,
-                                    progress = { progress },
-                                    modifier = Modifier.size(200.dp)
-                                )
+                                    LottieAnimation(
+                                        composition = composition,
+                                        progress = { progress },
+                                        modifier = Modifier.size(200.dp)
+                                    )
+                                }
                             }
                         }
                     }
