@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.google.gms.google.services) apply false
     alias (libs.plugins.hilt.application) apply false
+    id("com.google.devtools.ksp") version "2.2.20-2.0.3" apply false
 }
