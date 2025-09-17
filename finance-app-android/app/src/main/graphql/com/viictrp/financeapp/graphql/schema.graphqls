@@ -16,6 +16,7 @@ type Mutation {
     saveCreditCardTransaction(newTransaction: NewTransactionDTO!): TransactionDTO!
     saveTransaction(newTransaction: NewTransactionDTO!): TransactionDTO!
     saveCreditCard(newCreditCard: NewCreditCardDTO!): CreditCardDTO!
+    deleteTransaction(id: Int!, all: Boolean): Boolean!
 }
 
 enum TransactionType {

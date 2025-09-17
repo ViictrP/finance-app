@@ -4,6 +4,7 @@ extend type Query {
 
 extend type Mutation {
     saveTransaction(newTransaction: NewTransactionDTO!): TransactionDTO
+    deleteTransaction(id: Int!, all: Boolean): Boolean
 }
 
 type UserBalanceDTO {
