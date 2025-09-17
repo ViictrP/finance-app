@@ -9,6 +9,8 @@ import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.data.remote.service.mapper.mapCreditCardDTO
 import com.viictrp.financeapp.data.remote.service.mapper.mapMonthClosureDTO
 import com.viictrp.financeapp.data.remote.service.mapper.mapTransactionDTO
+import com.apollographql.apollo3.api.Optional
+import com.viictrp.financeapp.graphql.DeleteTransactionMutation
 import com.viictrp.financeapp.graphql.GetBalanceQuery
 import com.viictrp.financeapp.graphql.SaveUserTransactionMutation
 import com.viictrp.financeapp.graphql.type.NewTransactionDTO
@@ -104,6 +106,21 @@ class UserAPIService(private val apolloClient: ApolloClient) {
             Log.d("ApiService", "Error saving new transaction: ${e.message}")
             if (e is CancellationException) throw e
             null
+        }
+    }
+
+    suspend fun deleteTransaction(id: Long, all: Boolean): Boolean {
+        return try {
+            val response: ApolloResponse<DeleteTransactionMutation.Data> =
+                apolloClient
+                    .mutation(DeleteTransactionMutation(id.toInt(), Optional.presentIfNotNull(all)))
+                    .execute()
+
+            response.data?.deleteTransaction ?: false
+        } catch (e: Exception) {
+            Log.d("UserAPIService", "Error deleting transaction: ${e.message}")
+            if (e is CancellationException) throw e
+            false
         }
     }
 }

@@ -65,4 +65,8 @@ class ApiService {
     suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
         return creditCardApiService.loadInstallments(installmentId)
     }
+
+    suspend fun deleteTransaction(id: Long, all: Boolean): Boolean {
+        return userApiService.deleteTransaction(id, all)
+    }
 }

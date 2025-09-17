@@ -7,11 +7,12 @@ plugins {
     alias (libs.plugins.hilt.application)
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.viictrp.financeapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.viictrp.financeapp"
@@ -95,6 +96,6 @@ dependencies {
     implementation(libs.androidx.animation)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 }
