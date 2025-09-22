@@ -29,25 +29,25 @@ class BalanceViewModel @Inject constructor(
     val lastUpdateTime: StateFlow<Instant?> = _lastUpdateTime
 
     private val _balance = MutableStateFlow<BalanceDTO?>(null)
-    val balance = _balance
+    val balance: StateFlow<BalanceDTO?> = _balance
 
     private val _selectedInvoice = MutableStateFlow<InvoiceDTO?>(null)
-    val selectedInvoice = _selectedInvoice
+    val selectedInvoice: StateFlow<InvoiceDTO?> = _selectedInvoice
 
     private val _selectedCreditCard = MutableStateFlow<CreditCardDTO?>(null)
-    val selectedCreditCard = _selectedCreditCard
+    val selectedCreditCard: StateFlow<CreditCardDTO?> = _selectedCreditCard
 
     private val _selectedTransaction = MutableStateFlow<TransactionDTO?>(null)
-    val selectedTransaction = _selectedTransaction
+    val selectedTransaction: StateFlow<TransactionDTO?> = _selectedTransaction
 
     private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
-    val currentBalance = _currentBalance
+    val currentBalance: StateFlow<BalanceDTO?> = _currentBalance
 
-    private val _selectedYearMonth = MutableStateFlow<YearMonth>(YearMonth.now())
-    internal val selectedYearMonth = _selectedYearMonth
+    private val _selectedYearMonth = MutableStateFlow(YearMonth.now())
+    internal val selectedYearMonth: StateFlow<YearMonth> = _selectedYearMonth
 
     private val _loading = MutableStateFlow(false)
-    internal val loading = _loading
+    internal val loading: StateFlow<Boolean> = _loading
 
     private val _deleteTransactionSuccess = MutableSharedFlow<Unit>()
     val deleteTransactionSuccess: SharedFlow<Unit> = _deleteTransactionSuccess.asSharedFlow()

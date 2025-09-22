@@ -11,22 +11,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authManager: AuthManager) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val authManager: AuthManager
+) : ViewModel() {
 
     private val _isAuthenticated = MutableStateFlow<Boolean?>(null)
     val isAuthenticated: StateFlow<Boolean?> = _isAuthenticated
 
     private val _loading = MutableStateFlow(true)
+    val loading: StateFlow<Boolean> = _loading
 
     private val _user = MutableStateFlow<UserDTO?>(null)
-    val user = _user
+    val user: StateFlow<UserDTO?> = _user
 
     fun checkAuth() {
         viewModelScope.launch {
             _loading.value = true
             _isAuthenticated.value = authManager.isLoggedIn()
 
-            if (isAuthenticated.value == true) {
+            if (_isAuthenticated.value == true) {
                 _user.value = authManager.user
             }
             _loading.value = false
@@ -35,23 +38,30 @@ class AuthViewModel @Inject constructor(private val authManager: AuthManager) : 
 
     fun loginWithGoogle(onResult: (message: String?) -> Unit) {
         viewModelScope.launch {
+            _loading.value = true
             authManager.signInWithGoogle { user, message ->
-                _isAuthenticated.value = true
+                // actualize o estado apenas quando o login for bem‑sucedido
+                _isAuthenticated.value = user != null
                 _user.value = user
+                _loading.value = false
                 onResult(message)
             }
         }
     }
 
     fun resetAuth() {
-        _isAuthenticated.update {
+        viewModelScope.launch {
             authManager.clearTokens()
-            false
+            _isAuthenticated.value = false
+            _user.value = null
         }
     }
 
     fun logout() {
-        authManager.clearTokens()
-        _isAuthenticated.value = false
+        viewModelScope.launch {
+            authManager.clearTokens()
+            _isAuthenticated.value = false
+            _user.value = null
+        }
     }
 }
