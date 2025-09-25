@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,9 +44,7 @@ import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -86,16 +83,13 @@ fun HomeScreen(
             TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
 
-    val coroutineScope = rememberCoroutineScope()
     val loading by viewModel.loading.collectAsState()
 
     PullToRefreshContainer(
         viewModel = viewModel,
         isRefreshing = loading,
         onRefresh = {
-            coroutineScope.launch {
-                viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-            }
+            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         },
         modifier = Modifier
             .fillMaxSize()

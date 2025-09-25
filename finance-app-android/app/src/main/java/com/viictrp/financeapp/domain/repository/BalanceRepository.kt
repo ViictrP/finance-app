@@ -14,4 +14,5 @@ interface BalanceRepository {
     suspend fun saveCreditCard(creditCard: CreditCardDTO): CreditCardDTO?
     suspend fun loadInstallments(installmentId: String): List<TransactionDTO?>
     suspend fun deleteTransaction(id: Long, all: Boolean)
+    suspend fun clearCache()
 }

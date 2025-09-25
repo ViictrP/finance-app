@@ -35,15 +35,15 @@ class BalanceRepositoryImpl @Inject constructor(
         }
 
         val balance = apiService.getBalance(yearMonth)
-        if (balance != null) {
+        return balance?.let {
             val entity = BalanceEntity(
                 yearMonth = key,
                 content = serialize(balance),
                 lastUpdated = now
             )
             dao.saveBalance(entity)
+            return it.copy(wasFetchedFromNetwork = true)
         }
-        return balance
     }
 
     override suspend fun getInvoice(creditCardId: Long, yearMonth: YearMonth): InvoiceDTO? {
@@ -68,6 +68,10 @@ class BalanceRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTransaction(id: Long, all: Boolean) {
         apiService.deleteTransaction(id, all)
+    }
+
+    override suspend fun clearCache() {
+        dao.clearBalance()
     }
 
     private fun serialize(balance: BalanceDTO): String {

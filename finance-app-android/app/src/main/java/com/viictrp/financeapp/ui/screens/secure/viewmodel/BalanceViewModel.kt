@@ -6,13 +6,14 @@ import com.viictrp.financeapp.data.remote.dto.BalanceDTO
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.data.remote.dto.InvoiceDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
-import com.viictrp.financeapp.domain.usecase.DeleteTransactionUseCase
+import com.viictrp.financeapp.domain.usecase.DeleteTransactionWithCacheUseCase
 import com.viictrp.financeapp.domain.usecase.GetCurrentBalanceUseCase
 import com.viictrp.financeapp.domain.usecase.GetInvoiceUseCase
 import com.viictrp.financeapp.domain.usecase.LoadInstallmentsUseCase
-import com.viictrp.financeapp.domain.usecase.SaveCreditCardUseCase
-import com.viictrp.financeapp.domain.usecase.SaveTransactionUseCase
+import com.viictrp.financeapp.domain.usecase.SaveCreditCardWithCacheUseCase
+import com.viictrp.financeapp.domain.usecase.SaveTransactionWithCacheUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,35 +29,35 @@ import javax.inject.Inject
 class BalanceViewModel @Inject constructor(
     private val getCurrentBalanceUseCase: GetCurrentBalanceUseCase,
     private val getInvoiceUseCase: GetInvoiceUseCase,
-    private val saveTransactionUseCase: SaveTransactionUseCase,
-    private val saveCreditCardUseCase: SaveCreditCardUseCase,
-    private val deleteTransactionUseCase: DeleteTransactionUseCase,
+    private val saveTransactionWithCacheUseCase: SaveTransactionWithCacheUseCase,
+    private val saveCreditCardWithCacheUseCase: SaveCreditCardWithCacheUseCase,
+    private val deleteTransactionWithCacheUseCase: DeleteTransactionWithCacheUseCase,
     private val loadInstallmentsUseCase: LoadInstallmentsUseCase
 ) : ViewModel() {
 
     private val _lastUpdateTime = MutableStateFlow<Instant?>(null)
-    val lastUpdateTime: StateFlow<Instant?> = _lastUpdateTime
+    val lastUpdateTime: MutableStateFlow<Instant?> = _lastUpdateTime
 
     private val _balance = MutableStateFlow<BalanceDTO?>(null)
-    val balance: StateFlow<BalanceDTO?> = _balance
+    val balance: MutableStateFlow<BalanceDTO?> = _balance
 
     private val _selectedInvoice = MutableStateFlow<InvoiceDTO?>(null)
-    val selectedInvoice: StateFlow<InvoiceDTO?> = _selectedInvoice
+    val selectedInvoice: MutableStateFlow<InvoiceDTO?> = _selectedInvoice
 
     private val _selectedCreditCard = MutableStateFlow<CreditCardDTO?>(null)
-    val selectedCreditCard: StateFlow<CreditCardDTO?> = _selectedCreditCard
+    val selectedCreditCard: MutableStateFlow<CreditCardDTO?> = _selectedCreditCard
 
     private val _selectedTransaction = MutableStateFlow<TransactionDTO?>(null)
-    val selectedTransaction: StateFlow<TransactionDTO?> = _selectedTransaction
+    val selectedTransaction: MutableStateFlow<TransactionDTO?> = _selectedTransaction
 
     private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
-    val currentBalance: StateFlow<BalanceDTO?> = _currentBalance
+    val currentBalance: MutableStateFlow<BalanceDTO?> = _currentBalance
 
     private val _selectedYearMonth = MutableStateFlow(YearMonth.now())
-    internal val selectedYearMonth: StateFlow<YearMonth> = _selectedYearMonth
+    internal val selectedYearMonth: MutableStateFlow<YearMonth> = _selectedYearMonth
 
     private val _loading = MutableStateFlow(false)
-    internal val loading: StateFlow<Boolean> = _loading
+    internal val loading: MutableStateFlow<Boolean> = _loading
 
     private val _deleteTransactionSuccess = MutableSharedFlow<Unit>()
     val deleteTransactionSuccess: SharedFlow<Unit> = _deleteTransactionSuccess.asSharedFlow()
@@ -67,14 +68,24 @@ class BalanceViewModel @Inject constructor(
     suspend fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
         try {
             _loading.value = true
-            val balance = getCurrentBalanceUseCase(yearMonth)
-            _balance.value = balance
+            // Garantir tempo mínimo para animação
+            val startTime = System.currentTimeMillis()
+            
+            _balance.value = getCurrentBalanceUseCase(yearMonth)
             if (defineCurrent) {
-                _currentBalance.value = balance
+                _currentBalance.value = _balance.value
+                _creditCards.value = _balance.value?.creditCards ?: emptyList()
             }
-            _lastUpdateTime.value = Instant.now()
-        } catch (e: Exception) {
-            // Handle error
+            
+            if (_balance.value?.wasFetchedFromNetwork == true) {
+                _lastUpdateTime.value = Instant.now()
+            }
+
+            // Garantir pelo menos 300ms para animação ser visível
+            val elapsed = System.currentTimeMillis() - startTime
+            if (elapsed < 300) {
+                delay(300 - elapsed)
+            }
         } finally {
             _loading.value = false
         }
@@ -85,8 +96,6 @@ class BalanceViewModel @Inject constructor(
             _loading.value = true
             val invoice = getInvoiceUseCase(creditCardId, yearMonth)
             _selectedInvoice.value = invoice
-        } catch (e: Exception) {
-            // Handle error
         } finally {
             _loading.value = false
         }
@@ -95,9 +104,7 @@ class BalanceViewModel @Inject constructor(
     suspend fun saveCreditCardTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
         _loading.value = true
         return try {
-            saveTransactionUseCase(newTransactionDTO)
-        } catch (e: Exception) {
-            null
+            saveTransactionWithCacheUseCase(newTransactionDTO)
         } finally {
             _loading.value = false
         }
@@ -106,9 +113,7 @@ class BalanceViewModel @Inject constructor(
     suspend fun saveTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
         _loading.value = true
         return try {
-            saveTransactionUseCase(newTransactionDTO)
-        } catch (e: Exception) {
-            null
+            saveTransactionWithCacheUseCase(newTransactionDTO)
         } finally {
             _loading.value = false
         }
@@ -117,9 +122,7 @@ class BalanceViewModel @Inject constructor(
     suspend fun saveCreditCard(newCreditCardDTO: CreditCardDTO): CreditCardDTO? {
         _loading.value = true
         return try {
-            saveCreditCardUseCase(newCreditCardDTO)
-        } catch (e: Exception) {
-            null
+            saveCreditCardWithCacheUseCase(newCreditCardDTO)
         } finally {
             _loading.value = false
         }
@@ -133,10 +136,9 @@ class BalanceViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
             try {
-                deleteTransactionUseCase(id, all)
+                deleteTransactionWithCacheUseCase(id, all)
+                loadBalance(_selectedYearMonth.value, defineCurrent = true)
                 _deleteTransactionSuccess.emit(Unit)
-            } catch (e: Exception) {
-                // Handle error
             } finally {
                 _loading.value = false
             }
@@ -160,5 +162,7 @@ class BalanceViewModel @Inject constructor(
     fun clear() {
         _selectedInvoice.value = null
         _selectedYearMonth.value = YearMonth.now()
+        _selectedCreditCard.value = null
+        _selectedTransaction.value = null
     }
 }

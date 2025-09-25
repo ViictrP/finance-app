@@ -44,7 +44,6 @@ import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Accent
 import com.viictrp.financeapp.ui.theme.Orange

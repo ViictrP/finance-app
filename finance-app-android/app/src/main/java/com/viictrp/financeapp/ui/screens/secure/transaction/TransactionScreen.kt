@@ -69,7 +69,6 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.delay
 import java.text.NumberFormat

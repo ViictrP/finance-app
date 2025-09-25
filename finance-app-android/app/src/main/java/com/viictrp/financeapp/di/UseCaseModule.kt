@@ -3,14 +3,14 @@ package com.viictrp.financeapp.di
 import com.viictrp.financeapp.domain.repository.AuthRepository
 import com.viictrp.financeapp.domain.repository.BalanceRepository
 import com.viictrp.financeapp.domain.usecase.CheckAuthUseCase
-import com.viictrp.financeapp.domain.usecase.DeleteTransactionUseCase
+import com.viictrp.financeapp.domain.usecase.DeleteTransactionWithCacheUseCase
 import com.viictrp.financeapp.domain.usecase.GetCurrentBalanceUseCase
 import com.viictrp.financeapp.domain.usecase.GetInvoiceUseCase
 import com.viictrp.financeapp.domain.usecase.LoadInstallmentsUseCase
 import com.viictrp.financeapp.domain.usecase.LoginWithGoogleUseCase
 import com.viictrp.financeapp.domain.usecase.LogoutUseCase
-import com.viictrp.financeapp.domain.usecase.SaveCreditCardUseCase
-import com.viictrp.financeapp.domain.usecase.SaveTransactionUseCase
+import com.viictrp.financeapp.domain.usecase.SaveCreditCardWithCacheUseCase
+import com.viictrp.financeapp.domain.usecase.SaveTransactionWithCacheUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,19 +31,19 @@ object UseCaseModule {
     ): GetInvoiceUseCase = GetInvoiceUseCase(repository)
 
     @Provides
-    fun provideSaveTransactionUseCase(
+    fun provideSaveTransactionWithCacheUseCase(
         repository: BalanceRepository
-    ): SaveTransactionUseCase = SaveTransactionUseCase(repository)
+    ): SaveTransactionWithCacheUseCase = SaveTransactionWithCacheUseCase(repository)
 
     @Provides
-    fun provideSaveCreditCardUseCase(
+    fun provideSaveCreditCardWithCacheUseCase(
         repository: BalanceRepository
-    ): SaveCreditCardUseCase = SaveCreditCardUseCase(repository)
+    ): SaveCreditCardWithCacheUseCase = SaveCreditCardWithCacheUseCase(repository)
 
     @Provides
-    fun provideDeleteTransactionUseCase(
+    fun provideDeleteTransactionWithCacheUseCase(
         repository: BalanceRepository
-    ): DeleteTransactionUseCase = DeleteTransactionUseCase(repository)
+    ): DeleteTransactionWithCacheUseCase = DeleteTransactionWithCacheUseCase(repository)
 
     @Provides
     fun provideLoadInstallmentsUseCase(

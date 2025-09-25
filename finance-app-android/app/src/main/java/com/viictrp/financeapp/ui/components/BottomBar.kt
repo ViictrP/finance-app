@@ -54,9 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.core.os.ConfigurationCompat
-import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.navigation.Screen
-import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import java.util.Locale
 
 @Composable
@@ -287,7 +285,7 @@ private fun FinanceAppBottomNavLayout(
 
         // Divide the width into n+1 slots and give the selected item 2 slots
         val unselectedWidth = constraints.maxWidth / 3 /*/ (itemCount + 1) */
-        val selectedWidth = (1 * unselectedWidth).toInt()
+        val selectedWidth = (1 * unselectedWidth)
         val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
 
         val itemPlaceables = measurables
