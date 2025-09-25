@@ -30,18 +30,19 @@ public class Balance {
     private @Setter User user;
     private BigDecimal dollar;
 
-    public void calculateBalance(BigDecimal userSalary, BigDecimal dollar, BigDecimal currencyConversionTax, BigDecimal salaryTax) {
+    public void calculateBalance(BigDecimal userSalary, BigDecimal dollar, BigDecimal currencyConversionTax, BigDecimal salaryTax, BigDecimal socialSecurity) {
         var grossSalary = userSalary.multiply(dollar);
         var salaryMinusConversionTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
         var salaryMinusTax = salaryMinusConversionTax.subtract(salaryMinusConversionTax.multiply(salaryTax));
+        var salaryMinusSocialSecurity = salaryMinusTax.subtract(socialSecurity);
 
         this.dollar = dollar;
         this.nonConvertedSalary = grossSalary;
         this.exchangeTaxValue = currencyConversionTax;
         this.taxValue = salaryTax;
-        this.salary = salaryMinusTax;
+        this.salary = salaryMinusSocialSecurity;
         this.expenses = calculateExpenses();
-        this.available = salaryMinusTax.subtract(expenses);
+        this.available = salaryMinusSocialSecurity.subtract(expenses);
     }
 
     private BigDecimal calculateExpenses() {

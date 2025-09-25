@@ -1,0 +1,1 @@
+INSERT INTO finance_app.user_property VALUES (16, 'SOCIAL_SECURITY', '166.98');
