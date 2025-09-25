@@ -3,7 +3,6 @@
 package com.viictrp.financeapp.ui.screens.secure
 
 import android.text.format.DateUtils
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -34,11 +33,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
@@ -47,7 +44,7 @@ import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -66,8 +63,7 @@ fun HomeScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
+    val viewModel = rememberBalanceViewModel()
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
     val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()

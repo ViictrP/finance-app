@@ -1,7 +1,6 @@
 package com.viictrp.financeapp.ui.screens.secure.transaction
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,12 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CustomIcons
@@ -51,7 +48,7 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -59,8 +56,7 @@ import java.math.BigDecimal
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TransactionFormScreen(padding: PaddingValues) {
-    val context = LocalContext.current
-    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
+    val viewModel = rememberBalanceViewModel()
 
     val spacing = 48.dp
 

@@ -2,7 +2,6 @@
 
 package com.viictrp.financeapp.ui.screens.secure.creditcard
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,14 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.components.CreditCardBox
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 
@@ -35,8 +32,7 @@ fun CreditCardScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
+    val viewModel = rememberBalanceViewModel()
 
     val coroutineScope = rememberCoroutineScope()
 

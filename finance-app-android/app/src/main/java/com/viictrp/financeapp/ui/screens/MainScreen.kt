@@ -4,7 +4,6 @@
 
 package com.viictrp.financeapp.ui.screens
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -23,15 +22,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.components.BottomBarItem
 import com.viictrp.financeapp.ui.components.FinanceAppBottomBar
 import com.viictrp.financeapp.ui.components.FinanceAppScaffold
@@ -53,7 +49,8 @@ import com.viictrp.financeapp.ui.screens.secure.creditcard.CreditCardScreen
 import com.viictrp.financeapp.ui.screens.secure.creditcard.InvoiceScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionFormScreen
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.utils.rememberAuthViewModel
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import java.time.YearMonth
 
 @Composable
@@ -177,9 +174,8 @@ fun SecureContainer(
     modifier: Modifier = Modifier,
     onNavigation: (Long?, String, String, NavBackStackEntry) -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
-    val authViewModel = hiltViewModel<AuthViewModel>(context)
+    val viewModel = rememberBalanceViewModel()
+    val authViewModel = rememberAuthViewModel()
     val nestedNavController = rememberFinanceAppController()
 
     val user by authViewModel.user.collectAsState()
