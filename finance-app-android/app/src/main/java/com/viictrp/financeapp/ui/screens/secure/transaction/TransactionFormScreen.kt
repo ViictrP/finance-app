@@ -48,6 +48,7 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,13 +56,13 @@ import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
+fun TransactionFormScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
     val spacing = 48.dp
 
-    val balance = balanceModel.currentBalance.collectAsState()
+    val balance = viewModel.currentBalance.collectAsState()
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = balanceModel.loading.collectAsState()
+    val loading = viewModel.loading.collectAsState()
     val creditCards = balance.value?.creditCards ?: emptyList()
 
     val creditCardOptions = creditCards
@@ -199,7 +200,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                         validator = {
                             it.replace(",", ".")
                                 .toBigDecimal()
-                                .let { value -> value > BigDecimal.ZERO } == true
+                                .let { value -> value > BigDecimal.ZERO }
                         },
                         errorMessage = "Informe um valor válido maior que zero"
                     )
@@ -254,9 +255,9 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                             val transaction = form.value
 
                             if (transaction.creditCardId != null) {
-                                balanceModel.saveCreditCardTransaction(transaction)
+                                viewModel.saveCreditCardTransaction(transaction)
                             } else {
-                                balanceModel.saveTransaction(transaction)
+                                viewModel.saveTransaction(transaction)
                             }
 
                             delay(500)

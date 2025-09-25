@@ -1,11 +1,16 @@
 package com.viictrp.financeapp.ui.screens.other
 
-import androidx.compose.foundation.background
 //import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 //import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 //import androidx.compose.foundation.layout.size
+//import androidx.compose.ui.unit.dp
+//import com.airbnb.lottie.compose.LottieAnimation
+//import com.airbnb.lottie.compose.LottieCompositionSpec
+//import com.airbnb.lottie.compose.animateLottieCompositionAsState
+//import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,23 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-//import com.airbnb.lottie.compose.LottieAnimation
-//import com.airbnb.lottie.compose.LottieCompositionSpec
-//import com.airbnb.lottie.compose.animateLottieCompositionAsState
-//import com.airbnb.lottie.compose.rememberLottieComposition
 import com.viictrp.financeapp.auth.AuthViewModel
-import com.viictrp.financeapp.ui.navigation.PublicDestinations
-import com.viictrp.financeapp.ui.navigation.SecureDestinations
+import com.viictrp.financeapp.ui.navigation.Screen
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel
+    navController: NavController
 ) {
+    val authViewModel = hiltViewModel<AuthViewModel>()
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val user by authViewModel.user.collectAsState()
 
@@ -50,12 +50,12 @@ fun SplashScreen(
     LaunchedEffect(isAuthenticated, user) {
         if (isAuthenticated == true && user != null) {
             delay(1000)
-            navController.navigate(SecureDestinations.SECURE_ROUTE) {
-                popUpTo(PublicDestinations.SPLASH_ROUTE) { inclusive = true }
+            navController.navigate(Screen.Secure.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
             }
         } else if (isAuthenticated == false) {
-            navController.navigate(PublicDestinations.LOGIN_ROUTE) {
-                popUpTo(SecureDestinations.SECURE_ROUTE) { inclusive = true }
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Secure.route) { inclusive = true }
             }
         }
     }

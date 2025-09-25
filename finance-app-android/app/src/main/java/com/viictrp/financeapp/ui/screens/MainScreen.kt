@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
@@ -39,7 +40,7 @@ import com.viictrp.financeapp.ui.components.extension.composableWithCompositionL
 import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.components.rememberFinanceAppScaffoldState
 import com.viictrp.financeapp.ui.components.spatialExpressiveSpring
-import com.viictrp.financeapp.ui.navigation.PublicDestinations
+import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.navigation.rememberFinanceAppController
 import com.viictrp.financeapp.ui.screens.other.LoginScreen
@@ -57,8 +58,6 @@ import java.time.YearMonth
 @Composable
 fun MainScreen() {
     val financeAppNavController = rememberFinanceAppController()
-    val balanceViewModel = hiltViewModel<BalanceViewModel>()
-    val authViewModel = hiltViewModel<AuthViewModel>()
 
     SharedTransitionLayout {
         CompositionLocalProvider(
@@ -66,32 +65,31 @@ fun MainScreen() {
         ) {
             NavHost(
                 navController = financeAppNavController.navController,
-                startDestination = PublicDestinations.SPLASH_ROUTE
+                startDestination = Screen.Splash.route
             ) {
                 composableWithCompositionLocal(
-                    route = PublicDestinations.SPLASH_ROUTE
+                    route = Screen.Splash.route
                 ) {
-                    SplashScreen(financeAppNavController.navController, authViewModel)
+                    SplashScreen(financeAppNavController.navController)
                 }
 
                 composableWithCompositionLocal(
-                    route = PublicDestinations.LOGIN_ROUTE
+                    route = Screen.Login.route
                 ) { from ->
-                    LoginScreen(authViewModel, onNavigation = { destination ->
+                    LoginScreen(onNavigation = { destination ->
                         financeAppNavController.navigateTo(
                             destination,
-                            PublicDestinations.LOGIN_ROUTE,
+                            Screen.Login.route,
                             from
                         )
                     })
                 }
 
                 composableWithCompositionLocal(
-                    route = SecureDestinations.SECURE_ROUTE
-                ) {
+                    route = Screen.Secure.route
+                ) { backStackEntry ->
                     SecureContainer(
-                        viewModel = balanceViewModel,
-                        authViewModel = authViewModel,
+                        backStackEntry = backStackEntry,
                         onNavigation = { id, destination, origin, from ->
 
                             if (id != null) {
@@ -124,9 +122,7 @@ fun MainScreen() {
                 }
 
                 composableWithCompositionLocal(
-                    route = "${SecureDestinations.TRANSACTION_ROUTE}/" +
-                            "{${SecureDestinations.TRANSACTION_KEY}}" +
-                            "?origin={${SecureDestinations.ORIGIN}}",
+                    route = Screen.Transaction(0, "").route,
                     arguments = listOf(
                         navArgument(SecureDestinations.TRANSACTION_KEY) {
                             type = NavType.LongType
@@ -136,19 +132,24 @@ fun MainScreen() {
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val transactionId = arguments.getLong(SecureDestinations.TRANSACTION_KEY)
                     val origin = arguments.getString(SecureDestinations.ORIGIN)
+                    
+                    // Usa o viewModel do escopo secure compartilhado
+                    val parentEntry = remember(backStackEntry) {
+                        financeAppNavController.navController.getBackStackEntry(Screen.Secure.route)
+                    }
+                    val viewModel = hiltViewModel<BalanceViewModel>(parentEntry)
 
                     TransactionScreen(
+                        viewModel,
                         transactionId,
                         origin!!,
-                        balanceViewModel,
                     ) {
                         financeAppNavController.pressUp()
                     }
                 }
 
                 composableWithCompositionLocal(
-                    route = "${SecureDestinations.INVOICE_ROUTE}/" +
-                            "{${SecureDestinations.CREDIT_CARD_KEY}}",
+                    route = Screen.Invoice(0, "").route,
                     arguments = listOf(
                         navArgument(SecureDestinations.CREDIT_CARD_KEY) {
                             type = NavType.LongType
@@ -157,9 +158,16 @@ fun MainScreen() {
                 ) { backStackEntry ->
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val creditCardId = arguments.getLong(SecureDestinations.CREDIT_CARD_KEY)
+                    
+                    // Usa o viewModel do escopo secure compartilhado
+                    val parentEntry = remember(backStackEntry) {
+                        financeAppNavController.navController.getBackStackEntry(Screen.Secure.route)
+                    }
+                    val viewModel = hiltViewModel<BalanceViewModel>(parentEntry)
 
                     InvoiceScreen(
-                        creditCardId, balanceViewModel,
+                        viewModel,
+                        creditCardId,
                         onPressUp = { financeAppNavController.pressUp() },
                         onNavigation = { id, destination ->
                             financeAppNavController.navigateToTransaction(
@@ -181,10 +189,11 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { nu
 @Composable
 fun SecureContainer(
     modifier: Modifier = Modifier,
-    viewModel: BalanceViewModel,
-    authViewModel: AuthViewModel,
+    backStackEntry: NavBackStackEntry,
     onNavigation: (Long?, String, String, NavBackStackEntry) -> Unit
 ) {
+    val viewModel = hiltViewModel<BalanceViewModel>(backStackEntry)
+    val authViewModel = hiltViewModel<AuthViewModel>(backStackEntry)
     val nestedNavController = rememberFinanceAppController()
 
     val user by authViewModel.user.collectAsState()
@@ -271,23 +280,23 @@ fun SecureContainer(
     ) { padding ->
         NavHost(
             navController = nestedNavController.navController,
-            startDestination = SecureDestinations.HOME_ROUTE
+            startDestination = Screen.Home.route
         ) {
-            composable(SecureDestinations.HOME_ROUTE) { from ->
+            composable(Screen.Home.route) { from ->
                 HomeScreen(
                     viewModel = viewModel,
                     padding,
                     onNavigation = { id, destination ->
                         when (destination) {
-                            SecureDestinations.BALANCE_ROUTE -> nestedNavController.navigateTo(
-                                SecureDestinations.BALANCE_ROUTE,
-                                SecureDestinations.HOME_ROUTE,
+                            Screen.Balance.route -> nestedNavController.navigateTo(
+                                Screen.Balance.route,
+                                Screen.Home.route,
                                 from
                             )
                             else -> onNavigation(
                                 id,
                                 destination,
-                                SecureDestinations.HOME_ROUTE,
+                                Screen.Home.route,
                                 from
                             )
                         }
@@ -295,31 +304,39 @@ fun SecureContainer(
                 )
             }
 
-            composable(SecureDestinations.CREDIT_CARD_ROUTE) { from ->
+            composable(Screen.CreditCard.route) { from ->
                 CreditCardScreen(
-                    viewModel,
+                    viewModel = viewModel,
                     padding,
                     onNavigation = { id, route ->
                         onNavigation(
                             id,
                             route,
-                            SecureDestinations.CREDIT_CARD_ROUTE,
+                            Screen.CreditCard.route,
                             from
                         )
                     }
                 )
             }
 
-            composable(SecureDestinations.BALANCE_ROUTE) { from ->
-                BalanceScreen(viewModel, padding)
+            composable(
+                route = "secure/balance?origin={origin}",
+                arguments = listOf(
+                    navArgument("origin") {
+                        type = NavType.StringType
+                        nullable = true
+                    }
+                )
+            ) { from ->
+                BalanceScreen(viewModel = viewModel, padding)
             }
 
-            composable(SecureDestinations.TRANSACTION_FORM_ROUTE) { from ->
-                TransactionFormScreen(viewModel, padding)
+            composable(Screen.TransactionForm.route) { from ->
+                TransactionFormScreen(viewModel = viewModel, padding)
             }
 
-            composable(SecureDestinations.CREDIT_CARD_FORM_ROUTE) { from ->
-                CreditCardFormScreen(viewModel, padding)
+            composable(Screen.CreditCardForm.route) { from ->
+                CreditCardFormScreen(viewModel = viewModel, padding)
             }
         }
     }

@@ -44,6 +44,7 @@ import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Accent
 import com.viictrp.financeapp.ui.theme.Orange
@@ -55,13 +56,13 @@ import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
+fun CreditCardFormScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
 
     val spacing = 48.dp
 
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = balanceModel.loading.collectAsState()
+    val loading = viewModel.loading.collectAsState()
 
     val colorOptions by remember {
         mutableStateOf(
@@ -224,7 +225,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues)
                     if (isEnabled) {
                         coroutine.launch {
                             showDialog = true
-                            balanceModel.saveCreditCard(form.value)
+                            viewModel.saveCreditCard(form.value)
                             delay(500)
                             form.clear()
                             showDialog = false

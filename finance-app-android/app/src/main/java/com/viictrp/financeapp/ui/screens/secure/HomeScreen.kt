@@ -43,7 +43,9 @@ import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -143,7 +145,7 @@ fun HomeScreen(
                                             modifier = Modifier.clickable {
                                                 onNavigation(
                                                     null,
-                                                    SecureDestinations.BALANCE_ROUTE
+                                                    Screen.Balance.route
                                                 )
                                             }) {
                                             Text(
@@ -264,7 +266,7 @@ fun HomeScreen(
                                 transaction,
                                 creditCard?.title,
                                 MaterialTheme.colorScheme.tertiary,
-                                origin = SecureDestinations.HOME_ROUTE
+                                origin = Screen.Home.route
                             ) { id ->
                                 viewModel.selectTransaction(transaction, creditCard)
                                 onNavigation(

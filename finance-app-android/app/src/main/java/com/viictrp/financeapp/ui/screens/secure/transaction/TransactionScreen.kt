@@ -69,6 +69,7 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import kotlinx.coroutines.delay
 import java.text.NumberFormat
@@ -76,14 +77,14 @@ import java.util.Locale
 
 @Composable
 fun TransactionScreen(
+    viewModel: BalanceViewModel,
     transactionId: Long,
     origin: String,
-    balanceViewModel: BalanceViewModel,
     onPressUp: (() -> Unit)? = null
 ) {
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    val transaction = balanceViewModel.selectedTransaction.collectAsState()
-    val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
+    val transaction = viewModel.selectedTransaction.collectAsState()
+    val creditCard = viewModel.selectedCreditCard.collectAsState()
 
     var installments by remember { mutableStateOf<List<TransactionDTO?>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
@@ -105,7 +106,7 @@ fun TransactionScreen(
         loading = true
         if (transaction.value!!.isInstallment == true) {
             delay(500)
-            installments = balanceViewModel.loadInstallments(transaction.value!!.installmentId!!)
+            installments = viewModel.loadInstallments(transaction.value!!.installmentId!!)
         }
         loading = false
     }
@@ -222,7 +223,7 @@ fun TransactionScreen(
                                     IconButton(
                                         onClick = {
                                             transaction.value?.id?.let { transactionId ->
-                                                balanceViewModel.deleteTransaction(transactionId, transaction.value!!.isInstallment!!)
+                                                viewModel.deleteTransaction(transactionId, transaction.value!!.isInstallment!!)
                                                 onPressUp?.invoke()
                                             }
                                         }) {

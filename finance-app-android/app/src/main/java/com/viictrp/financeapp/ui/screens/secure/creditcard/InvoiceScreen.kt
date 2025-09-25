@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -86,8 +87,8 @@ import java.util.Locale
 )
 @Composable
 fun InvoiceScreen(
-    creditCardId: Long,
     viewModel: BalanceViewModel,
+    creditCardId: Long,
     onPressUp: (() -> Unit)? = null,
     onNavigation: ((id: Long, destination: String) -> Unit)? = null,
 ) {

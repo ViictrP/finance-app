@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.components.CreditCardBox
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
@@ -29,23 +30,23 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreditCardScreen(
-    balanceViewModel: BalanceViewModel,
+    viewModel: BalanceViewModel,
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    val loading by balanceViewModel.loading.collectAsState()
-    val balance by balanceViewModel.currentBalance.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val balance by viewModel.currentBalance.collectAsState()
 
     val creditCards = balance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
-        balanceViewModel,
+        viewModel,
         isRefreshing = loading,
         onRefresh = {
             coroutineScope.launch {
-                balanceViewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+                viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
             }
         },
         modifier = Modifier
@@ -73,7 +74,7 @@ fun CreditCardScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             CreditCardBox(creditCard) {
-                                balanceViewModel.selectCreditCard(creditCard)
+                                viewModel.selectCreditCard(creditCard)
                                 onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
                             }
                         }
