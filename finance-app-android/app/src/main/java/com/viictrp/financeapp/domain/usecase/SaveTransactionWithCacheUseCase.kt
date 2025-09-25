@@ -13,9 +13,7 @@ class SaveTransactionWithCacheUseCase @Inject constructor(
         } else {
             repository.saveTransaction(transaction)
         }
-        if (result != null) {
-            repository.clearCache()
-        }
+        repository.clearCache()
         return result
     }
 }

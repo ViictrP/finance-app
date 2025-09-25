@@ -3,6 +3,7 @@
 package com.viictrp.financeapp.ui.screens.secure.transaction
 
 import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -48,8 +49,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -76,11 +79,13 @@ import java.util.Locale
 
 @Composable
 fun TransactionScreen(
-    viewModel: BalanceViewModel,
     transactionId: Long,
     origin: String,
     onPressUp: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
+
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val transaction = viewModel.selectedTransaction.collectAsState()
     val creditCard = viewModel.selectedCreditCard.collectAsState()

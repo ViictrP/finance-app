@@ -1,5 +1,6 @@
 package com.viictrp.financeapp.ui.screens.secure.balance
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,13 +10,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BalanceScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
+fun BalanceScreen(padding: PaddingValues) {
+
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
     val loading by viewModel.loading.collectAsState()
 
     DisposableEffect(Unit) {

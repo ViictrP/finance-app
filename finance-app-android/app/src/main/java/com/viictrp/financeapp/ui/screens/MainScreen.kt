@@ -22,7 +22,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -91,7 +90,6 @@ fun MainScreen() {
                     route = Screen.Secure.route
                 ) { backStackEntry ->
                     SecureContainer(
-                        backStackEntry = backStackEntry,
                         onNavigation = { id, destination, origin, from ->
 
                             if (id != null) {
@@ -135,14 +133,7 @@ fun MainScreen() {
                     val transactionId = arguments.getLong(SecureDestinations.TRANSACTION_KEY)
                     val origin = arguments.getString(SecureDestinations.ORIGIN)
                     
-                    // Usa o viewModel do escopo secure compartilhado
-                    val parentEntry = remember(backStackEntry) {
-                        financeAppNavController.navController.getBackStackEntry(Screen.Secure.route)
-                    }
-                    val viewModel = hiltViewModel<BalanceViewModel>(parentEntry)
-
                     TransactionScreen(
-                        viewModel,
                         transactionId,
                         origin!!,
                     ) {
@@ -160,15 +151,8 @@ fun MainScreen() {
                 ) { backStackEntry ->
                     val arguments = requireNotNull(backStackEntry.arguments)
                     val creditCardId = arguments.getLong(SecureDestinations.CREDIT_CARD_KEY)
-                    
-                    // Usa o viewModel do escopo secure compartilhado
-                    val parentEntry = remember(backStackEntry) {
-                        financeAppNavController.navController.getBackStackEntry(Screen.Secure.route)
-                    }
-                    val viewModel = hiltViewModel<BalanceViewModel>(parentEntry)
 
                     InvoiceScreen(
-                        viewModel,
                         creditCardId,
                         onPressUp = { financeAppNavController.pressUp() },
                         onNavigation = { id, destination ->
@@ -191,12 +175,11 @@ val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { nu
 @Composable
 fun SecureContainer(
     modifier: Modifier = Modifier,
-    backStackEntry: NavBackStackEntry,
     onNavigation: (Long?, String, String, NavBackStackEntry) -> Unit
 ) {
-    val viewModel = hiltViewModel<BalanceViewModel>(backStackEntry)
     val context = LocalContext.current
-    val authViewModel = hiltViewModel<AuthViewModel>(context as ComponentActivity)
+    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
+    val authViewModel = hiltViewModel<AuthViewModel>(context)
     val nestedNavController = rememberFinanceAppController()
 
     val user by authViewModel.user.collectAsState()
@@ -287,7 +270,6 @@ fun SecureContainer(
         ) {
             composable(Screen.Home.route) { from ->
                 HomeScreen(
-                    viewModel = viewModel,
                     padding,
                     onNavigation = { id, destination ->
                         when (destination) {
@@ -309,7 +291,6 @@ fun SecureContainer(
 
             composable(Screen.CreditCard.route) { from ->
                 CreditCardScreen(
-                    viewModel = viewModel,
                     padding,
                     onNavigation = { id, route ->
                         onNavigation(
@@ -331,15 +312,15 @@ fun SecureContainer(
                     }
                 )
             ) { from ->
-                BalanceScreen(viewModel = viewModel, padding)
+                BalanceScreen(padding)
             }
 
             composable(Screen.TransactionForm.route) { from ->
-                TransactionFormScreen(viewModel = viewModel, padding)
+                TransactionFormScreen(padding)
             }
 
             composable(Screen.CreditCardForm.route) { from ->
-                CreditCardFormScreen(viewModel = viewModel, padding)
+                CreditCardFormScreen(padding)
             }
         }
     }

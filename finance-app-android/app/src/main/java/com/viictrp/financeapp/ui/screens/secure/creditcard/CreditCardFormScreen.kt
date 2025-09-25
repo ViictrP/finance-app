@@ -1,6 +1,7 @@
 package com.viictrp.financeapp.ui.screens.secure.creditcard
 
 import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,10 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FSelectField
@@ -55,7 +58,9 @@ import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CreditCardFormScreen(viewModel: BalanceViewModel, padding: PaddingValues) {
+fun CreditCardFormScreen(padding: PaddingValues) {
+    val context = LocalContext.current
+    val viewModel = hiltViewModel<BalanceViewModel>(context as ComponentActivity)
 
     val spacing = 48.dp
 
