@@ -4,6 +4,7 @@
 
 package com.viictrp.financeapp.ui.screens
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -23,6 +24,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
@@ -193,7 +195,8 @@ fun SecureContainer(
     onNavigation: (Long?, String, String, NavBackStackEntry) -> Unit
 ) {
     val viewModel = hiltViewModel<BalanceViewModel>(backStackEntry)
-    val authViewModel = hiltViewModel<AuthViewModel>(backStackEntry)
+    val context = LocalContext.current
+    val authViewModel = hiltViewModel<AuthViewModel>(context as ComponentActivity)
     val nestedNavController = rememberFinanceAppController()
 
     val user by authViewModel.user.collectAsState()

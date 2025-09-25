@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.viictrp.financeapp.auth.AuthViewModel
@@ -31,7 +33,8 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     navController: NavController
 ) {
-    val authViewModel = hiltViewModel<AuthViewModel>()
+    val context = LocalContext.current
+    val authViewModel = hiltViewModel<AuthViewModel>(context as ComponentActivity)
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val user by authViewModel.user.collectAsState()
 

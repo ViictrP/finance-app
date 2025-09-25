@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.activity.ComponentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.viictrp.financeapp.auth.AuthViewModel
 import com.viictrp.financeapp.ui.navigation.Screen
@@ -23,8 +24,8 @@ import com.viictrp.financeapp.ui.navigation.Screen
 fun LoginScreen(
     onNavigation: (String) -> Unit
 ) {
-    val authViewModel = hiltViewModel<AuthViewModel>()
     val context = LocalContext.current
+    val authViewModel = hiltViewModel<AuthViewModel>(context as ComponentActivity)
 
     LaunchedEffect(Unit) {
         authViewModel.loginWithGoogle { message ->
