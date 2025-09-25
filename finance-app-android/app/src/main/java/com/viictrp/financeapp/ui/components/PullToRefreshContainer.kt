@@ -13,25 +13,22 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PullToRefreshContainer(
     viewModel: BalanceViewModel,
     isRefreshing: Boolean,
-    onRefresh: suspend () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier,
     content: @Composable () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state = rememberPullToRefreshState()
-    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {
@@ -44,11 +41,7 @@ fun PullToRefreshContainer(
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = {
-            coroutineScope.launch {
-                onRefresh()
-            }
-        },
+        onRefresh = onRefresh,
         modifier = modifier,
         indicator = {
             Indicator(

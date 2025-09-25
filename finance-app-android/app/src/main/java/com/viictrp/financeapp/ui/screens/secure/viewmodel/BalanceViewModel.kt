@@ -65,29 +65,44 @@ class BalanceViewModel @Inject constructor(
     private val _creditCards = MutableStateFlow<List<CreditCardDTO>>(emptyList())
     val creditCards: StateFlow<List<CreditCardDTO>> = _creditCards.asStateFlow()
 
-    suspend fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
-        try {
-            _loading.value = true
-            // Garantir tempo mínimo para animação
-            val startTime = System.currentTimeMillis()
-            
-            _balance.value = getCurrentBalanceUseCase(yearMonth)
-            if (defineCurrent) {
-                _currentBalance.value = _balance.value
-                _creditCards.value = _balance.value?.creditCards ?: emptyList()
-            }
-            
-            if (_balance.value?.wasFetchedFromNetwork == true) {
-                _lastUpdateTime.value = Instant.now()
-            }
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
 
-            // Garantir pelo menos 300ms para animação ser visível
-            val elapsed = System.currentTimeMillis() - startTime
-            if (elapsed < 300) {
-                delay(300 - elapsed)
+    init {
+        // Carrega dados locais quando ViewModel é recriado (ex: após desbloquear telefone)
+        loadBalance(YearMonth.now(), defineCurrent = true)
+    }
+
+    fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
+        viewModelScope.launch {
+            try {
+                _loading.value = true
+                // Garantir tempo mínimo para animação
+                val startTime = System.currentTimeMillis()
+
+                _balance.value = getCurrentBalanceUseCase(yearMonth ?: YearMonth.now())
+                if (defineCurrent) {
+                    _currentBalance.value = _balance.value
+                    _creditCards.value = _balance.value?.creditCards ?: emptyList()
+                }
+
+                if (_balance.value?.wasFetchedFromNetwork == true) {
+                    _lastUpdateTime.value = Instant.now()
+                }
+
+                // Garantir pelo menos 300ms para animação ser visível
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < 300) {
+                    delay(300 - elapsed)
+                }
+                _loading.value = false
+
+            } catch (e: Exception) {
+                _loading.value = false
+                e.printStackTrace()
+            } finally {
+                _isInitialized.value = true
             }
-        } finally {
-            _loading.value = false
         }
     }
 

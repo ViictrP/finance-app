@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,6 @@ import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
-import kotlinx.coroutines.launch
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,8 +32,6 @@ fun CreditCardScreen(
 ) {
     val viewModel = rememberBalanceViewModel()
 
-    val coroutineScope = rememberCoroutineScope()
-
     val loading by viewModel.loading.collectAsState()
     val balance by viewModel.currentBalance.collectAsState()
 
@@ -45,9 +41,7 @@ fun CreditCardScreen(
         viewModel,
         isRefreshing = loading,
         onRefresh = {
-            coroutineScope.launch {
-                viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-            }
+            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         },
         modifier = Modifier
             .fillMaxSize()

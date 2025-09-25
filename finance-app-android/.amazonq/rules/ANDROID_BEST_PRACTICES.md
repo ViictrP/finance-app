@@ -100,6 +100,74 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
 - **SEMPRE** limpe recursos em `onDispose`
 - **SEMPRE** use `viewModelScope` para coroutines
 
+## ⚡ Coroutines & Scopes
+
+### ✅ ViewModelScope (Obrigatório)
+- **SEMPRE** use `viewModelScope.launch` dentro de ViewModels
+- **NUNCA** use `suspend fun` em ViewModels que serão chamadas da UI
+- **SEMPRE** deixe o ViewModel gerenciar suas próprias coroutines
+
+```kotlin
+// ✅ Correto
+fun loadData() {
+    viewModelScope.launch {
+        try {
+            _loading.value = true
+            val result = repository.getData()
+            _data.value = result
+        } catch (e: Exception) {
+            _error.value = e.message
+        } finally {
+            _loading.value = false
+        }
+    }
+}
+
+// ❌ Errado - causa "coroutine left composition"
+suspend fun loadData() {
+    // Não fazer isso em ViewModels
+}
+```
+
+### ✅ Scopes na UI
+- **NUNCA** use `coroutineScope.launch` para chamar ViewModels
+- **SEMPRE** chame funções regulares do ViewModel
+- **APENAS** use `rememberCoroutineScope` para ações de UI específicas
+
+```kotlin
+// ✅ Correto
+@Composable
+fun MyScreen() {
+    val viewModel = rememberMyViewModel()
+    
+    Button(onClick = {
+        viewModel.loadData() // Função regular
+    })
+}
+
+// ❌ Errado
+@Composable
+fun MyScreen() {
+    val scope = rememberCoroutineScope()
+    
+    Button(onClick = {
+        scope.launch {
+            viewModel.loadData() // Problemático
+        }
+    })
+}
+```
+
+### ✅ Tratamento de Erros
+- **SEMPRE** use try-catch em coroutines
+- **SEMPRE** atualize loading states no finally
+- **SEMPRE** trate cancelamento de coroutines
+
+### ✅ Cancelamento
+- **SEMPRE** cancele jobs anteriores quando necessário
+- **SEMPRE** use `viewModelScope` para cancelamento automático
+- **NUNCA** use `GlobalScope` (causa vazamentos)
+
 ## 🔒 Segurança
 
 ### ✅ Dados Sensíveis
@@ -192,6 +260,8 @@ Antes de fazer merge, verifique:
 - [ ] Código foi verificado antes de modificações
 - [ ] Nenhuma alteração externa foi sobrescrita
 - [ ] ViewModels usam funções helper (`remember*`)
+- [ ] ViewModels usam `viewModelScope.launch` (não `suspend fun`)
+- [ ] Não há `coroutineScope.launch` chamando ViewModels
 - [ ] Não há ViewModels passados como parâmetros
 - [ ] Pull-to-refresh mantido onde existia
 - [ ] Dados críticos persistidos localmente
@@ -213,6 +283,8 @@ Antes de fazer merge, verifique:
 8. **Fallback Offline**: Sempre ter plano B
 9. **Loading States**: Feedback visual é crucial
 10. **Não Sobreescrever**: Respeitar alterações externas
+11. **ViewModelScope**: Use para evitar "coroutine left composition"
+12. **Suspend Functions**: Apenas dentro de ViewModels com viewModelScope
 
 ---
 

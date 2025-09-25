@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -35,11 +34,9 @@ import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.PrimaryDark
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -51,8 +48,6 @@ fun BalanceScreenContent(
     val balance by balanceViewModel.balance.collectAsState()
     val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
     val loading by balanceViewModel.loading.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
 
     val monthClosure = balance?.monthClosures
         ?.find {
@@ -101,9 +96,7 @@ fun BalanceScreenContent(
             ) {
                 MonthPicker(selectedYearMonth, loading) { yearMonth ->
                     balanceViewModel.updateYearMonth(yearMonth)
-                    coroutineScope.launch {
-                        balanceViewModel.loadBalance(selectedYearMonth)
-                    }
+                    balanceViewModel.loadBalance(selectedYearMonth)
                 }
             }
         }

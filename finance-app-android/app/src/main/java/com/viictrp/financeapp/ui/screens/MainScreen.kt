@@ -190,7 +190,8 @@ fun SecureContainer(
         ?: throw IllegalStateException("No SharedElementScope found")
 
     LaunchedEffect(currentDestination) {
-        if (balance == null) {
+        // Só carrega se ViewModel não foi inicializado ainda
+        if (!viewModel.isInitialized.value && balance == null) {
             viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
         }
     }
