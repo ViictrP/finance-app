@@ -3,9 +3,7 @@ package com.viictrp.financeapp.modules
 import android.content.Context
 import androidx.room.Room
 import com.viictrp.financeapp.data.local.db.AppDatabase
-import com.viictrp.financeapp.data.remote.service.ApiService
 import com.viictrp.financeapp.data.local.dao.BalanceDAO
-import com.viictrp.financeapp.data.repository.BalanceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,13 +27,4 @@ object DatabaseModule {
 
     @Provides
     fun provideBalanceDao(db: AppDatabase): BalanceDAO = db.balanceDAO()
-
-    @Provides
-    @Singleton
-    fun provideBalanceRepository(
-        api: ApiService,
-        dao: BalanceDAO
-    ): BalanceRepository {
-        return BalanceRepository(api, dao)
-    }
 }

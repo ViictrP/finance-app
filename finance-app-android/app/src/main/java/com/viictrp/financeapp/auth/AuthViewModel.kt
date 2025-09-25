@@ -3,16 +3,20 @@ package com.viictrp.financeapp.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.viictrp.financeapp.data.remote.dto.UserDTO
+import com.viictrp.financeapp.domain.usecase.CheckAuthUseCase
+import com.viictrp.financeapp.domain.usecase.LoginWithGoogleUseCase
+import com.viictrp.financeapp.domain.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authManager: AuthManager
+    private val checkAuthUseCase: CheckAuthUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _isAuthenticated = MutableStateFlow<Boolean?>(null)
@@ -27,41 +31,51 @@ class AuthViewModel @Inject constructor(
     fun checkAuth() {
         viewModelScope.launch {
             _loading.value = true
-            _isAuthenticated.value = authManager.isLoggedIn()
-
-            if (_isAuthenticated.value == true) {
-                _user.value = authManager.user
+            try {
+                val (isLoggedIn, user) = checkAuthUseCase()
+                _isAuthenticated.value = isLoggedIn
+                _user.value = user
+            } catch (e: Exception) {
+                _isAuthenticated.value = false
+                _user.value = null
+            } finally {
+                _loading.value = false
             }
-            _loading.value = false
         }
     }
 
     fun loginWithGoogle(onResult: (message: String?) -> Unit) {
         viewModelScope.launch {
             _loading.value = true
-            authManager.signInWithGoogle { user, message ->
-                // actualize o estado apenas quando o login for bem‑sucedido
-                _isAuthenticated.value = user != null
-                _user.value = user
+            try {
+                loginWithGoogleUseCase { user, message ->
+                    _isAuthenticated.value = user != null
+                    _user.value = user
+                    _loading.value = false
+                    onResult(message)
+                }
+            } catch (e: Exception) {
                 _loading.value = false
-                onResult(message)
+                onResult("Erro durante o login")
             }
-        }
-    }
-
-    fun resetAuth() {
-        viewModelScope.launch {
-            authManager.clearTokens()
-            _isAuthenticated.value = false
-            _user.value = null
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            authManager.clearTokens()
-            _isAuthenticated.value = false
-            _user.value = null
+            try {
+                logoutUseCase()
+                _isAuthenticated.value = false
+                _user.value = null
+            } catch (e: Exception) {
+                // Handle error
+            }
         }
+    }
+
+    fun resetAuth() {
+        _isAuthenticated.value = null
+        _user.value = null
+        _loading.value = true
     }
 }
