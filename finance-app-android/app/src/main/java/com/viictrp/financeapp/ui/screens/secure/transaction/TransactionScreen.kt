@@ -151,23 +151,25 @@ fun TransactionScreen(
                                     onPressUp?.invoke()
                                 }
 
-                                Text(
-                                    creditCard.value?.title!!,
-                                    style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            rememberSharedContentState(
-                                                key = CreditCardSharedKey(
-                                                    creditCardId = creditCard.value?.id!!,
-                                                    type = CreditCardSharedKeyElementType.Title
-                                                )
-                                            ),
-                                            animatedVisibilityScope = animatedVisibilityScope,
-                                            boundsTransform = boundsTransform
-                                        )
-                                        .wrapContentWidth()
-                                )
+                                creditCard.value?.let {
+                                    Text(
+                                        it.title,
+                                        style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                                        color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(
+                                                    key = CreditCardSharedKey(
+                                                        creditCardId = it.id!!,
+                                                        type = CreditCardSharedKeyElementType.Title
+                                                    )
+                                                ),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                                boundsTransform = boundsTransform
+                                            )
+                                            .wrapContentWidth()
+                                    )
+                                }
                             }
                         }
                     }
