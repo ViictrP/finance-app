@@ -45,6 +45,7 @@ import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -66,30 +67,30 @@ fun HomeScreen(
     val viewModel = rememberBalanceViewModel()
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
-    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
-    val balance by viewModel.currentBalance.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     val space = Modifier.height(48.dp)
 
-    val monthClosure = balance?.monthClosures
+    val monthClosure = state.currentBalance?.monthClosures
         ?.find {
             it.year == now.year && it.month == now.month.name.substring(0, 3)
         }
 
-    val transactions = balance?.lastAddedTransactions
+    val transactions = state.currentBalance?.lastAddedTransactions
         ?.map { transaction ->
             val creditCard =
-                balance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
+                state.currentBalance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
 
             TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
 
-    val loading by viewModel.loading.collectAsState()
-
     PullToRefreshContainer(
         viewModel = viewModel,
-        isRefreshing = loading,
+        isRefreshing = state.loading,
         onRefresh = {
-            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
         modifier = Modifier
             .fillMaxSize()
@@ -162,12 +163,12 @@ fun HomeScreen(
                                     Spacer(modifier = Modifier.size(10.dp))
                                     Text(
                                         when {
-                                            loading -> "Carregando..."
+                                            state.loading -> "Carregando..."
                                             monthClosure != null -> numberFormatter.format(
                                                 monthClosure.expenses
                                             )
 
-                                            balance != null -> numberFormatter.format(balance?.expenses)
+                                            state.currentBalance != null -> numberFormatter.format(state.currentBalance?.expenses)
                                             else -> ""
                                         },
                                         style = LocalTextStyle.current.copy(fontSize = 28.sp),
@@ -179,7 +180,7 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    balance?.let {
+                                    state.currentBalance?.let {
                                         val value =
                                             it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
 
@@ -216,7 +217,7 @@ fun HomeScreen(
                                 .padding(top = 8.dp)
                                 .padding(horizontal = 16.dp)
                         ) {
-                            lastUpdateTime?.let {
+                            state.lastUpdateTime?.let {
                                 val formatted = DateUtils.getRelativeTimeSpanString(
                                     it.toEpochMilli(),
                                     System.currentTimeMillis(),

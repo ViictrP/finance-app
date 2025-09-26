@@ -22,6 +22,7 @@ import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,16 +33,17 @@ fun CreditCardScreen(
 ) {
     val viewModel = rememberBalanceViewModel()
 
-    val loading by viewModel.loading.collectAsState()
-    val balance by viewModel.currentBalance.collectAsState()
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
 
-    val creditCards = balance?.creditCards ?: emptyList()
+    val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
         viewModel,
-        isRefreshing = loading,
+        isRefreshing = state.loading,
         onRefresh = {
-            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
         modifier = Modifier
             .fillMaxSize()

@@ -49,6 +49,7 @@ import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -60,9 +61,10 @@ fun CreditCardFormScreen(padding: PaddingValues) {
 
     val spacing = 48.dp
 
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = viewModel.loading.collectAsState()
 
     val colorOptions by remember {
         mutableStateOf(
@@ -215,7 +217,7 @@ fun CreditCardFormScreen(padding: PaddingValues) {
     val isEnabled = form.isValid
 
     if (showDialog) {
-        LoadingDialog(loading = loading.value)
+        LoadingDialog(loading = state.loading)
     }
 
     Scaffold(
@@ -225,7 +227,8 @@ fun CreditCardFormScreen(padding: PaddingValues) {
                     if (isEnabled) {
                         coroutine.launch {
                             showDialog = true
-                            viewModel.saveCreditCard(form.value)
+                            // ✅ MVI - Usando handleIntent
+                            viewModel.handleIntent(BalanceIntent.SaveCreditCard(form.value))
                             delay(500)
                             form.clear()
                             showDialog = false

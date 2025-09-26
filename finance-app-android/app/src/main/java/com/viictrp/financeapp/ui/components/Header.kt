@@ -64,7 +64,7 @@ fun Header(user: UserDTO?, modifier: Modifier, navController: NavController) {
 
     val backButtonRoutes = listOf(
         Screen.Balance.route,
-        Screen.CreditCardForm.route,
+        Screen.TransactionForm.route,
         Screen.CreditCardForm.route
     )
     val showBackButton = currentDestination in backButtonRoutes

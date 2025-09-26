@@ -2,9 +2,7 @@ package com.viictrp.financeapp.ui.screens.secure.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.viictrp.financeapp.data.remote.dto.BalanceDTO
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
-import com.viictrp.financeapp.data.remote.dto.InvoiceDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.domain.usecase.DeleteTransactionWithCacheUseCase
 import com.viictrp.financeapp.domain.usecase.GetCurrentBalanceUseCase
@@ -35,149 +33,165 @@ class BalanceViewModel @Inject constructor(
     private val loadInstallmentsUseCase: LoadInstallmentsUseCase
 ) : ViewModel() {
 
-    private val _lastUpdateTime = MutableStateFlow<Instant?>(null)
-    val lastUpdateTime: MutableStateFlow<Instant?> = _lastUpdateTime
+    // ✅ FULL MVI - Uma única fonte de verdade
+    private val _state = MutableStateFlow(BalanceState())
+    val state: StateFlow<BalanceState> = _state.asStateFlow()
 
-    private val _balance = MutableStateFlow<BalanceDTO?>(null)
-    val balance: MutableStateFlow<BalanceDTO?> = _balance
-
-    private val _selectedInvoice = MutableStateFlow<InvoiceDTO?>(null)
-    val selectedInvoice: MutableStateFlow<InvoiceDTO?> = _selectedInvoice
-
-    private val _selectedCreditCard = MutableStateFlow<CreditCardDTO?>(null)
-    val selectedCreditCard: MutableStateFlow<CreditCardDTO?> = _selectedCreditCard
-
-    private val _selectedTransaction = MutableStateFlow<TransactionDTO?>(null)
-    val selectedTransaction: MutableStateFlow<TransactionDTO?> = _selectedTransaction
-
-    private val _currentBalance = MutableStateFlow<BalanceDTO?>(null)
-    val currentBalance: MutableStateFlow<BalanceDTO?> = _currentBalance
-
-    private val _selectedYearMonth = MutableStateFlow(YearMonth.now())
-    internal val selectedYearMonth: MutableStateFlow<YearMonth> = _selectedYearMonth
-
-    private val _loading = MutableStateFlow(false)
-    internal val loading: MutableStateFlow<Boolean> = _loading
-
+    // ✅ Eventos únicos (não fazem parte do state)
     private val _deleteTransactionSuccess = MutableSharedFlow<Unit>()
     val deleteTransactionSuccess: SharedFlow<Unit> = _deleteTransactionSuccess.asSharedFlow()
 
-    private val _creditCards = MutableStateFlow<List<CreditCardDTO>>(emptyList())
-    val creditCards: StateFlow<List<CreditCardDTO>> = _creditCards.asStateFlow()
-
-    private val _isInitialized = MutableStateFlow(false)
-    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
-
     init {
-        // Carrega dados locais quando ViewModel é recriado (ex: após desbloquear telefone)
-        loadBalance(YearMonth.now(), defineCurrent = true)
+        handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
     }
 
-    fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
+    // ✅ MVI Intent Handler
+    fun handleIntent(intent: BalanceIntent) {
+        when (intent) {
+            is BalanceIntent.LoadBalance -> loadBalance(intent.yearMonth, intent.defineCurrent)
+            is BalanceIntent.RefreshBalance -> loadBalance(_state.value.selectedYearMonth, defineCurrent = true)
+            is BalanceIntent.UpdateYearMonth -> updateYearMonth(intent.yearMonth)
+            is BalanceIntent.LoadInvoice -> loadInvoice(intent.creditCardId, intent.yearMonth)
+            is BalanceIntent.SelectTransaction -> selectTransactionById(intent.transactionId)
+            is BalanceIntent.SaveTransaction -> saveTransaction(intent.transaction)
+            is BalanceIntent.SaveCreditCard -> saveCreditCard(intent.creditCard)
+            is BalanceIntent.DeleteTransaction -> deleteTransaction(intent.id, intent.all)
+            is BalanceIntent.LoadInstallments -> loadInstallments(intent.installmentId)
+            is BalanceIntent.ClearCache -> { /* implementar se necessário */ }
+            is BalanceIntent.Clear -> clear()
+        }
+    }
+
+    private fun loadBalance(yearMonth: YearMonth, defineCurrent: Boolean = false) {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                // Garantir tempo mínimo para animação
+                _state.value = _state.value.copy(loading = true, error = null)
+                
                 val startTime = System.currentTimeMillis()
+                val balance = getCurrentBalanceUseCase(yearMonth)
+                
+                _state.value = _state.value.copy(
+                    balance = balance,
+                    currentBalance = if (defineCurrent) balance else _state.value.currentBalance,
+                    creditCards = if (defineCurrent) balance?.creditCards ?: emptyList() else _state.value.creditCards,
+                    lastUpdateTime = if (balance?.wasFetchedFromNetwork == true) Instant.now() else _state.value.lastUpdateTime
+                )
 
-                _balance.value = getCurrentBalanceUseCase(yearMonth ?: YearMonth.now())
-                if (defineCurrent) {
-                    _currentBalance.value = _balance.value
-                    _creditCards.value = _balance.value?.creditCards ?: emptyList()
-                }
-
-                if (_balance.value?.wasFetchedFromNetwork == true) {
-                    _lastUpdateTime.value = Instant.now()
-                }
-
-                // Garantir pelo menos 300ms para animação ser visível
                 val elapsed = System.currentTimeMillis() - startTime
                 if (elapsed < 300) {
                     delay(300 - elapsed)
                 }
-                _loading.value = false
+                
+                _state.value = _state.value.copy(loading = false, isInitialized = true)
 
             } catch (e: Exception) {
-                _loading.value = false
-                e.printStackTrace()
-            } finally {
-                _isInitialized.value = true
+                _state.value = _state.value.copy(
+                    loading = false, 
+                    error = e.message,
+                    isInitialized = true
+                )
             }
         }
     }
 
-    suspend fun getInvoice(creditCardId: Long, yearMonth: YearMonth) {
-        try {
-            _loading.value = true
-            val invoice = getInvoiceUseCase(creditCardId, yearMonth)
-            _selectedInvoice.value = invoice
-        } finally {
-            _loading.value = false
-        }
-    }
-
-    suspend fun saveCreditCardTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
-        _loading.value = true
-        return try {
-            saveTransactionWithCacheUseCase(newTransactionDTO)
-        } finally {
-            _loading.value = false
-        }
-    }
-
-    suspend fun saveTransaction(newTransactionDTO: TransactionDTO): TransactionDTO? {
-        _loading.value = true
-        return try {
-            saveTransactionWithCacheUseCase(newTransactionDTO)
-        } finally {
-            _loading.value = false
-        }
-    }
-
-    suspend fun saveCreditCard(newCreditCardDTO: CreditCardDTO): CreditCardDTO? {
-        _loading.value = true
-        return try {
-            saveCreditCardWithCacheUseCase(newCreditCardDTO)
-        } finally {
-            _loading.value = false
-        }
-    }
-
-    suspend fun loadInstallments(installmentId: String): List<TransactionDTO?> {
-        return loadInstallmentsUseCase(installmentId)
-    }
-
-    fun deleteTransaction(id: Long, all: Boolean) {
+    private fun loadInvoice(creditCardId: Long, yearMonth: YearMonth) {
         viewModelScope.launch {
-            _loading.value = true
             try {
-                deleteTransactionWithCacheUseCase(id, all)
-                loadBalance(_selectedYearMonth.value, defineCurrent = true)
-                _deleteTransactionSuccess.emit(Unit)
-            } finally {
-                _loading.value = false
+                _state.value = _state.value.copy(loading = true)
+                val invoice = getInvoiceUseCase(creditCardId, yearMonth)
+                _state.value = _state.value.copy(selectedInvoice = invoice, loading = false)
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(loading = false, error = e.message)
             }
         }
     }
 
-    fun updateYearMonth(yearMonth: YearMonth) {
-        _selectedYearMonth.value = yearMonth
+    private fun selectTransactionById(transactionId: Long) {
+        val transaction = _state.value.balance?.transactions?.find { it.id == transactionId }
+        val creditCard = _state.value.creditCards.find { card ->
+            card.invoices.any { invoice -> 
+                invoice.transactions.any { it.id == transactionId }
+            }
+        }
+        _state.value = _state.value.copy(
+            selectedTransaction = transaction,
+            selectedCreditCard = creditCard
+        )
     }
 
+    private fun saveTransaction(transaction: TransactionDTO) {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(loading = true)
+                saveTransactionWithCacheUseCase(transaction)
+                handleIntent(BalanceIntent.LoadBalance(_state.value.selectedYearMonth, defineCurrent = true))
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(loading = false, error = e.message)
+            }
+        }
+    }
+
+    private fun saveCreditCard(creditCard: CreditCardDTO) {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(loading = true)
+                saveCreditCardWithCacheUseCase(creditCard)
+                handleIntent(BalanceIntent.LoadBalance(_state.value.selectedYearMonth, defineCurrent = true))
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(loading = false, error = e.message)
+            }
+        }
+    }
+
+    private fun deleteTransaction(id: Long, all: Boolean) {
+        viewModelScope.launch {
+            try {
+                _state.value = _state.value.copy(loading = true)
+                deleteTransactionWithCacheUseCase(id, all)
+                handleIntent(BalanceIntent.LoadBalance(_state.value.selectedYearMonth, defineCurrent = true))
+                _deleteTransactionSuccess.emit(Unit)
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(loading = false, error = e.message)
+            }
+        }
+    }
+
+    private fun loadInstallments(installmentId: String) {
+        viewModelScope.launch {
+            try {
+                loadInstallmentsUseCase(installmentId)
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(error = e.message)
+            }
+        }
+    }
+
+    private fun updateYearMonth(yearMonth: YearMonth) {
+        _state.value = _state.value.copy(selectedYearMonth = yearMonth)
+    }
+
+    private fun clear() {
+        _state.value = _state.value.copy(
+            selectedInvoice = null,
+            selectedYearMonth = YearMonth.now(),
+            selectedCreditCard = null,
+            selectedTransaction = null
+        )
+    }
+
+    // ✅ Métodos de compatibilidade temporária (para telas que ainda não migraram completamente)
     fun selectCreditCard(creditCard: CreditCardDTO) {
-        _selectedCreditCard.value = creditCard
-        _selectedInvoice.value = creditCard.invoices.getOrNull(0)
+        _state.value = _state.value.copy(
+            selectedCreditCard = creditCard,
+            selectedInvoice = creditCard.invoices.getOrNull(0)
+        )
     }
 
     fun selectTransaction(transaction: TransactionDTO, creditCard: CreditCardDTO?) {
-        _selectedTransaction.value = transaction
-        _selectedCreditCard.value = creditCard
+        _state.value = _state.value.copy(
+            selectedTransaction = transaction,
+            selectedCreditCard = creditCard
+        )
     }
 
-    fun clear() {
-        _selectedInvoice.value = null
-        _selectedYearMonth.value = YearMonth.now()
-        _selectedCreditCard.value = null
-        _selectedTransaction.value = null
-    }
 }

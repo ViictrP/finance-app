@@ -51,6 +51,7 @@ import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionFormScree
 import com.viictrp.financeapp.ui.screens.secure.transaction.TransactionScreen
 import com.viictrp.financeapp.ui.utils.rememberAuthViewModel
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.time.YearMonth
 
 @Composable
@@ -179,7 +180,9 @@ fun SecureContainer(
     val nestedNavController = rememberFinanceAppController()
 
     val user by authViewModel.user.collectAsState()
-    val balance by viewModel.balance.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
 
     val navBackStackEntry by nestedNavController.navController.currentBackStackEntryAsState()
     val financeAppScaffoldState = rememberFinanceAppScaffoldState()
@@ -191,8 +194,9 @@ fun SecureContainer(
 
     LaunchedEffect(currentDestination) {
         // Só carrega se ViewModel não foi inicializado ainda
-        if (!viewModel.isInitialized.value && balance == null) {
-            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+        if (!state.isInitialized && state.balance == null) {
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         }
     }
 

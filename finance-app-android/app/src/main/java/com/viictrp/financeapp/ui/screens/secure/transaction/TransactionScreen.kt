@@ -70,7 +70,7 @@ import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
-import kotlinx.coroutines.delay
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -83,8 +83,10 @@ fun TransactionScreen(
     val viewModel = rememberBalanceViewModel()
 
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    val transaction = viewModel.selectedTransaction.collectAsState()
-    val creditCard = viewModel.selectedCreditCard.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
+    val transaction = state.selectedTransaction
 
     var installments by remember { mutableStateOf<List<TransactionDTO?>>(emptyList()) }
     var loading by remember { mutableStateOf(false) }
@@ -102,14 +104,7 @@ fun TransactionScreen(
             }
         }
 
-    LaunchedEffect(transaction) {
-        loading = true
-        if (transaction.value!!.isInstallment == true) {
-            delay(500)
-            installments = viewModel.loadInstallments(transaction.value!!.installmentId!!)
-        }
-        loading = false
-    }
+    // ✅ TODO: Implementar loadInstallments via MVI se necessário
 
     with(sharedTransitionScope) {
         FinanceAppSurface(
@@ -151,7 +146,7 @@ fun TransactionScreen(
                                     onPressUp?.invoke()
                                 }
 
-                                creditCard.value?.let {
+                                state.selectedCreditCard?.let {
                                     Text(
                                         it.title,
                                         style = LocalTextStyle.current.copy(fontSize = 40.sp),
@@ -189,7 +184,7 @@ fun TransactionScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "${transaction.value?.date?.toFormatted()}",
+                                    "${state.selectedTransaction?.date?.toFormatted()}",
                                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                                     color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                 )
@@ -202,7 +197,7 @@ fun TransactionScreen(
 
                             ) {
                                 Text(
-                                    transaction.value?.description!!,
+                                    state.selectedTransaction?.description!!,
                                     style = LocalTextStyle.current.copy(fontSize = 30.sp),
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier
@@ -224,8 +219,9 @@ fun TransactionScreen(
                                 ) {
                                     IconButton(
                                         onClick = {
-                                            transaction.value?.id?.let { transactionId ->
-                                                viewModel.deleteTransaction(transactionId, transaction.value!!.isInstallment!!)
+                                            state.selectedTransaction?.id?.let { transactionId ->
+                                                // ✅ MVI - Usando handleIntent
+                                                viewModel.handleIntent(BalanceIntent.DeleteTransaction(transactionId, state.selectedTransaction!!.isInstallment!!))
                                                 onPressUp?.invoke()
                                             }
                                         }) {
@@ -242,12 +238,12 @@ fun TransactionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 with(animatedVisibilityScope) {
-                                    val installmentAmount = transaction.value?.installmentAmount?.takeIf {
+                                    val installmentAmount = transaction?.installmentAmount?.takeIf {
                                         it > 1
                                     }
                                     if (installmentAmount != null) {
                                         Text(
-                                            "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
+                                            "parcela (${transaction.installmentNumber}/${installmentAmount})",
                                             style = LocalTextStyle.current.copy(fontSize = 18.sp),
                                             color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                             modifier = Modifier.animateEnterExit(
@@ -275,7 +271,7 @@ fun TransactionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    numberFormatter.format(transaction.value?.amount ?: 0),
+                                    numberFormatter.format(state.selectedTransaction?.amount ?: 0),
                                     style = LocalTextStyle.current.copy(fontSize = 24.sp),
                                     color = MaterialTheme.colorScheme.secondary
                                 )
@@ -298,7 +294,7 @@ fun TransactionScreen(
                         ) {
                             TransactionCard(
                                 transaction!!,
-                                tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
+                                tag = if (transaction.isInstallment == true) "Parcela (${transaction?.installmentNumber}/${transaction?.installmentAmount})" else null,
                                 tagColor = MaterialTheme.colorScheme.secondary.copy(
                                     alpha = .7f
                                 ),

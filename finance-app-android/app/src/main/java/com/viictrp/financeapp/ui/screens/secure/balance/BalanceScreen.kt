@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -18,20 +19,24 @@ import java.time.YearMonth
 fun BalanceScreen(padding: PaddingValues) {
 
     val viewModel = rememberBalanceViewModel()
-    val loading by viewModel.loading.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
 
     DisposableEffect(Unit) {
         onDispose {
-            viewModel.clear()
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.Clear)
         }
     }
 
     PullToRefreshContainer(
         viewModel,
-        isRefreshing = loading,
+        isRefreshing = state.loading,
         onRefresh = {
-            viewModel.updateYearMonth(YearMonth.now())
-            viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.UpdateYearMonth(YearMonth.now()))
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
         modifier = Modifier
             .fillMaxSize()

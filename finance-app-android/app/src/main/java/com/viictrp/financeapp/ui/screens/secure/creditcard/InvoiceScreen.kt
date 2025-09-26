@@ -74,6 +74,7 @@ import com.viictrp.financeapp.ui.theme.Background
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.theme.SecondaryDark
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -93,14 +94,14 @@ fun InvoiceScreen(
     val viewModel = rememberBalanceViewModel()
 
     val coroutineScope = rememberCoroutineScope()
-    val loading by viewModel.loading.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
 
     val spacing = 48.dp
-    val creditCard = viewModel.selectedCreditCard.collectAsState()
-    val invoice by viewModel.selectedInvoice.collectAsState()
-    val selectedYearMonth by viewModel.selectedYearMonth.collectAsState()
-
-    val transactions = invoice?.transactions ?: emptyList()
+    val transactions = state.selectedInvoice?.transactions ?: emptyList()
+    val invoice = state.selectedInvoice
+    val creditCard = state.selectedCreditCard
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No sharedTransitionScope found")
@@ -127,30 +128,32 @@ fun InvoiceScreen(
     val animatedFontSizeSp = with(density) { animatedFontSize.toSp() }
 
     LaunchedEffect(creditCardId) {
-        viewModel.updateYearMonth(YearMonth.now())
+        // ✅ MVI - Usando handleIntent
+        viewModel.handleIntent(BalanceIntent.UpdateYearMonth(YearMonth.now()))
     }
 
     with(sharedTransitionScope) {
         PullToRefreshContainer(
             viewModel = viewModel,
-            isRefreshing = loading,
+            isRefreshing = state.loading,
             onRefresh = {
                 coroutineScope.launch {
-                    viewModel.updateYearMonth(YearMonth.now())
-                    viewModel.getInvoice(creditCardId, YearMonth.now())
+                    // ✅ MVI - Usando handleIntent
+                    viewModel.handleIntent(BalanceIntent.UpdateYearMonth(YearMonth.now()))
+                    viewModel.handleIntent(BalanceIntent.LoadInvoice(creditCardId, YearMonth.now()))
                 }
             },
             modifier = Modifier
                 .fillMaxSize(),
             content = {
-                val color = colorMap[creditCard.value?.color] ?: Secondary
+                val color = colorMap[creditCard?.color] ?: Secondary
                 FinanceAppSurface(
                     color = color,
                     modifier = Modifier
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(
                                 key = CreditCardSharedKey(
-                                    creditCardId = creditCard.value!!.id!!,
+                                    creditCardId = creditCard!!.id!!,
                                     type = CreditCardSharedKeyElementType.Bounds
                                 )
                             ),
@@ -188,7 +191,7 @@ fun InvoiceScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = creditCard.value?.title!!,
+                                        text = creditCard.title,
                                         color = SecondaryDark,
                                         style = MaterialTheme.typography.titleLarge.copy(
                                             fontSize = animatedFontSizeSp
@@ -197,7 +200,7 @@ fun InvoiceScreen(
                                             .sharedBounds(
                                                 rememberSharedContentState(
                                                     key = CreditCardSharedKey(
-                                                        creditCardId = creditCard.value?.id!!,
+                                                        creditCardId = creditCard.id,
                                                         type = CreditCardSharedKeyElementType.Title
                                                     )
                                                 ),
@@ -213,7 +216,7 @@ fun InvoiceScreen(
                                                 .sharedBounds(
                                                     rememberSharedContentState(
                                                         key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.value?.id!!,
+                                                            creditCardId = creditCard.id,
                                                             type = CreditCardSharedKeyElementType.Actions
                                                         )
                                                     ),
@@ -242,7 +245,7 @@ fun InvoiceScreen(
                                                 .sharedBounds(
                                                     rememberSharedContentState(
                                                         key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.value?.id!!,
+                                                            creditCardId = creditCard.id,
                                                             type = CreditCardSharedKeyElementType.Icon
                                                         )
                                                     ),
@@ -255,7 +258,7 @@ fun InvoiceScreen(
                                             tint = SecondaryDark,
                                         )
                                         Text(
-                                            text = " ${creditCard.value?.invoiceClosingDay}",
+                                            text = " ${creditCard.invoiceClosingDay}",
                                             color = SecondaryDark,
                                             style = MaterialTheme.typography.titleLarge.copy(
                                                 fontSize = 24.sp
@@ -264,7 +267,7 @@ fun InvoiceScreen(
                                                 .sharedBounds(
                                                     rememberSharedContentState(
                                                         key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.value?.id!!,
+                                                            creditCardId = creditCard.id,
                                                             type = CreditCardSharedKeyElementType.InvoiceClosingDay
                                                         )
                                                     ),
@@ -275,7 +278,7 @@ fun InvoiceScreen(
                                         )
                                     }
                                     Text(
-                                        text = creditCard.value?.number!!,
+                                        text = creditCard.number,
                                         color = SecondaryDark,
                                         style = MaterialTheme.typography.titleLarge.copy(
                                             fontSize = 28.sp,
@@ -285,7 +288,7 @@ fun InvoiceScreen(
                                             .sharedBounds(
                                                 rememberSharedContentState(
                                                     key = CreditCardSharedKey(
-                                                        creditCardId = creditCard.value?.id!!,
+                                                        creditCardId = creditCard.id,
                                                         type = CreditCardSharedKeyElementType.Number
                                                     )
                                                 ),
@@ -307,18 +310,19 @@ fun InvoiceScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        colorMap[creditCard.value?.color!!] ?: Background
+                                        colorMap[creditCard.color] ?: Background
                                     )
                                     .padding(horizontal = 16.dp)
                                     .skipToLookaheadSize()
                             ) {
-                                MonthPicker(selectedYearMonth, loading) { yearMonth ->
-                                    viewModel.updateYearMonth(yearMonth)
+                                MonthPicker(state.selectedYearMonth, state.loading) { yearMonth ->
+                                    // ✅ MVI - Usando handleIntent
+                                    viewModel.handleIntent(BalanceIntent.UpdateYearMonth(yearMonth))
                                     coroutineScope.launch {
-                                        viewModel.getInvoice(
-                                            creditCard.value?.id!!,
-                                            selectedYearMonth
-                                        )
+                                        viewModel.handleIntent(BalanceIntent.LoadInvoice(
+                                            creditCard.id,
+                                            yearMonth
+                                        ))
                                     }
                                 }
                             }
@@ -342,7 +346,7 @@ fun InvoiceScreen(
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = creditCard.value?.title!!,
+                                        text = creditCard.title,
                                         fontWeight = FontWeight.Bold,
                                         style = LocalTextStyle.current.copy(fontSize = 20.sp),
                                         color = SecondaryDark
@@ -377,7 +381,7 @@ fun InvoiceScreen(
                                                 .sharedBounds(
                                                     rememberSharedContentState(
                                                         key = CreditCardSharedKey(
-                                                            creditCardId = creditCard.value?.id!!,
+                                                            creditCardId = creditCard.id,
                                                             type = CreditCardSharedKeyElementType.InvoiceTotalAmount
                                                         )
                                                     ),
@@ -391,7 +395,7 @@ fun InvoiceScreen(
                             }
                         }
 
-                        if (!loading) {
+                        if (!state.loading) {
                             if (transactions.isNotEmpty()) {
                                 itemsIndexed(
                                     transactions,
@@ -410,7 +414,7 @@ fun InvoiceScreen(
                                             ),
                                             origin = SecureDestinations.INVOICE_ROUTE
                                         ) { id ->
-                                            viewModel.selectTransaction(transaction, creditCard.value)
+                                            viewModel.selectTransaction(transaction, creditCard)
                                             onNavigation?.invoke(
                                                 id,
                                                 SecureDestinations.INVOICE_ROUTE
