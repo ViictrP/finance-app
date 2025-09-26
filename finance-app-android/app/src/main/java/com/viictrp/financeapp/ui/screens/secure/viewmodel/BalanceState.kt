@@ -16,6 +16,7 @@ data class BalanceState(
     val selectedTransaction: TransactionDTO? = null,
     val selectedYearMonth: YearMonth = YearMonth.now(),
     val creditCards: List<CreditCardDTO> = emptyList(),
+    val installments: List<TransactionDTO?> = emptyList(),
     val lastUpdateTime: Instant? = null,
     val isInitialized: Boolean = false,
     val error: String? = null

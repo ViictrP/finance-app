@@ -159,7 +159,9 @@ class BalanceViewModel @Inject constructor(
     private fun loadInstallments(installmentId: String) {
         viewModelScope.launch {
             try {
-                loadInstallmentsUseCase(installmentId)
+                _state.value = _state.value.copy(loading = true, error = null, installments = emptyList())
+                val installments = loadInstallmentsUseCase(installmentId)
+                _state.value = _state.value.copy(installments = installments, loading = false)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(error = e.message)
             }

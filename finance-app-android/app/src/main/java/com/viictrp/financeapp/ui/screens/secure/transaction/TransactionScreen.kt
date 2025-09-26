@@ -43,9 +43,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,7 +52,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CreditCardSharedKey
 import com.viictrp.financeapp.ui.components.CreditCardSharedKeyElementType
 import com.viictrp.financeapp.ui.components.CustomIcons
@@ -69,8 +65,8 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -88,8 +84,8 @@ fun TransactionScreen(
     val state by viewModel.state.collectAsState()
     val transaction = state.selectedTransaction
 
-    var installments by remember { mutableStateOf<List<TransactionDTO?>>(emptyList()) }
-    var loading by remember { mutableStateOf(false) }
+    val installments = state.installments
+    val loading = state.loading
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
@@ -104,7 +100,11 @@ fun TransactionScreen(
             }
         }
 
-    // ✅ TODO: Implementar loadInstallments via MVI se necessário
+    LaunchedEffect(transaction) {
+        if (transaction?.isInstallment == true) {
+            viewModel.handleIntent(BalanceIntent.LoadInstallments(transaction.installmentId!!))
+        }
+    }
 
     with(sharedTransitionScope) {
         FinanceAppSurface(
@@ -294,7 +294,7 @@ fun TransactionScreen(
                         ) {
                             TransactionCard(
                                 transaction!!,
-                                tag = if (transaction.isInstallment == true) "Parcela (${transaction?.installmentNumber}/${transaction?.installmentAmount})" else null,
+                                tag = if (transaction.isInstallment == true) "Parcela (${transaction.installmentNumber}/${transaction.installmentAmount})" else null,
                                 tagColor = MaterialTheme.colorScheme.secondary.copy(
                                     alpha = .7f
                                 ),
