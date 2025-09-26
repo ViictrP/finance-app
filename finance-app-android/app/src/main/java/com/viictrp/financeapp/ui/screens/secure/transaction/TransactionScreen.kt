@@ -102,7 +102,7 @@ fun TransactionScreen(
 
     LaunchedEffect(transaction) {
         if (transaction?.isInstallment == true) {
-            viewModel.handleIntent(BalanceIntent.LoadInstallments(transaction.installmentId!!))
+            viewModel.handleIntent(BalanceIntent.LoadInstallments(transaction.id!!, transaction.installmentId!!))
         }
     }
 
@@ -184,7 +184,7 @@ fun TransactionScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "${state.selectedTransaction?.date?.toFormatted()}",
+                                    "${transaction?.date?.toFormatted()}",
                                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                                     color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                 )
@@ -197,7 +197,7 @@ fun TransactionScreen(
 
                             ) {
                                 Text(
-                                    state.selectedTransaction?.description!!,
+                                    transaction?.description!!,
                                     style = LocalTextStyle.current.copy(fontSize = 30.sp),
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier
@@ -219,9 +219,9 @@ fun TransactionScreen(
                                 ) {
                                     IconButton(
                                         onClick = {
-                                            state.selectedTransaction?.id?.let { transactionId ->
+                                            transaction.id?.let { transactionId ->
                                                 // ✅ MVI - Usando handleIntent
-                                                viewModel.handleIntent(BalanceIntent.DeleteTransaction(transactionId, state.selectedTransaction!!.isInstallment!!))
+                                                viewModel.handleIntent(BalanceIntent.DeleteTransaction(transactionId, transaction.isInstallment!!))
                                                 onPressUp?.invoke()
                                             }
                                         }) {
@@ -271,7 +271,7 @@ fun TransactionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    numberFormatter.format(state.selectedTransaction?.amount ?: 0),
+                                    numberFormatter.format(transaction?.amount ?: 0),
                                     style = LocalTextStyle.current.copy(fontSize = 24.sp),
                                     color = MaterialTheme.colorScheme.secondary
                                 )
@@ -314,7 +314,7 @@ fun TransactionScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Crossfade(targetState = loading, label = "lottieFade") { _ ->
+                                Crossfade(targetState = true, label = "lottieFade") { _ ->
                                     val composition by rememberLottieComposition(
                                         LottieCompositionSpec.Asset("loading-lottie.json")
                                     )

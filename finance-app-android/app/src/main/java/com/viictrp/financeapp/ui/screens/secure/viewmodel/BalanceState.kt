@@ -31,7 +31,7 @@ sealed class BalanceIntent {
     data class SaveTransaction(val transaction: TransactionDTO) : BalanceIntent()
     data class SaveCreditCard(val creditCard: CreditCardDTO) : BalanceIntent()
     data class DeleteTransaction(val id: Long, val all: Boolean = false) : BalanceIntent()
-    data class LoadInstallments(val installmentId: String) : BalanceIntent()
+    data class LoadInstallments(val clickedTransactionId: Long, val installmentId: String) : BalanceIntent()
     object ClearCache : BalanceIntent()
     object Clear : BalanceIntent()
 }

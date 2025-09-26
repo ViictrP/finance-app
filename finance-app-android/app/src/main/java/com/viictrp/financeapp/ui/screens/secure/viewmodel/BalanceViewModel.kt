@@ -56,7 +56,7 @@ class BalanceViewModel @Inject constructor(
             is BalanceIntent.SaveTransaction -> saveTransaction(intent.transaction)
             is BalanceIntent.SaveCreditCard -> saveCreditCard(intent.creditCard)
             is BalanceIntent.DeleteTransaction -> deleteTransaction(intent.id, intent.all)
-            is BalanceIntent.LoadInstallments -> loadInstallments(intent.installmentId)
+            is BalanceIntent.LoadInstallments -> loadInstallments(intent.clickedTransactionId, intent.installmentId)
             is BalanceIntent.ClearCache -> { /* implementar se necessário */ }
             is BalanceIntent.Clear -> clear()
         }
@@ -156,14 +156,26 @@ class BalanceViewModel @Inject constructor(
         }
     }
 
-    private fun loadInstallments(installmentId: String) {
+    private fun loadInstallments(clickedTransactionId: Long, installmentId: String) {
         viewModelScope.launch {
             try {
+                val startTime = System.currentTimeMillis()
                 _state.value = _state.value.copy(loading = true, error = null, installments = emptyList())
+
                 val installments = loadInstallmentsUseCase(installmentId)
-                _state.value = _state.value.copy(installments = installments, loading = false)
+                _state.value = _state.value.copy(
+                    installments = installments
+                        .filter { it?.id != clickedTransactionId }
+                )
+
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < 500) {
+                    delay(500 - elapsed)
+                }
+
+                _state.value = _state.value.copy(loading = false)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = e.message)
+                _state.value = _state.value.copy(loading = false, error = e.message)
             }
         }
     }
