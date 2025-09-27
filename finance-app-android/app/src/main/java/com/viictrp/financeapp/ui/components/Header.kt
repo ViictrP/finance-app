@@ -46,7 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.viictrp.financeapp.R
 import com.viictrp.financeapp.data.remote.dto.UserDTO
-import com.viictrp.financeapp.ui.navigation.SecureDestinations
+import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
 import com.viictrp.financeapp.ui.theme.FinanceAppTheme
@@ -63,9 +63,9 @@ fun Header(user: UserDTO?, modifier: Modifier, navController: NavController) {
     val currentDestination = navBackStackEntry?.destination?.route
 
     val backButtonRoutes = listOf(
-        SecureDestinations.BALANCE_ROUTE,
-        SecureDestinations.CREDIT_CARD_FORM_ROUTE,
-        SecureDestinations.TRANSACTION_FORM_ROUTE
+        Screen.Balance.route,
+        Screen.TransactionForm.route,
+        Screen.CreditCardForm.route
     )
     val showBackButton = currentDestination in backButtonRoutes
 

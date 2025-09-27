@@ -18,11 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -48,21 +48,22 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
+fun TransactionFormScreen(padding: PaddingValues) {
+    val viewModel = rememberBalanceViewModel()
+
     val spacing = 48.dp
 
-    val balance = balanceModel.currentBalance.collectAsState()
-    val coroutine = rememberCoroutineScope()
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = balanceModel.loading.collectAsState()
-    val creditCards = balance.value?.creditCards ?: emptyList()
+    val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
     val creditCardOptions = creditCards
         .map {
@@ -199,7 +200,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                         validator = {
                             it.replace(",", ".")
                                 .toBigDecimal()
-                                .let { value -> value > BigDecimal.ZERO } == true
+                                .let { value -> value > BigDecimal.ZERO }
                         },
                         errorMessage = "Informe um valor válido maior que zero"
                     )
@@ -240,8 +241,18 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
 
     val isEnabled = form.isValid
 
+    // ✅ Observar loading para dar tempo da animação
+    LaunchedEffect(state.loading) {
+        if (!state.loading && showDialog) {
+            // Loading acabou, dar tempo para animação de sucesso
+            delay(500) // ✅ 500ms para animação rodar
+            form.clear()
+            showDialog = false
+        }
+    }
+
     if (showDialog) {
-        LoadingDialog(loading = loading.value)
+        LoadingDialog(loading = state.loading)
     }
 
     Scaffold(
@@ -249,20 +260,8 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
             FloatingActionButton(
                 onClick = {
                     if (isEnabled) {
-                        coroutine.launch {
-                            showDialog = true
-                            val transaction = form.value
-
-                            if (transaction.creditCardId != null) {
-                                balanceModel.saveCreditCardTransaction(transaction)
-                            } else {
-                                balanceModel.saveTransaction(transaction)
-                            }
-
-                            delay(500)
-                            form.clear()
-                            showDialog = false
-                        }
+                        showDialog = true
+                        viewModel.handleIntent(BalanceIntent.SaveTransaction(form.value))
                     }
                 },
                 containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary

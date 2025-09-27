@@ -11,7 +11,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 object SecureDestinations {
-    const val SECURE_ROUTE = "secure"
     const val HOME_ROUTE = "home"
     const val CREDIT_CARD_ROUTE = "credit_card"
     const val BALANCE_ROUTE = "balance"
@@ -22,11 +21,6 @@ object SecureDestinations {
     const val TRANSACTION_KEY = "transactionId"
     const val CREDIT_CARD_KEY = "creditCardId"
     const val ORIGIN = "origin"
-}
-
-object PublicDestinations {
-    const val LOGIN_ROUTE = "login"
-    const val SPLASH_ROUTE = "splash"
 }
 
 @Composable
@@ -63,7 +57,7 @@ class FinanceAppNavController(
         from: NavBackStackEntry
     ) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("${SecureDestinations.INVOICE_ROUTE}/$creditCardId?origin=$origin")
+            navController.navigate(Screen.Invoice(creditCardId, origin).buildRoute())
         }
     }
 
@@ -73,7 +67,7 @@ class FinanceAppNavController(
         from: NavBackStackEntry
     ) {
         if (from.lifecycleIsResumed()) {
-            navController.navigate("${SecureDestinations.TRANSACTION_ROUTE}/$transactionId?origin=$origin")
+            navController.navigate(Screen.Transaction(transactionId, origin).buildRoute())
         }
     }
 

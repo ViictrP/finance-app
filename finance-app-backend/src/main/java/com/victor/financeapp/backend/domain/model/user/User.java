@@ -56,7 +56,10 @@ public class User {
         var salaryTax = new BigDecimal(getProperty("SALARY_TAX")
                 .orElse("0.0"));
 
-        this.balance.calculateBalance(this.salary, dollar, currencyConversionTax, salaryTax);
+        var socialSecurity = new BigDecimal(getProperty("SOCIAL_SECURITY")
+                .orElse("0.0"));
+
+        this.balance.calculateBalance(this.salary, dollar, currencyConversionTax, salaryTax, socialSecurity);
     }
 
     public void addProperty(String name, String value) {

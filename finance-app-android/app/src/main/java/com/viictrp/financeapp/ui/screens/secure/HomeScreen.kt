@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,9 +42,10 @@ import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import kotlinx.coroutines.launch
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -61,39 +61,36 @@ data class TransactionWithCreditCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: BalanceViewModel,
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
+    val viewModel = rememberBalanceViewModel()
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
-    val lastUpdateTime by viewModel.lastUpdateTime.collectAsState()
-    val balance by viewModel.currentBalance.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     val space = Modifier.height(48.dp)
 
-    val monthClosure = balance?.monthClosures
+    val monthClosure = state.currentBalance?.monthClosures
         ?.find {
             it.year == now.year && it.month == now.month.name.substring(0, 3)
         }
 
-    val transactions = balance?.lastAddedTransactions
+    val transactions = state.currentBalance?.lastAddedTransactions
         ?.map { transaction ->
             val creditCard =
-                balance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
+                state.currentBalance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
 
             TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
 
-    val coroutineScope = rememberCoroutineScope()
-    val loading by viewModel.loading.collectAsState()
-
     PullToRefreshContainer(
         viewModel = viewModel,
-        isRefreshing = loading,
+        isRefreshing = state.loading,
         onRefresh = {
-            coroutineScope.launch {
-                viewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-            }
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
         modifier = Modifier
             .fillMaxSize()
@@ -143,7 +140,7 @@ fun HomeScreen(
                                             modifier = Modifier.clickable {
                                                 onNavigation(
                                                     null,
-                                                    SecureDestinations.BALANCE_ROUTE
+                                                    Screen.Balance.route
                                                 )
                                             }) {
                                             Text(
@@ -166,12 +163,12 @@ fun HomeScreen(
                                     Spacer(modifier = Modifier.size(10.dp))
                                     Text(
                                         when {
-                                            loading -> "Carregando..."
+                                            state.loading -> "Carregando..."
                                             monthClosure != null -> numberFormatter.format(
                                                 monthClosure.expenses
                                             )
 
-                                            balance != null -> numberFormatter.format(balance?.expenses)
+                                            state.currentBalance != null -> numberFormatter.format(state.currentBalance?.expenses)
                                             else -> ""
                                         },
                                         style = LocalTextStyle.current.copy(fontSize = 28.sp),
@@ -183,7 +180,7 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    balance?.let {
+                                    state.currentBalance?.let {
                                         val value =
                                             it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
 
@@ -220,7 +217,7 @@ fun HomeScreen(
                                 .padding(top = 8.dp)
                                 .padding(horizontal = 16.dp)
                         ) {
-                            lastUpdateTime?.let {
+                            state.lastUpdateTime?.let {
                                 val formatted = DateUtils.getRelativeTimeSpanString(
                                     it.toEpochMilli(),
                                     System.currentTimeMillis(),
@@ -264,7 +261,7 @@ fun HomeScreen(
                                 transaction,
                                 creditCard?.title,
                                 MaterialTheme.colorScheme.tertiary,
-                                origin = SecureDestinations.HOME_ROUTE
+                                origin = Screen.Home.route
                             ) { id ->
                                 viewModel.selectTransaction(transaction, creditCard)
                                 onNavigation(
