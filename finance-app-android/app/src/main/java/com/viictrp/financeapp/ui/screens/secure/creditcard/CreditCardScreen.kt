@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,31 +21,29 @@ import com.viictrp.financeapp.ui.components.CreditCardBox
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import kotlinx.coroutines.launch
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreditCardScreen(
-    balanceViewModel: BalanceViewModel,
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val viewModel = rememberBalanceViewModel()
 
-    val loading by balanceViewModel.loading.collectAsState()
-    val balance by balanceViewModel.currentBalance.collectAsState()
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
 
-    val creditCards = balance?.creditCards ?: emptyList()
+    val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
-        balanceViewModel,
-        isRefreshing = loading,
+        viewModel,
+        isRefreshing = state.loading,
         onRefresh = {
-            coroutineScope.launch {
-                balanceViewModel.loadBalance(YearMonth.now(), defineCurrent = true)
-            }
+            // ✅ MVI - Usando handleIntent
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
         modifier = Modifier
             .fillMaxSize()
@@ -73,7 +70,7 @@ fun CreditCardScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             CreditCardBox(creditCard) {
-                                balanceViewModel.selectCreditCard(creditCard)
+                                viewModel.selectCreditCard(creditCard)
                                 onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
                             }
                         }

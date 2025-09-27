@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -34,12 +33,11 @@ import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import com.viictrp.financeapp.ui.theme.PrimaryDark
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,22 +46,20 @@ fun BalanceScreenContent(
     balanceViewModel: BalanceViewModel,
 ) {
     val spacing = Modifier.height(48.dp)
-    val balance by balanceViewModel.balance.collectAsState()
-    val selectedYearMonth by balanceViewModel.selectedYearMonth.collectAsState()
-    val loading by balanceViewModel.loading.collectAsState()
+    
+    // ✅ FULL MVI - Apenas state
+    val state by balanceViewModel.state.collectAsState()
 
-    val coroutineScope = rememberCoroutineScope()
-
-    val monthClosure = balance?.monthClosures
+    val monthClosure = state.balance?.monthClosures
         ?.find {
-            it.year == selectedYearMonth.year && it.month == selectedYearMonth.month.name.substring(0, 3)
+            it.year == state.selectedYearMonth.year && it.month == state.selectedYearMonth.month.name.substring(0, 3)
         }
 
-    val recurringExpenses = balance?.transactions
+    val recurringExpenses = state.balance?.transactions
         ?.filter { transaction -> transaction.type == TransactionType.RECURRING } ?: emptyList()
 
     val transactions =
-        balance?.transactions?.filter { transaction -> transaction.type == TransactionType.DEFAULT }
+        state.balance?.transactions?.filter { transaction -> transaction.type == TransactionType.DEFAULT }
             ?: emptyList()
 
     LazyColumn(
@@ -99,16 +95,15 @@ fun BalanceScreenContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                MonthPicker(selectedYearMonth, loading) { yearMonth ->
-                    balanceViewModel.updateYearMonth(yearMonth)
-                    coroutineScope.launch {
-                        balanceViewModel.loadBalance(selectedYearMonth)
-                    }
+                MonthPicker(state.selectedYearMonth, state.loading) { yearMonth ->
+                    // ✅ MVI - Usando handleIntent
+                    balanceViewModel.handleIntent(BalanceIntent.UpdateYearMonth(yearMonth))
+                    balanceViewModel.handleIntent(BalanceIntent.LoadBalance(yearMonth))
                 }
             }
         }
 
-        if (!loading) {
+        if (!state.loading) {
             item {
                 Spacer(modifier = spacing)
             }
@@ -121,7 +116,7 @@ fun BalanceScreenContent(
                 ) {
                     when {
                         monthClosure != null -> SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
-                        balance != null -> SummaryCard(balance!!.salary, balance!!.expenses, balance!!.available)
+                        state.balance != null -> SummaryCard(state.balance!!.salary, state.balance!!.expenses, state.balance!!.available)
                     }
                 }
             }
@@ -144,7 +139,7 @@ fun BalanceScreenContent(
                             .padding(horizontal = 16.dp)
                     )
                     Spacer(modifier = Modifier.size(24.dp))
-                    balance?.let {
+                    state.balance?.let {
                         ExpensesCarousel(it.creditCards, it.salary)
                     }
                 }

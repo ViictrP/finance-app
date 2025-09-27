@@ -40,12 +40,10 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,7 +53,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.viictrp.financeapp.data.remote.dto.TransactionDTO
 import com.viictrp.financeapp.ui.components.CreditCardSharedKey
 import com.viictrp.financeapp.ui.components.CreditCardSharedKeyElementType
 import com.viictrp.financeapp.ui.components.CustomIcons
@@ -69,8 +66,8 @@ import com.viictrp.financeapp.ui.components.nonSpatialExpressiveSpring
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.LocalNavAnimatedVisibilityScope
 import com.viictrp.financeapp.ui.screens.LocalSharedTransitionScope
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import kotlinx.coroutines.delay
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -78,15 +75,18 @@ import java.util.Locale
 fun TransactionScreen(
     transactionId: Long,
     origin: String,
-    balanceViewModel: BalanceViewModel,
     onPressUp: (() -> Unit)? = null
 ) {
-    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-    val transaction = balanceViewModel.selectedTransaction.collectAsState()
-    val creditCard = balanceViewModel.selectedCreditCard.collectAsState()
+    val viewModel = rememberBalanceViewModel()
 
-    var installments by remember { mutableStateOf<List<TransactionDTO?>>(emptyList()) }
-    var loading by remember { mutableStateOf(false) }
+    val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
+    val transaction = state.selectedTransaction
+
+    val installments = state.installments
+    val loading = state.loading
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
@@ -102,12 +102,15 @@ fun TransactionScreen(
         }
 
     LaunchedEffect(transaction) {
-        loading = true
-        if (transaction.value!!.isInstallment == true) {
-            delay(500)
-            installments = balanceViewModel.loadInstallments(transaction.value!!.installmentId!!)
+        if (transaction?.isInstallment == true) {
+            viewModel.handleIntent(BalanceIntent.LoadInstallments(transaction.id!!, transaction.installmentId!!))
         }
-        loading = false
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.handleIntent(BalanceIntent.ClearInstallmentsArray)
+        }
     }
 
     with(sharedTransitionScope) {
@@ -150,23 +153,25 @@ fun TransactionScreen(
                                     onPressUp?.invoke()
                                 }
 
-                                Text(
-                                    creditCard.value?.title!!,
-                                    style = LocalTextStyle.current.copy(fontSize = 40.sp),
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
-                                    modifier = Modifier
-                                        .sharedBounds(
-                                            rememberSharedContentState(
-                                                key = CreditCardSharedKey(
-                                                    creditCardId = creditCard.value?.id!!,
-                                                    type = CreditCardSharedKeyElementType.Title
-                                                )
-                                            ),
-                                            animatedVisibilityScope = animatedVisibilityScope,
-                                            boundsTransform = boundsTransform
-                                        )
-                                        .wrapContentWidth()
-                                )
+                                state.selectedCreditCard?.let {
+                                    Text(
+                                        it.title,
+                                        style = LocalTextStyle.current.copy(fontSize = 40.sp),
+                                        color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
+                                        modifier = Modifier
+                                            .sharedBounds(
+                                                rememberSharedContentState(
+                                                    key = CreditCardSharedKey(
+                                                        creditCardId = it.id!!,
+                                                        type = CreditCardSharedKeyElementType.Title
+                                                    )
+                                                ),
+                                                animatedVisibilityScope = animatedVisibilityScope,
+                                                boundsTransform = boundsTransform
+                                            )
+                                            .wrapContentWidth()
+                                    )
+                                }
                             }
                         }
                     }
@@ -186,7 +191,7 @@ fun TransactionScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    "${transaction.value?.date?.toFormatted()}",
+                                    "${transaction?.date?.toFormatted()}",
                                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                                     color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                 )
@@ -199,7 +204,7 @@ fun TransactionScreen(
 
                             ) {
                                 Text(
-                                    transaction.value?.description!!,
+                                    transaction?.description!!,
                                     style = LocalTextStyle.current.copy(fontSize = 30.sp),
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier
@@ -221,8 +226,9 @@ fun TransactionScreen(
                                 ) {
                                     IconButton(
                                         onClick = {
-                                            transaction.value?.id?.let { transactionId ->
-                                                balanceViewModel.deleteTransaction(transactionId, transaction.value!!.isInstallment!!)
+                                            transaction.id?.let { transactionId ->
+                                                // ✅ MVI - Usando handleIntent
+                                                viewModel.handleIntent(BalanceIntent.DeleteTransaction(transactionId, transaction.isInstallment!!))
                                                 onPressUp?.invoke()
                                             }
                                         }) {
@@ -239,12 +245,12 @@ fun TransactionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 with(animatedVisibilityScope) {
-                                    val installmentAmount = transaction.value?.installmentAmount?.takeIf {
+                                    val installmentAmount = transaction?.installmentAmount?.takeIf {
                                         it > 1
                                     }
                                     if (installmentAmount != null) {
                                         Text(
-                                            "parcela (${transaction.value?.installmentNumber}/${installmentAmount})",
+                                            "parcela (${transaction.installmentNumber}/${installmentAmount})",
                                             style = LocalTextStyle.current.copy(fontSize = 18.sp),
                                             color = MaterialTheme.colorScheme.secondary.copy(alpha = .8f),
                                             modifier = Modifier.animateEnterExit(
@@ -272,7 +278,7 @@ fun TransactionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    numberFormatter.format(transaction.value?.amount ?: 0),
+                                    numberFormatter.format(transaction?.amount ?: 0),
                                     style = LocalTextStyle.current.copy(fontSize = 24.sp),
                                     color = MaterialTheme.colorScheme.secondary
                                 )
@@ -315,7 +321,7 @@ fun TransactionScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Crossfade(targetState = loading, label = "lottieFade") { _ ->
+                                Crossfade(targetState = true, label = "lottieFade") { _ ->
                                     val composition by rememberLottieComposition(
                                         LottieCompositionSpec.Asset("loading-lottie.json")
                                     )

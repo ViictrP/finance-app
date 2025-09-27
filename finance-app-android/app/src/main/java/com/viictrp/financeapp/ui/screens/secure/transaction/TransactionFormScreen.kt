@@ -48,21 +48,24 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
+fun TransactionFormScreen(padding: PaddingValues) {
+    val viewModel = rememberBalanceViewModel()
+
     val spacing = 48.dp
 
-    val balance = balanceModel.currentBalance.collectAsState()
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = balanceModel.loading.collectAsState()
-    val creditCards = balance.value?.creditCards ?: emptyList()
+    val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
     val creditCardOptions = creditCards
         .map {
@@ -199,7 +202,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                         validator = {
                             it.replace(",", ".")
                                 .toBigDecimal()
-                                .let { value -> value > BigDecimal.ZERO } == true
+                                .let { value -> value > BigDecimal.ZERO }
                         },
                         errorMessage = "Informe um valor válido maior que zero"
                     )
@@ -241,7 +244,7 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
     val isEnabled = form.isValid
 
     if (showDialog) {
-        LoadingDialog(loading = loading.value)
+        LoadingDialog(loading = state.loading)
     }
 
     Scaffold(
@@ -253,11 +256,8 @@ fun TransactionFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues
                             showDialog = true
                             val transaction = form.value
 
-                            if (transaction.creditCardId != null) {
-                                balanceModel.saveCreditCardTransaction(transaction)
-                            } else {
-                                balanceModel.saveTransaction(transaction)
-                            }
+                            // ✅ MVI - Usando handleIntent
+                            viewModel.handleIntent(BalanceIntent.SaveTransaction(transaction))
 
                             delay(500)
                             form.clear()
