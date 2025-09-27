@@ -15,15 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.auth.AuthViewModel
-import com.viictrp.financeapp.ui.navigation.SecureDestinations
+import com.viictrp.financeapp.ui.navigation.Screen
+import com.viictrp.financeapp.ui.utils.rememberAuthViewModel
 
 @Composable
 fun LoginScreen(
-    authViewModel: AuthViewModel,
     onNavigation: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val authViewModel = rememberAuthViewModel()
 
     LaunchedEffect(Unit) {
         authViewModel.loginWithGoogle { message ->
@@ -31,7 +31,7 @@ fun LoginScreen(
                 if (message != null) {
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 } else {
-                    onNavigation(SecureDestinations.SECURE_ROUTE)
+                    onNavigation(Screen.Secure.route)
                 }
             }
         }

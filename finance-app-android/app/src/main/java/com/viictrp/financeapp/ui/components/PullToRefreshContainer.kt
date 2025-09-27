@@ -9,7 +9,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,11 +25,10 @@ fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier,
-    state: PullToRefreshState = rememberPullToRefreshState(),
     content: @Composable () -> Unit
 ) {
-
     val snackbarHostState = remember { SnackbarHostState() }
+    val state = rememberPullToRefreshState()
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {

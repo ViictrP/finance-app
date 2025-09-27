@@ -54,8 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.core.os.ConfigurationCompat
-import com.viictrp.financeapp.ui.components.CustomIcons
-import com.viictrp.financeapp.ui.navigation.SecureDestinations
+import com.viictrp.financeapp.ui.navigation.Screen
 import java.util.Locale
 
 @Composable
@@ -79,9 +78,9 @@ enum class BottomBarItem(
     val icon: String,
     val route: String? = null,
 ) {
-    HOME("Início", "House", SecureDestinations.HOME_ROUTE),
+    HOME("Início", "House", Screen.Home.route),
     MENU("Menu", "Add", null),
-    CREDIT_CARD("Cartões", "CreditCard", SecureDestinations.CREDIT_CARD_ROUTE)
+    CREDIT_CARD("Cartões", "CreditCard", Screen.CreditCard.route)
 }
 
 enum class BottomSheetItem(
@@ -89,8 +88,8 @@ enum class BottomSheetItem(
     val icon: String,
     val route: String? = null
 ) {
-    NEW_CARD("Novo Cartão", "CreditCard", SecureDestinations.CREDIT_CARD_FORM_ROUTE),
-    NEW_TRANSACTION("Nova Transação", "ShoppingBag", SecureDestinations.TRANSACTION_FORM_ROUTE)
+    NEW_CARD("Novo Cartão", "CreditCard", Screen.CreditCardForm.route),
+    NEW_TRANSACTION("Nova Transação", "ShoppingBag", Screen.TransactionForm.route)
 }
 
 private val TextIconSpacing = 2.dp
@@ -286,7 +285,7 @@ private fun FinanceAppBottomNavLayout(
 
         // Divide the width into n+1 slots and give the selected item 2 slots
         val unselectedWidth = constraints.maxWidth / 3 /*/ (itemCount + 1) */
-        val selectedWidth = (1 * unselectedWidth).toInt()
+        val selectedWidth = (1 * unselectedWidth)
         val indicatorMeasurable = measurables.first { it.layoutId == "indicator" }
 
         val itemPlaceables = measurables

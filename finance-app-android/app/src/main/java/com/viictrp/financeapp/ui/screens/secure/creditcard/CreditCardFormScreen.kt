@@ -44,24 +44,27 @@ import com.viictrp.financeapp.ui.components.formutils.controller.Field
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidator
 import com.viictrp.financeapp.ui.components.formutils.controller.StateValidatorType
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 import com.viictrp.financeapp.ui.theme.Accent
 import com.viictrp.financeapp.ui.theme.Orange
 import com.viictrp.financeapp.ui.theme.Purple
 import com.viictrp.financeapp.ui.theme.Secondary
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues) {
+fun CreditCardFormScreen(padding: PaddingValues) {
+    val viewModel = rememberBalanceViewModel()
 
     val spacing = 48.dp
 
+    // ✅ FULL MVI - Apenas state
+    val state by viewModel.state.collectAsState()
     val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
-    val loading = balanceModel.loading.collectAsState()
 
     val colorOptions by remember {
         mutableStateOf(
@@ -214,7 +217,7 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues)
     val isEnabled = form.isValid
 
     if (showDialog) {
-        LoadingDialog(loading = loading.value)
+        LoadingDialog(loading = state.loading)
     }
 
     Scaffold(
@@ -224,7 +227,8 @@ fun CreditCardFormScreen(balanceModel: BalanceViewModel, padding: PaddingValues)
                     if (isEnabled) {
                         coroutine.launch {
                             showDialog = true
-                            balanceModel.saveCreditCard(form.value)
+                            // ✅ MVI - Usando handleIntent
+                            viewModel.handleIntent(BalanceIntent.SaveCreditCard(form.value))
                             delay(500)
                             form.clear()
                             showDialog = false
