@@ -59,6 +59,7 @@ class BalanceViewModel @Inject constructor(
             is BalanceIntent.LoadInstallments -> loadInstallments(intent.clickedTransactionId, intent.installmentId)
             is BalanceIntent.ClearCache -> { /* implementar se necessário */ }
             is BalanceIntent.Clear -> clear()
+            is BalanceIntent.ClearInstallmentsArray -> clearInstallments()
         }
     }
 
@@ -160,20 +161,18 @@ class BalanceViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val startTime = System.currentTimeMillis()
-                _state.value = _state.value.copy(loading = true, error = null, installments = emptyList())
+                _state.value = _state.value.copy(loading = true, error = null)
 
                 val installments = loadInstallmentsUseCase(installmentId)
-                _state.value = _state.value.copy(
-                    installments = installments
-                        .filter { it?.id != clickedTransactionId }
-                )
+                val filtered = installments
+                    .filter { it?.id != clickedTransactionId }
 
                 val elapsed = System.currentTimeMillis() - startTime
                 if (elapsed < 500) {
                     delay(500 - elapsed)
                 }
 
-                _state.value = _state.value.copy(loading = false)
+                _state.value = _state.value.copy(installments = filtered, loading = false)
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false, error = e.message)
             }
@@ -182,6 +181,10 @@ class BalanceViewModel @Inject constructor(
 
     private fun updateYearMonth(yearMonth: YearMonth) {
         _state.value = _state.value.copy(selectedYearMonth = yearMonth)
+    }
+
+    private fun clearInstallments() {
+        _state.value = _state.value.copy(installments = emptyList())
     }
 
     private fun clear() {

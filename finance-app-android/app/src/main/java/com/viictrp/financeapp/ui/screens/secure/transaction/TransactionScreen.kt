@@ -40,6 +40,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -103,6 +104,12 @@ fun TransactionScreen(
     LaunchedEffect(transaction) {
         if (transaction?.isInstallment == true) {
             viewModel.handleIntent(BalanceIntent.LoadInstallments(transaction.id!!, transaction.installmentId!!))
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.handleIntent(BalanceIntent.ClearInstallmentsArray)
         }
     }
 
