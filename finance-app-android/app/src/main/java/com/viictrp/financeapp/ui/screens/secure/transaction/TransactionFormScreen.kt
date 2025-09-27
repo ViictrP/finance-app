@@ -18,11 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -48,10 +48,9 @@ import com.viictrp.financeapp.ui.components.formutils.controller.localDateTimeVa
 import com.viictrp.financeapp.ui.components.formutils.controller.longValue
 import com.viictrp.financeapp.ui.components.formutils.controller.rememberFormController
 import com.viictrp.financeapp.ui.components.formutils.controller.textValue
-import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -63,7 +62,6 @@ fun TransactionFormScreen(padding: PaddingValues) {
 
     // ✅ FULL MVI - Apenas state
     val state by viewModel.state.collectAsState()
-    val coroutine = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
@@ -243,6 +241,16 @@ fun TransactionFormScreen(padding: PaddingValues) {
 
     val isEnabled = form.isValid
 
+    // ✅ Observar loading para dar tempo da animação
+    LaunchedEffect(state.loading) {
+        if (!state.loading && showDialog) {
+            // Loading acabou, dar tempo para animação de sucesso
+            delay(500) // ✅ 500ms para animação rodar
+            form.clear()
+            showDialog = false
+        }
+    }
+
     if (showDialog) {
         LoadingDialog(loading = state.loading)
     }
@@ -252,17 +260,8 @@ fun TransactionFormScreen(padding: PaddingValues) {
             FloatingActionButton(
                 onClick = {
                     if (isEnabled) {
-                        coroutine.launch {
-                            showDialog = true
-                            val transaction = form.value
-
-                            // ✅ MVI - Usando handleIntent
-                            viewModel.handleIntent(BalanceIntent.SaveTransaction(transaction))
-
-                            delay(500)
-                            form.clear()
-                            showDialog = false
-                        }
+                        showDialog = true
+                        viewModel.handleIntent(BalanceIntent.SaveTransaction(form.value))
                     }
                 },
                 containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
