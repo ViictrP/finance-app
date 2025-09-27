@@ -26,7 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -216,6 +216,16 @@ fun CreditCardFormScreen(padding: PaddingValues) {
 
     val isEnabled = form.isValid
 
+    // ✅ Observar loading para dar tempo da animação
+    LaunchedEffect(state.loading) {
+        if (!state.loading && showDialog) {
+            // Loading acabou, dar tempo para animação de sucesso
+            delay(500) // ✅ 500ms para animação rodar
+            form.clear()
+            showDialog = false
+        }
+    }
+
     if (showDialog) {
         LoadingDialog(loading = state.loading)
     }
@@ -225,14 +235,8 @@ fun CreditCardFormScreen(padding: PaddingValues) {
             FloatingActionButton(
                 onClick = {
                     if (isEnabled) {
-                        coroutine.launch {
-                            showDialog = true
-                            // ✅ MVI - Usando handleIntent
-                            viewModel.handleIntent(BalanceIntent.SaveCreditCard(form.value))
-                            delay(500)
-                            form.clear()
-                            showDialog = false
-                        }
+                        showDialog = true
+                        viewModel.handleIntent(BalanceIntent.SaveCreditCard(form.value))
                     }
                 },
                 containerColor = if (isEnabled) MaterialTheme.colorScheme.tertiary
