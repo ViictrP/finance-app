@@ -26,10 +26,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,8 +47,9 @@ import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceState
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -58,19 +62,56 @@ data class TransactionWithCreditCard(
     val creditCard: CreditCardDTO?
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     padding: PaddingValues,
     onNavigation: (Long?, String) -> Unit
 ) {
     val viewModel = rememberBalanceViewModel()
+    val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.deleteTransactionSuccess.collect {
+            snackbarHostState.showSnackbar(
+                message = "Transação excluída com sucesso!",
+                withDismissAction = true
+            )
+        }
+    }
+
+    HomeScreenContent(
+        state = state,
+        padding = padding,
+        snackbarHostState = snackbarHostState,
+        onRefresh = {
+            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
+        },
+        onTransactionClick = { transaction, creditCard ->
+            viewModel.selectTransaction(transaction, creditCard)
+            onNavigation(
+                transaction.id,
+                SecureDestinations.TRANSACTION_ROUTE
+            )
+        },
+        onNavigateToBalance = {
+            onNavigation(null, Screen.Balance.route)
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenContent(
+    state: BalanceState,
+    padding: PaddingValues,
+    snackbarHostState: SnackbarHostState,
+    onRefresh: () -> Unit,
+    onTransactionClick: (TransactionDTO, CreditCardDTO?) -> Unit,
+    onNavigateToBalance: () -> Unit,
+) {
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
-    
-    // ✅ FULL MVI - Apenas state
-    val state by viewModel.state.collectAsState()
-    val space = Modifier.height(48.dp)
 
     val monthClosure = state.currentBalance?.monthClosures
         ?.find {
@@ -80,201 +121,188 @@ fun HomeScreen(
     val transactions = state.currentBalance?.lastAddedTransactions
         ?.map { transaction ->
             val creditCard =
-                state.currentBalance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
+                state.currentBalance.creditCards.find { creditCard -> creditCard.id == transaction.creditCardId }
 
             TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
 
     PullToRefreshContainer(
-        viewModel = viewModel,
         isRefreshing = state.loading,
-        onRefresh = {
-            // ✅ MVI - Usando handleIntent
-            viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
-        },
+        onRefresh = onRefresh,
+        snackbarHostState = snackbarHostState,
         modifier = Modifier
             .fillMaxSize()
             .padding(padding),
-        content = {
-            FinanceAppSurface(
-                modifier = Modifier
-                    .fillMaxSize()
+    ) {
+        FinanceAppSurface(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 16.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
-
-                LazyColumn(
-                    contentPadding = PaddingValues(vertical = 16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                            border = BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                        ),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(
+                                horizontal = 24.dp,
+                                vertical = 16.dp
                             ),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp,
-                                    vertical = 16.dp
-                                ),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Column {
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "gastos do mês",
+                                        style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                        color = MaterialTheme.colorScheme.secondary.copy(
+                                            alpha = 0.5F
+                                        )
+                                    )
                                     Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.clickable { onNavigateToBalance() }
                                     ) {
                                         Text(
-                                            "gastos do mês",
-                                            style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                            color = MaterialTheme.colorScheme.secondary.copy(
-                                                alpha = 0.5F
-                                            )
+                                            SimpleDateFormat(
+                                                "MMMM",
+                                                Locale.getDefault()
+                                            ).format(Calendar.getInstance().time),
+                                            style = LocalTextStyle.current.copy(fontSize = 18.sp),
+                                            color = MaterialTheme.colorScheme.tertiary,
+                                            fontWeight = FontWeight.Medium
                                         )
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            modifier = Modifier.clickable {
-                                                onNavigation(
-                                                    null,
-                                                    Screen.Balance.route
-                                                )
-                                            }) {
-                                            Text(
-                                                SimpleDateFormat(
-                                                    "MMMM",
-                                                    Locale.getDefault()
-                                                ).format(Calendar.getInstance().time),
-                                                style = LocalTextStyle.current.copy(fontSize = 18.sp),
-                                                color = MaterialTheme.colorScheme.tertiary,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                            Icon(
-                                                CustomIcons.Filled.Calendar,
-                                                modifier = Modifier.size(24.dp),
-                                                contentDescription = "Select Month",
-                                                tint = MaterialTheme.colorScheme.tertiary,
-                                            )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.size(10.dp))
-                                    Text(
-                                        when {
-                                            state.loading -> "Carregando..."
-                                            monthClosure != null -> numberFormatter.format(
-                                                monthClosure.expenses
-                                            )
-
-                                            state.currentBalance != null -> numberFormatter.format(state.currentBalance?.expenses)
-                                            else -> ""
-                                        },
-                                        style = LocalTextStyle.current.copy(fontSize = 28.sp),
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.secondary
-                                    )
-                                }
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    state.currentBalance?.let {
-                                        val value =
-                                            it.monthClosures.first().expenses - it.expenses
-
-                                        Text(
-                                            NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
-                                                .format(value),
-                                            style = LocalTextStyle.current.copy(fontSize = 20.sp),
-                                            color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                        Icon(
+                                            CustomIcons.Filled.Calendar,
+                                            modifier = Modifier.size(24.dp),
+                                            contentDescription = "Select Month",
+                                            tint = MaterialTheme.colorScheme.tertiary,
                                         )
-                                        if (value > BigDecimal.ZERO) {
-                                            StatusChip(
-                                                "diminuiu!",
-                                                textColor = MaterialTheme.colorScheme.primary,
-                                                backgroundColor = MaterialTheme.colorScheme.onTertiary
-                                            )
-                                        } else {
-                                            StatusChip(
-                                                "aumentou!",
-                                                textColor = MaterialTheme.colorScheme.primary,
-                                                backgroundColor = MaterialTheme.colorScheme.error
-                                            )
-                                        }
                                     }
-
                                 }
-                            }
-                        }
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            state.lastUpdateTime?.let {
-                                val formatted = DateUtils.getRelativeTimeSpanString(
-                                    it.toEpochMilli(),
-                                    System.currentTimeMillis(),
-                                    DateUtils.MINUTE_IN_MILLIS
-                                )
-
+                                Spacer(modifier = Modifier.size(10.dp))
                                 Text(
-                                    "Última atualização $formatted",
-                                    style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                    fontWeight = FontWeight.Light,
-                                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                                    when {
+                                        state.loading -> "Carregando..."
+                                        monthClosure != null -> numberFormatter.format(
+                                            monthClosure.expenses
+                                        )
+
+                                        state.currentBalance != null -> numberFormatter.format(state.currentBalance.expenses)
+                                        else -> ""
+                                    },
+                                    style = LocalTextStyle.current.copy(fontSize = 28.sp),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
                                 )
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                state.currentBalance?.let {
+                                    val value =
+                                        it.monthClosures.first().expenses - it.expenses
+
+                                    Text(
+                                        NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                            .format(value),
+                                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                        color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
+                                    )
+                                    if (value > BigDecimal.ZERO) {
+                                        StatusChip(
+                                            "diminuiu!",
+                                            textColor = MaterialTheme.colorScheme.primary,
+                                            backgroundColor = MaterialTheme.colorScheme.onTertiary
+                                        )
+                                    } else {
+                                        StatusChip(
+                                            "aumentou!",
+                                            textColor = MaterialTheme.colorScheme.primary,
+                                            backgroundColor = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                }
+
                             }
                         }
                     }
+                }
 
-                    item {
-                        Spacer(modifier = space)
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        state.lastUpdateTime?.let {
+                            val formatted = DateUtils.getRelativeTimeSpanString(
+                                it.toEpochMilli(),
+                                System.currentTimeMillis(),
+                                DateUtils.MINUTE_IN_MILLIS
+                            )
+
+                            Text(
+                                "Última atualização $formatted",
+                                style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                fontWeight = FontWeight.Light,
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                            )
+                        }
                     }
-                    item {
-                        Text(
-                            "Últimas Compras",
-                            style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .padding(bottom = 24.dp)
-                        )
-                    }
+                }
 
-                    items(transactions.size) { index ->
-                        val transaction = transactions[index].transaction
-                        val creditCard = transactions[index].creditCard
+                item {
+                    Spacer(Modifier.height(48.dp))
+                }
+                item {
+                    Text(
+                        "Últimas Compras",
+                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp)
+                    )
+                }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                items(transactions.size) { index ->
+                    val transaction = transactions[index].transaction
+                    val creditCard = transactions[index].creditCard
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    ) {
+                        TransactionCard(
+                            transaction,
+                            creditCard?.title,
+                            MaterialTheme.colorScheme.tertiary,
+                            origin = Screen.Home.route
                         ) {
-                            TransactionCard(
-                                transaction,
-                                creditCard?.title,
-                                MaterialTheme.colorScheme.tertiary,
-                                origin = Screen.Home.route
-                            ) { id ->
-                                viewModel.selectTransaction(transaction, creditCard)
-                                onNavigation(
-                                    id,
-                                    SecureDestinations.TRANSACTION_ROUTE
-                                )
-                            }
+                            onTransactionClick(transaction, creditCard)
                         }
                     }
                 }
             }
         }
-    )
+    }
 }
 
 @Composable

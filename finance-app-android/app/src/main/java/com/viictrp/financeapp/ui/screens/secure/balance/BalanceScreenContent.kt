@@ -17,8 +17,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -32,23 +30,21 @@ import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceState
 import com.viictrp.financeapp.ui.theme.PrimaryDark
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.time.YearMonth
 import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BalanceScreenContent(
-    balanceViewModel: BalanceViewModel,
+    state: BalanceState,
+    onMonthSelected: (YearMonth) -> Unit,
 ) {
     val spacing = Modifier.height(48.dp)
-    
-    // ✅ FULL MVI - Apenas state
-    val state by balanceViewModel.state.collectAsState()
 
     val monthClosure = state.balance?.monthClosures
         ?.find {
@@ -95,11 +91,7 @@ fun BalanceScreenContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                MonthPicker(state.selectedYearMonth, state.loading) { yearMonth ->
-                    // ✅ MVI - Usando handleIntent
-                    balanceViewModel.handleIntent(BalanceIntent.UpdateYearMonth(yearMonth))
-                    balanceViewModel.handleIntent(BalanceIntent.LoadBalance(yearMonth))
-                }
+                MonthPicker(state.selectedYearMonth, state.loading, onMonthSelected)
             }
         }
 
@@ -116,7 +108,7 @@ fun BalanceScreenContent(
                 ) {
                     when {
                         monthClosure != null -> SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
-                        state.balance != null -> SummaryCard(state.balance!!.salary, state.balance!!.expenses, state.balance!!.available)
+                        state.balance != null -> SummaryCard(state.balance.salary, state.balance.expenses, state.balance.available)
                     }
                 }
             }
