@@ -182,7 +182,7 @@ fun HomeScreen(
                                 ) {
                                     state.currentBalance?.let {
                                         val value =
-                                            it.monthClosures[it.monthClosures.size - 1].expenses - it.expenses
+                                            it.monthClosures.first().expenses - it.expenses
 
                                         Text(
                                             NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
