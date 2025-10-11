@@ -26,6 +26,7 @@ import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import kotlinx.coroutines.flow.first
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +41,7 @@ fun CreditCardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {
+            viewModel.state.first { !it.loading }
             snackbarHostState.showSnackbar(
                 message = "Transação excluída com sucesso!",
                 withDismissAction = true

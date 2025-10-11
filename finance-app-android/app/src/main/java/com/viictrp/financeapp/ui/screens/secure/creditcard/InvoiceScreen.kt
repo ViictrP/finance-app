@@ -77,6 +77,7 @@ import com.viictrp.financeapp.ui.theme.Background
 import com.viictrp.financeapp.ui.theme.Secondary
 import com.viictrp.financeapp.ui.theme.SecondaryDark
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -100,6 +101,7 @@ fun InvoiceScreen(
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {
+            viewModel.state.first { !it.loading }
             snackbarHostState.showSnackbar(
                 message = "Transação excluída com sucesso!",
                 withDismissAction = true

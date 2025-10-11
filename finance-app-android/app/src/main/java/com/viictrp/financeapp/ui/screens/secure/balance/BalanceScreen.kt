@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import kotlinx.coroutines.flow.first
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +28,10 @@ fun BalanceScreen(padding: PaddingValues) {
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {
+            // Espera até que o estado não esteja mais carregando
+            viewModel.state.first { !it.loading }
+            
+            // Agora, com o estado atualizado e não mais carregando, mostramos a snackbar
             snackbarHostState.showSnackbar(
                 message = "Transação excluída com sucesso!",
                 withDismissAction = true

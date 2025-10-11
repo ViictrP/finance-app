@@ -37,10 +37,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viictrp.financeapp.data.remote.dto.BalanceDTO
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
+import com.viictrp.financeapp.data.remote.dto.MonthClosureDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
@@ -49,10 +53,13 @@ import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceState
+import com.viictrp.financeapp.ui.theme.FinanceAppTheme
 import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import kotlinx.coroutines.flow.first
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.util.Calendar
 import java.util.Locale
@@ -73,6 +80,7 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.deleteTransactionSuccess.collect {
+            viewModel.state.first { !it.loading }
             snackbarHostState.showSnackbar(
                 message = "Transação excluída com sucesso!",
                 withDismissAction = true
@@ -121,7 +129,7 @@ fun HomeScreenContent(
     val transactions = state.currentBalance?.lastAddedTransactions
         ?.map { transaction ->
             val creditCard =
-                state.currentBalance.creditCards.find { creditCard -> creditCard.id == transaction.creditCardId }
+                state.currentBalance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
 
             TransactionWithCreditCard(transaction, creditCard)
         } ?: emptyList()
@@ -201,7 +209,7 @@ fun HomeScreenContent(
                                             monthClosure.expenses
                                         )
 
-                                        state.currentBalance != null -> numberFormatter.format(state.currentBalance.expenses)
+                                        state.currentBalance != null -> numberFormatter.format(state.currentBalance?.expenses)
                                         else -> ""
                                     },
                                     style = LocalTextStyle.current.copy(fontSize = 28.sp),
@@ -318,4 +326,120 @@ fun StatusChip(text: String, backgroundColor: Color, textColor: Color = Color.Wh
             style = LocalTextStyle.current.copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenContentPreview() {
+    FinanceAppTheme {
+        HomeScreenContent(
+            state = PreviewData.loadedState,
+            padding = PaddingValues(0.dp),
+            snackbarHostState = SnackbarHostState(),
+            onRefresh = {},
+            onTransactionClick = { _, _ -> },
+            onNavigateToBalance = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Loading State")
+@Composable
+fun HomeScreenContentLoadingPreview() {
+    FinanceAppTheme {
+        HomeScreenContent(
+            state = PreviewData.loadingState,
+            padding = PaddingValues(0.dp),
+            snackbarHostState = SnackbarHostState(),
+            onRefresh = {},
+            onTransactionClick = { _, _ -> },
+            onNavigateToBalance = {}
+        )
+    }
+}
+
+object PreviewData  {
+    val sampleTransactions = listOf(
+        TransactionDTO(
+            id = 1,
+            description = "Netflix",
+            amount = BigDecimal("39.90"),
+            category = "Assinaturas",
+            type = TransactionType.RECURRING,
+            date = LocalDateTime.now().minusDays(2),
+            creditCardId = 1
+        ),
+        TransactionDTO(
+            id = 2,
+            description = "Almoço",
+            amount = BigDecimal("45.50"),
+            category = "Alimentação",
+            type = TransactionType.DEFAULT,
+            date = LocalDateTime.now().minusDays(1),
+            creditCardId = 1
+        ),
+        TransactionDTO(
+            id = 3,
+            description = "Gasolina",
+            amount = BigDecimal("150.00"),
+            category = "Transporte",
+            type = TransactionType.DEFAULT,
+            date = LocalDateTime.now(),
+            creditCardId = 2
+        )
+    )
+
+    val sampleCreditCards = listOf(
+        CreditCardDTO(
+            id = 1,
+            title = "Cartão Principal",
+            description = "Mastercard Platinum",
+            color = "BLUE",
+            number = "**** 1234",
+            invoiceClosingDay = 28,
+            totalInvoiceAmount = BigDecimal("1500.75")
+        ),
+        CreditCardDTO(
+            id = 2,
+            title = "Cartão Secundário",
+            description = "Visa Gold",
+            color = "GOLD",
+            number = "**** 5678",
+            invoiceClosingDay = 15,
+            totalInvoiceAmount = BigDecimal("850.20")
+        )
+    )
+
+    val sampleMonthClosures = listOf(
+        MonthClosureDTO(
+            month = "JAN",
+            year = YearMonth.now().year,
+            total = BigDecimal("5000"),
+            available = BigDecimal("2000"),
+            expenses = BigDecimal("3000"),
+            index = 0,
+            finalUsdToBRL = BigDecimal("5.00")
+        )
+    )
+
+    val sampleBalance = BalanceDTO(
+        transactions = sampleTransactions,
+        lastAddedTransactions = sampleTransactions.take(2),
+        creditCards = sampleCreditCards,
+        monthClosures = sampleMonthClosures,
+        salary = BigDecimal("5000"),
+        expenses = BigDecimal("2350.45"),
+        available = BigDecimal("2649.55")
+    )
+
+    val loadingState = BalanceState(loading = true)
+
+    val loadedState = BalanceState(
+        loading = false,
+        balance = sampleBalance,
+        currentBalance = sampleBalance,
+        selectedYearMonth = YearMonth.now(),
+        creditCards = sampleCreditCards,
+        isInitialized = true
+    )
 }
