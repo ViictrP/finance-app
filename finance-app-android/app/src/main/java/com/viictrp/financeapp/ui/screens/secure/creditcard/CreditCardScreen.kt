@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,8 +24,9 @@ import com.viictrp.financeapp.ui.components.CreditCardBox
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
-import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
+import com.viictrp.financeapp.ui.utils.rememberBalanceViewModel
+import kotlinx.coroutines.flow.first
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,51 +36,58 @@ fun CreditCardScreen(
     onNavigation: (Long?, String) -> Unit
 ) {
     val viewModel = rememberBalanceViewModel()
-
-    // ✅ FULL MVI - Apenas state
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.deleteTransactionSuccess.collect {
+            viewModel.state.first { !it.loading }
+            snackbarHostState.showSnackbar(
+                message = "Transação excluída com sucesso!",
+                withDismissAction = true
+            )
+        }
+    }
 
     val creditCards = state.currentBalance?.creditCards ?: emptyList()
 
     PullToRefreshContainer(
-        viewModel,
         isRefreshing = state.loading,
         onRefresh = {
-            // ✅ MVI - Usando handleIntent
             viewModel.handleIntent(BalanceIntent.LoadBalance(YearMonth.now(), defineCurrent = true))
         },
+        snackbarHostState = snackbarHostState,
         modifier = Modifier
             .fillMaxSize()
             .padding(padding),
-        content = {
-            FinanceAppSurface(
+    ) {
+        FinanceAppSurface(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    items(creditCards.size) { index ->
-                        val creditCard = creditCards[index]
+                items(creditCards.size) { index ->
+                    val creditCard = creditCards[index]
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(bottom = 24.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            CreditCardBox(creditCard) {
-                                viewModel.selectCreditCard(creditCard)
-                                onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
-                            }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CreditCardBox(creditCard) {
+                            viewModel.selectCreditCard(creditCard)
+                            onNavigation(creditCard.id, SecureDestinations.INVOICE_ROUTE)
                         }
                     }
                 }
             }
         }
-    )
+    }
 }

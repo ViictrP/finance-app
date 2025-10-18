@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,11 +71,24 @@ fun TransactionCard(
     origin: String,
     onClick: ((id: Long) -> Unit)? = null
 ) {
-
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No sharedTransitionScope found")
+
     val animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current
         ?: throw IllegalStateException("No animatedVisibilityScope found")
+
+    @Composable
+    fun getIcon(category: String): Painter {
+        return when(category) {
+            "home" -> CustomIcons.Outline.House
+            "shop" -> CustomIcons.Outline.ShoppingBag
+            "credit_card" -> CustomIcons.Outline.CreditCard
+            "other" -> CustomIcons.Outline.Barcode
+            "food" -> CustomIcons.Outline.Burger
+            "transportation" -> CustomIcons.Outline.Transportation
+            else -> CustomIcons.Outline.Barcode
+        }
+    }
 
     with(sharedTransitionScope) {
         val roundedCornerAnimation by animatedVisibilityScope.transition
@@ -131,7 +145,7 @@ fun TransactionCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            CustomIcons.Outline.Burger,
+                            getIcon(transaction.category),
                             modifier = Modifier.size(26.dp),
                             contentDescription = "Select Month",
                             tint = MaterialTheme.colorScheme.tertiary,

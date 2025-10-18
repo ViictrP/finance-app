@@ -162,6 +162,18 @@ fun TransactionFormScreen(padding: PaddingValues) {
                 }
             },
             object : FSelectItem {
+                override fun getLabel(): String = "Transporte"
+                override fun getValue(): String = "transportation"
+                override fun getIcon(): @Composable (() -> Unit)? = {
+                    Icon(
+                        painter = CustomIcons.Outline.Transportation,
+                        contentDescription = "Transporte",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            },
+            object : FSelectItem {
                 override fun getLabel(): String = "Outro"
                 override fun getValue(): String = "other"
                 override fun getIcon(): @Composable (() -> Unit)? = {

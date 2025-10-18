@@ -1,0 +1,1 @@
+UPDATE finance_app.transaction SET category = 'transportation' WHERE description like '%Uber%';
