@@ -46,12 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.ui.components.ChartConfig
+import com.viictrp.financeapp.ui.components.CurvedLineChart
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
-import com.viictrp.financeapp.ui.components.BarChart
-import com.viictrp.financeapp.ui.components.BarChartConfig
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
@@ -298,10 +298,11 @@ fun HomeScreenContent(
                                     )
                                 )
                                 Spacer(Modifier.height(16.dp))
-                                BarChart(
+                                CurvedLineChart(
                                     data = getTransactionsByDay(),
-                                    config = BarChartConfig(
-                                        barStrokeWidth = 2.dp
+                                    config = ChartConfig(
+                                        pointRadius = 6.dp,
+                                        labelsAndValuesTogether = true
                                     ),
                                     modifier = Modifier.height(200.dp)
                                 )
