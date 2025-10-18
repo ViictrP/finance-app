@@ -11,33 +11,20 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PullToRefreshContainer(
-    viewModel: BalanceViewModel,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier,
     content: @Composable () -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val state = rememberPullToRefreshState()
-
-    LaunchedEffect(Unit) {
-        viewModel.deleteTransactionSuccess.collect {
-            snackbarHostState.showSnackbar(
-                message = "Transação excluída com sucesso!",
-                withDismissAction = true
-            )
-        }
-    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
