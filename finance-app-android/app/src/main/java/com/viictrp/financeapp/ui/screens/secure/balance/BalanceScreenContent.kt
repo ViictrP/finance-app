@@ -31,7 +31,8 @@ import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
-import com.viictrp.financeapp.ui.components.WeeklyExpensesChart
+import com.viictrp.financeapp.ui.components.BarChart
+import com.viictrp.financeapp.ui.components.BarChartConfig
 import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceState
@@ -148,7 +149,12 @@ fun BalanceScreenContent(
                             )
                         )
                         Spacer(Modifier.height(16.dp))
-                        WeeklyExpensesChart(data = getTransactionsByCategory())
+                        BarChart(
+                            data = getTransactionsByCategory(),
+                            config = BarChartConfig(
+                                barStrokeWidth = 2.dp
+                            )
+                        )
                     }
                 }
             }
