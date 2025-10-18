@@ -342,9 +342,8 @@ fun HomeScreenContent(
                     Spacer(Modifier.height(48.dp))
                 }
                 item {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
