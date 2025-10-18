@@ -46,11 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
+import com.viictrp.financeapp.ui.components.ChartConfig
+import com.viictrp.financeapp.ui.components.CurvedLineChart
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
-import com.viictrp.financeapp.ui.components.WeeklyExpensesChart
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
@@ -203,7 +204,7 @@ fun HomeScreenContent(
                                 horizontal = 24.dp,
                                 vertical = 16.dp
                             ),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Column {
                                 Row(
@@ -249,7 +250,7 @@ fun HomeScreenContent(
                                         state.currentBalance != null -> numberFormatter.format(state.currentBalance.expenses)
                                         else -> ""
                                     },
-                                    style = LocalTextStyle.current.copy(fontSize = 28.sp),
+                                    style = LocalTextStyle.current.copy(fontSize = 32.sp),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.secondary
                                 )
@@ -265,7 +266,7 @@ fun HomeScreenContent(
                                     Text(
                                         NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
                                             .format(value),
-                                        style = LocalTextStyle.current.copy(fontSize = 20.sp),
+                                        style = LocalTextStyle.current.copy(fontSize = 22.sp),
                                         color = if (value > BigDecimal.ZERO) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.error
                                     )
                                     if (value > BigDecimal.ZERO) {
@@ -283,6 +284,28 @@ fun HomeScreenContent(
                                     }
                                 }
 
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    "gastos por dia",
+                                    style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.secondary.copy(
+                                        alpha = 0.5F
+                                    )
+                                )
+                                Spacer(Modifier.height(16.dp))
+                                CurvedLineChart(
+                                    data = getTransactionsByDay(),
+                                    config = ChartConfig(
+                                        pointRadius = 6.dp,
+                                        labelsAndValuesTogether = true
+                                    ),
+                                    modifier = Modifier.height(200.dp)
+                                )
                             }
                         }
                     }
@@ -308,32 +331,6 @@ fun HomeScreenContent(
                                 fontWeight = FontWeight.Light,
                                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
                             )
-                        }
-                    }
-                }
-
-                if (invoiceTransactions.isNotEmpty()) {
-                    item {
-                        Spacer(Modifier.height(48.dp))
-                    }
-
-                    item {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 24.dp)
-                        ) {
-                            Text(
-                                "gastos por dia",
-                                style = LocalTextStyle.current.copy(fontSize = 14.sp),
-                                color = MaterialTheme.colorScheme.secondary.copy(
-                                    alpha = 0.5F
-                                )
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            WeeklyExpensesChart(data = getTransactionsByDay())
                         }
                     }
                 }
