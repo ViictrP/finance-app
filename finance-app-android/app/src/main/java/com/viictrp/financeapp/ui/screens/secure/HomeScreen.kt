@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -32,7 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,15 +44,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.viictrp.financeapp.data.remote.dto.BalanceDTO
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
-import com.viictrp.financeapp.data.remote.dto.MonthClosureDTO
 import com.viictrp.financeapp.data.remote.dto.TransactionDTO
-import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CustomIcons
 import com.viictrp.financeapp.ui.components.FinanceAppSurface
 import com.viictrp.financeapp.ui.components.PullToRefreshContainer
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.components.WeeklyExpensesChart
 import com.viictrp.financeapp.ui.navigation.Screen
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceIntent
@@ -61,6 +63,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -120,19 +123,53 @@ fun HomeScreenContent(
 ) {
     val numberFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
     val now = YearMonth.now()
+    val today = LocalDateTime.now().toLocalDate()
+    
+    var selectedPeriod by remember { mutableStateOf("de Hoje") }
+    var expanded by remember { mutableStateOf(false) }
 
     val monthClosure = state.currentBalance?.monthClosures
         ?.find {
             it.year == now.year && it.month == now.month.name.substring(0, 3)
         }
 
-    val transactions = state.currentBalance?.lastAddedTransactions
-        ?.map { transaction ->
-            val creditCard =
-                state.currentBalance?.creditCards?.find { creditCard -> creditCard.id == transaction.creditCardId }
-
+    val invoiceTransactions = state.currentBalance?.creditCards
+        ?.flatMap { it.invoices }
+        ?.flatMap { it.transactions }
+        ?: emptyList()
+    
+    val allTransactions = (state.currentBalance?.transactions ?: emptyList()) + invoiceTransactions
+    
+    fun getTransactionsByPeriod(period: String = selectedPeriod): List<TransactionDTO> {
+        return when (period) {
+            "de Hoje" -> allTransactions.filter { it.date.toLocalDate() == today }
+            "da Semana" -> allTransactions.filter { it.date.toLocalDate().isAfter(today.minusDays(7)) }
+            else -> emptyList()
+        }.sortedByDescending { it.date }
+    }
+    
+    fun getTransactionsWithCreditCards(): List<TransactionWithCreditCard> {
+        return getTransactionsByPeriod().map { transaction ->
+            val creditCard = state.currentBalance?.creditCards?.find { it.id == transaction.creditCardId }
             TransactionWithCreditCard(transaction, creditCard)
-        } ?: emptyList()
+        }
+    }
+    
+    fun getTotalAmount(): BigDecimal {
+        return getTransactionsByPeriod().sumOf { it.amount }
+    }
+    
+    fun getTransactionsByDay(): Map<String, BigDecimal> {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM")
+        return getTransactionsByPeriod("da Semana")
+            .groupBy { 
+                it.date.toLocalDate().format(formatter)
+            }
+            .toSortedMap()
+            .mapValues { (_, transactions) -> 
+                transactions.sumOf { it.amount } 
+            }
+    }
 
     PullToRefreshContainer(
         isRefreshing = state.loading,
@@ -209,7 +246,7 @@ fun HomeScreenContent(
                                             monthClosure.expenses
                                         )
 
-                                        state.currentBalance != null -> numberFormatter.format(state.currentBalance?.expenses)
+                                        state.currentBalance != null -> numberFormatter.format(state.currentBalance.expenses)
                                         else -> ""
                                     },
                                     style = LocalTextStyle.current.copy(fontSize = 28.sp),
@@ -275,23 +312,105 @@ fun HomeScreenContent(
                     }
                 }
 
+                if (invoiceTransactions.isNotEmpty()) {
+                    item {
+                        Spacer(Modifier.height(48.dp))
+                    }
+
+                    item {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 24.dp)
+                        ) {
+                            Text(
+                                "gastos por dia",
+                                style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                                color = MaterialTheme.colorScheme.secondary.copy(
+                                    alpha = 0.5F
+                                )
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            WeeklyExpensesChart(data = getTransactionsByDay())
+                        }
+                    }
+                }
+
                 item {
                     Spacer(Modifier.height(48.dp))
                 }
                 item {
-                    Text(
-                        "Últimas Compras",
-                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
-                        fontWeight = FontWeight.Bold,
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .padding(bottom = 24.dp)
-                    )
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Compras ",
+                                style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Box {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.clickable { expanded = true }
+                                ) {
+                                    Text(
+                                        text = selectedPeriod,
+                                        style = LocalTextStyle.current.copy(fontSize = 24.sp),
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    )
+                                    Icon(
+                                        CustomIcons.Filled.CaretDown,
+                                        contentDescription = "Selecionar período",
+                                        tint = MaterialTheme.colorScheme.tertiary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false }
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("de Hoje") },
+                                        onClick = {
+                                            selectedPeriod = "de Hoje"
+                                            expanded = false
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("da Semana") },
+                                        onClick = {
+                                            selectedPeriod = "da Semana"
+                                            expanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Text(
+                            text = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                .format(getTotalAmount()),
+                            style = LocalTextStyle.current.copy(fontSize = 24.sp)
+                        )
+                    }
                 }
 
-                items(transactions.size) { index ->
-                    val transaction = transactions[index].transaction
-                    val creditCard = transactions[index].creditCard
+                items(getTransactionsWithCreditCards().size) { index ->
+                    val transactionWithCard = getTransactionsWithCreditCards()[index]
+                    val transaction = transactionWithCard.transaction
+                    val creditCard = transactionWithCard.creditCard
 
                     Box(
                         modifier = Modifier
@@ -335,7 +454,7 @@ fun HomeScreenContentPreview() {
         HomeScreenContent(
             state = PreviewData.loadedState,
             padding = PaddingValues(0.dp),
-            snackbarHostState = SnackbarHostState(),
+            snackbarHostState = remember { SnackbarHostState() },
             onRefresh = {},
             onTransactionClick = { _, _ -> },
             onNavigateToBalance = {}
@@ -350,96 +469,10 @@ fun HomeScreenContentLoadingPreview() {
         HomeScreenContent(
             state = PreviewData.loadingState,
             padding = PaddingValues(0.dp),
-            snackbarHostState = SnackbarHostState(),
+            snackbarHostState = remember { SnackbarHostState() },
             onRefresh = {},
             onTransactionClick = { _, _ -> },
             onNavigateToBalance = {}
         )
     }
-}
-
-object PreviewData  {
-    val sampleTransactions = listOf(
-        TransactionDTO(
-            id = 1,
-            description = "Netflix",
-            amount = BigDecimal("39.90"),
-            category = "Assinaturas",
-            type = TransactionType.RECURRING,
-            date = LocalDateTime.now().minusDays(2),
-            creditCardId = 1
-        ),
-        TransactionDTO(
-            id = 2,
-            description = "Almoço",
-            amount = BigDecimal("45.50"),
-            category = "Alimentação",
-            type = TransactionType.DEFAULT,
-            date = LocalDateTime.now().minusDays(1),
-            creditCardId = 1
-        ),
-        TransactionDTO(
-            id = 3,
-            description = "Gasolina",
-            amount = BigDecimal("150.00"),
-            category = "Transporte",
-            type = TransactionType.DEFAULT,
-            date = LocalDateTime.now(),
-            creditCardId = 2
-        )
-    )
-
-    val sampleCreditCards = listOf(
-        CreditCardDTO(
-            id = 1,
-            title = "Cartão Principal",
-            description = "Mastercard Platinum",
-            color = "BLUE",
-            number = "**** 1234",
-            invoiceClosingDay = 28,
-            totalInvoiceAmount = BigDecimal("1500.75")
-        ),
-        CreditCardDTO(
-            id = 2,
-            title = "Cartão Secundário",
-            description = "Visa Gold",
-            color = "GOLD",
-            number = "**** 5678",
-            invoiceClosingDay = 15,
-            totalInvoiceAmount = BigDecimal("850.20")
-        )
-    )
-
-    val sampleMonthClosures = listOf(
-        MonthClosureDTO(
-            month = "JAN",
-            year = YearMonth.now().year,
-            total = BigDecimal("5000"),
-            available = BigDecimal("2000"),
-            expenses = BigDecimal("3000"),
-            index = 0,
-            finalUsdToBRL = BigDecimal("5.00")
-        )
-    )
-
-    val sampleBalance = BalanceDTO(
-        transactions = sampleTransactions,
-        lastAddedTransactions = sampleTransactions.take(2),
-        creditCards = sampleCreditCards,
-        monthClosures = sampleMonthClosures,
-        salary = BigDecimal("5000"),
-        expenses = BigDecimal("2350.45"),
-        available = BigDecimal("2649.55")
-    )
-
-    val loadingState = BalanceState(loading = true)
-
-    val loadedState = BalanceState(
-        loading = false,
-        balance = sampleBalance,
-        currentBalance = sampleBalance,
-        selectedYearMonth = YearMonth.now(),
-        creditCards = sampleCreditCards,
-        isInitialized = true
-    )
 }

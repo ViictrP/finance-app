@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,12 +24,15 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.viictrp.financeapp.data.remote.dto.CreditCardDTO
 import com.viictrp.financeapp.domain.model.transaction.TransactionType
 import com.viictrp.financeapp.ui.components.CreditCardImpactCard
 import com.viictrp.financeapp.ui.components.MonthPicker
 import com.viictrp.financeapp.ui.components.SummaryCard
 import com.viictrp.financeapp.ui.components.TransactionCard
+import com.viictrp.financeapp.ui.components.WeeklyExpensesChart
+import com.viictrp.financeapp.ui.helper.categoryHelper
 import com.viictrp.financeapp.ui.navigation.SecureDestinations
 import com.viictrp.financeapp.ui.screens.secure.viewmodel.BalanceState
 import com.viictrp.financeapp.ui.theme.PrimaryDark
@@ -57,6 +61,19 @@ fun BalanceScreenContent(
     val transactions =
         state.balance?.transactions?.filter { transaction -> transaction.type == TransactionType.DEFAULT }
             ?: emptyList()
+
+    val allTransactions = (state.balance?.transactions ?: emptyList()) +
+            (state.balance?.creditCards?.flatMap { it.invoices }?.flatMap { it.transactions } ?: emptyList())
+    
+    fun getTransactionsByCategory(): Map<String, BigDecimal> {
+        return allTransactions
+            .filter { it.type != TransactionType.RECURRING }
+            .groupBy { categoryHelper(it.category) }
+            .mapValues { (_, transactions) -> transactions.sumOf { it.amount } }
+            .toList()
+            .sortedByDescending { it.second }
+            .toMap()
+    }
 
     LazyColumn(
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -91,24 +108,47 @@ fun BalanceScreenContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                MonthPicker(state.selectedYearMonth, state.loading, onMonthSelected)
-            }
-        }
-
-        if (!state.loading) {
-            item {
-                Spacer(modifier = spacing)
-            }
-
-            item {
+                MonthPicker(
+                    state.selectedYearMonth, 
+                    state.loading, 
+                    onMonthSelected,
+                )
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .offset(y = (-11).dp)
+                        .zIndex(-1f)
                 ) {
                     when {
                         monthClosure != null -> SummaryCard(monthClosure.total, monthClosure.expenses, monthClosure.available)
                         state.balance != null -> SummaryCard(state.balance.salary, state.balance.expenses, state.balance.available)
+                    }
+                }
+            }
+        }
+
+        if (!state.loading) {
+            if (allTransactions.isNotEmpty()) {
+                item {
+                    Spacer(modifier = spacing)
+                }
+
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 24.dp)
+                    ) {
+                        Text(
+                            "Gastos por categoria",
+                            style = LocalTextStyle.current.copy(fontSize = 14.sp),
+                            color = MaterialTheme.colorScheme.secondary.copy(
+                                alpha = 0.5F
+                            )
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        WeeklyExpensesChart(data = getTransactionsByCategory())
                     }
                 }
             }
