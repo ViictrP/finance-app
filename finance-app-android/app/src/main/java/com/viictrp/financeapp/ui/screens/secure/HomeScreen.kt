@@ -200,10 +200,9 @@ fun HomeScreenContent(
                         ),
                     ) {
                         Column(
-                            modifier = Modifier.padding(
-                                horizontal = 24.dp,
-                                vertical = 16.dp
-                            ),
+                            modifier = Modifier
+                                .padding(horizontal = 24.dp)
+                                .padding(top = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Column {
@@ -304,7 +303,7 @@ fun HomeScreenContent(
                                         pointRadius = 6.dp,
                                         labelsAndValuesTogether = true
                                     ),
-                                    modifier = Modifier.height(200.dp)
+                                    modifier = Modifier.height(150.dp)
                                 )
                             }
                         }
