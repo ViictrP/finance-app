@@ -61,7 +61,7 @@ public class CreditCard {
     public void addTransaction(Transaction transaction) {
         var transactionDate = YearMonth.from(transaction.getDate());
 
-        if (transaction.getDate().getDayOfMonth() > invoiceClosingDay) {
+        if (transaction.getDate().getDayOfMonth() >= invoiceClosingDay) {
             transactionDate = transactionDate.plusMonths(1);
         }
 
