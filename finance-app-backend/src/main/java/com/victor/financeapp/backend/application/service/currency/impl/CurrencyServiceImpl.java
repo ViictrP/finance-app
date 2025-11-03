@@ -21,9 +21,15 @@ public class CurrencyServiceImpl implements CurrencyService {
     public Mono<BigDecimal> getDollarExchangeRates() {
         log.info("Retrieving dollar exchange rates");
         return client.getCurrencyExchangeRates("USD-BRL")
-                .map(response -> (Map<String, String>) response.get("USDBRL"))
-                .map(currency -> currency.get("ask"))
-                .map(BigDecimal::new)
-                .doOnSuccess(value -> log.info("Currency exchange rates {}", value));
+                .map(CurrencyServiceImpl::getBigDecimalCurrency)
+                .doOnError(throwable -> log.error(throwable.getLocalizedMessage(), throwable))
+                .doOnSuccess(value -> log.info("Currency exchange rates {}", value))
+                .onErrorResume(throwable -> Mono.just(BigDecimal.ZERO));
+    }
+
+    private static BigDecimal getBigDecimalCurrency(Map<String, Object> response) {
+        var usdBrl = (Map<String, String>) response.get("USDBRL");
+        var currency = usdBrl.get("ask");
+        return new BigDecimal(currency);
     }
 }
