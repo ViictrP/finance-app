@@ -29,10 +29,14 @@ public class CurrencyClientImpl implements CurrencyClient {
     public Mono<Map<String, Object>> getCurrencyExchangeRates(String currencyType) {
         return webClient.
                 get()
-                .uri(currencyUrl + "/" + currencyType + "?token=" + awesomeAPIToken)
+                .uri(currencyUrl + "/" + currencyType)
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new RuntimeException("Erro ao chamar API"))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
                         clientResponse -> Mono.error(new RuntimeException("Erro ao chamar API"))
                 )
                 .bodyToMono(new ParameterizedTypeReference<>() {});
