@@ -54,7 +54,8 @@ public class SaveCreditCardTransactionUseCaseImpl implements SaveCreditCardTrans
                             .flatMap(installment -> {
                                 creditCard.addTransaction(installment);
                                 installment.setDate(originalTransaction.getDate());
-                                return saveTransaction(installment, user, creditCard);
+                                return saveTransaction(installment)
+                                        .doOnNext(saved -> log.info("Saved transaction {} for user {} and card {}", saved.getId(), user.getId(), creditCard.getId()));
                             })
                             .then(Mono.just(originalTransaction));
                 })
@@ -62,21 +63,18 @@ public class SaveCreditCardTransactionUseCaseImpl implements SaveCreditCardTrans
                 .doOnNext(saved -> log.info("Processing transaction {} has completed", saved.description()));
     }
 
-    private Mono<Transaction> saveTransaction(Transaction transaction, User user, CreditCard creditCard) {
+    private Mono<Transaction> saveTransaction(Transaction transaction) {
         var invoice = transaction.getInvoice();
-
-        Mono<Transaction> saveTransactionMono = transactionRepository.save(transaction)
-                .doOnNext(saved -> log.info("Saved transaction {} for user {} and card {}", saved.getId(), user.getId(), creditCard.getId()));
 
         if (invoice.isNew()) {
             return invoiceRepository.save(invoice)
                     .doOnNext(saved -> log.info("New invoice created on {}", invoice.getYearMonth()))
                     .flatMap(i -> {
                         i.addTransaction(transaction);
-                        return saveTransactionMono;
+                        return transactionRepository.save(transaction);
                     });
         } else {
-            return saveTransactionMono;
+            return transactionRepository.save(transaction);
         }
     }
 
